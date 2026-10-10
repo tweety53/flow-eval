@@ -1,0 +1,23 @@
+{
+  "id": "kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3",
+  "role": "impl",
+  "source": {
+    "repo": "gymie",
+    "change": "kan-757-offline-l5-be-per-item-if-match-on-group-session"
+  },
+  "snapshot": "d8b3855fad09fe6e518fab58f62a3a2d4a52bfff",
+  "notes": "task 3: feat(groupsession): the floor set patch refuses a stale expected with set_changed (reference 5a20e08fd88050b980c8bc4f88b5dae2e8dac0a2)",
+  "needsDocker": true,
+  "verify": [
+    "./gradlew verifyChange",
+    "./gradlew :groupsession:test --tests 'GroupSessionFloorSetConflictTest' --tests 'GroupSessionWorkoutControllerTest'",
+    "./gradlew :groupsession:test"
+  ],
+  "files": [
+    "src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt",
+    "src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt",
+    "src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt",
+    "src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt",
+    "src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt"
+  ]
+}

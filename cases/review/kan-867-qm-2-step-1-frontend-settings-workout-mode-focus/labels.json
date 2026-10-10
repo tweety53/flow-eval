@@ -1,0 +1,63 @@
+{
+  "mustFind": [
+    {
+      "id": "F1",
+      "slot": "primary",
+      "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt",
+      "line": 295,
+      "summary": "If the load fails and the user then saves a unit successfully, loadFailed is cleared even though the workout mode was never confirmed — Retry disappears and the row shows FOCUS while the server holds QUICK.",
+      "severity": "Important"
+    },
+    {
+      "id": "F6",
+      "slot": "principles",
+      "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt",
+      "line": 339,
+      "summary": "loadFailed is a stored copy of 'some field is unconfirmed'; each field's write path clears it alone, so it drifts from the facts (Single Source of Truth).",
+      "severity": "Important"
+    },
+    {
+      "id": "F9",
+      "slot": "failure-modes",
+      "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt",
+      "line": 295,
+      "summary": "After a failed load, a successful chooseUnit clears loadFailed though viewWrite was never confirmed: Retry disappears and the control draws FOCUS while the server holds QUICK; the unit PUT's own answer carried QUICK and chooseUnit discards it.",
+      "severity": "Important"
+    },
+    {
+      "id": "F10",
+      "slot": "mutation",
+      "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt",
+      "line": 412,
+      "summary": "The label-to-option mapping is unpinned: swapping it so the option tagged QUICK reads Focus passes every test.",
+      "severity": "Important"
+    },
+    {
+      "id": "F11",
+      "slot": "mutation",
+      "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt",
+      "line": 272,
+      "summary": "The guard that stops a load begun before a successful mode write from overwriting it is untested: removing it passes.",
+      "severity": "Important"
+    },
+    {
+      "id": "F12",
+      "slot": "mutation",
+      "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt",
+      "line": 248,
+      "summary": "Nothing pins the Workout mode row behind the hasLoaded gate: drawing it in the skeleton branch passes every test, FirstFrameLoaderUiTest included.",
+      "severity": "Important"
+    }
+  ],
+  "knownFalse": [],
+  "ignored": [
+    {
+      "id": "F3",
+      "slot": "primary",
+      "file": "spectre/changes/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/tasks.md",
+      "line": 200,
+      "summary": "Task 2's Tests and Baseline fields are stale: the file has 10 @Test, theWorkoutModeControlKeepsOneLineAtPhoneWidth is missing, and the row test now asserts a stored QUICK, not FOCUS.",
+      "reason": "plan artifact: Baseline is measured at the task commit by check-task-commit-fields (9 at 6c85938e); the missing Tests name and the QUICK change are now in Task 2’s fields and Correction"
+    }
+  ]
+}

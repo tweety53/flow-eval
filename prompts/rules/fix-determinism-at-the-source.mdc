@@ -1,0 +1,66 @@
+---
+description: Fix a flaky test at its cause; widening a tolerance is not a fix
+alwaysApply: true
+---
+
+# Fix determinism at the source, never by widening tolerance
+
+<!-- core -->
+When a test is flaky, fix the nondeterminism where it lives, then prove the fix reaches the code
+under test. Pin the identity that varies, make the reset act, install a deterministic clock —
+whichever mechanism the flake actually runs on. **Never make a flaky test pass by widening a
+tolerance** — a pixel threshold, a timeout, a retry count, a sleep. A wider tolerance still passes
+while the defect is present: it is the bug wearing a green badge, and the next flake is already on
+its way.
+
+Widen a tolerance only when the fuzziness is the requirement itself — the specification asks for an
+approximate match and the tolerance states how approximate. A race, a hidden ordering or an
+uninitialised value is never that.
+
+**Prove the seam holds.** A determinism fix is done when the mechanism is shown to reach the code
+under test, not when one green run follows it — state what the pin, the reset or the installed
+clock replaces, and show the test failing with the mechanism removed.
+<!-- /core -->
+
+## Read the flake before touching anything
+
+Run the test until you have seen it fail, and name what actually varied — time, identity, ordering,
+leftover state, a live network, machine load. A flake you have not reproduced is a guess, and a
+guess routes straight to the tolerance.
+
+## Fix at the source
+
+- **Pin identity.** When the assertion matches on something that varies run to run — a generated
+  id, a timestamp, a random seed — pin it to a fixed value at the boundary the test controls, and
+  assert against the pinned value.
+- **Make the reset act.** A reset that exists but never fires is worse than none: it reads as
+  coverage while the leftover state it was written for keeps leaking. Repair the mechanism so it
+  actually acts, in the fixture, where every case passes through it.
+- **Install a deterministic clock.** Freeze or install time at the boundary — Playwright's
+  `page.clock.install()` for a page, the language's frozen-clock helper for a runtime — and assert
+  against instants you named, never against the wall clock.
+
+## Prove the seam holds
+
+Break the mechanism on purpose — unpin the identity, disable the reset, unfreeze the clock — and
+watch the test fail; restore it and watch the test pass. A pin that does not reach the code under
+test proves nothing: a clock installed into the page but not into the wasm runtime it drives leaves
+the original nondeterminism in place behind a green run. The failure you can produce on demand is
+the evidence the fix is live; one green run after the fix is evidence of nothing.
+
+## When widening is legitimate
+
+Only when approximation is the requirement: the specification says the match is approximate and
+the tolerance states how approximate. Name it in the assertion's own terms and move on. Never
+widen to absorb a race, a hidden ordering, an uninitialised value, or a slow machine — fix the
+cause instead, and if the cause is genuinely outside the test's reach, say so in the change
+summary rather than quietly raising the threshold.
+
+## Reporting
+
+A change that touches flakiness says which mechanism it pinned, reset or installed and how the
+seam was proven. A change that only widened a tolerance states why the source could not be fixed —
+that sentence is the review target.
+
+Applies to any automated test in any project — unit, integration, UI, visual snapshot, load — and
+to the fixes written for them.

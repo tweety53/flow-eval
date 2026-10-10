@@ -1,0 +1,11 @@
+{
+  "id": "kan-867-qm-2-step-1-frontend-settings-workout-mode-focus",
+  "role": "review",
+  "source": {
+    "repo": "gymie-frontend",
+    "change": "kan-867-qm-2-step-1-frontend-settings-workout-mode-focus"
+  },
+  "snapshot": "b246cc452a5c57673fcc2f82aac1b3cbfcc3aeab",
+  "notes": "round-0 range 3fc0d480ba1e206dc828e5375de279c58f449879..b246cc452a5c57673fcc2f82aac1b3cbfcc3aeab",
+  "needsDocker": false
+}

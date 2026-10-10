@@ -1,0 +1,50 @@
+---
+description: A commit's Conventional Commits scope names the module or area it moved, never the change or a task id
+alwaysApply: true
+---
+
+# Commit scopes name the module
+
+<!-- core -->
+**A commit's scope names the module or area inside the repository that the commit moved** —
+`scripts`, `finish-contract`, `spectre` — never the change name, the change's Jira key, or a task
+id. A scope is optional: a subject carrying none, `fix: <subject>`, already satisfies this. Where a
+commit spans several modules, name the one carrying its substance, or a broader area covering them —
+never a list.
+<!-- /core -->
+
+## Why
+
+`<type>(<scope>): <subject>` exists so a reader scanning `git log --oneline` sees what part of the
+codebase moved without opening the commit. A scope naming the change or a ticket repeats information
+the branch and the tracker already carry, and tells the reader nothing about where the change landed.
+
+## The three prohibited shapes
+
+- **The change name** — `feat(kan-239-run-2-asserts-base-branch-and-archives-via-pr): …` names the
+  change, not a module.
+- **The change's bare Jira key** — `feat(kan-239): …` is the same defect with the descriptive suffix
+  trimmed off.
+- **A task id** — `fix(3.2): …` names a line in a plan, not a part of the codebase.
+
+Anything else is allowed. There is no vocabulary of legal module names to maintain; the rule refuses
+three known-wrong shapes and accepts everything else.
+
+## The guard
+
+Inside the flow pipeline, `<agents repo>/scripts/check-task-commit-fields.sh` — its Go port's `tcfCheckCommitScope`
+(`<agents repo>/stats/internal/guard/taskcommitfields.go`) — enforces
+this on every task's **declared** `**Commit:**` field, at the point `/flow` commits the task —
+so a plan that declares one of the three prohibited shapes fails the guard even when the implementer
+reproduces it exactly. Outside the pipeline, this rule is the only enforcement: apply it by hand.
+
+## Examples
+
+- `feat(scripts): add alpha` — a module, passes.
+- `fix: drop an invented spec citation` — no scope at all, passes; a scope is optional.
+- `feat(kan-900-helpers): add alpha` — contains a Jira key as a substring but is not equal to it,
+  passes; the check is equality, never a substring match.
+- `feat(kan-202-commit-split-and-module-scopes): …` — the change name, refused.
+- `fix(3.2): …` — a dotted task id, refused.
+
+Applies globally, to every commit, not only inside the flow pipeline.

@@ -1,0 +1,2458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261010T140957Z-impl-claude-code-claude-haiku-5-5-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261010T140957Z-impl-claude-code-claude-haiku-5-5-low</h1>
+<dl class="header">
+<dt>role</dt><dd>impl</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>claude-haiku-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>judge</dt><dd>–</dd>
+<dt>prompt pin</dt><dd>b35b350c2573184c56c37138e627d33f8a3de927</dd>
+<dt>case set</dt><dd>395d8bd4caf5299dbac80dc5f1d0023d3370b640d0dd4f23c7ace8d835a8ffe9</dd>
+<dt>flow-eval</dt><dd>5ed26210c06529270383291bc4479a829f234715</dd>
+<dt>started</dt><dd>2026-10-10T14:09:57Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3">kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3</a> · <a href="#trial-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3-1">trial 1</a> · <a href="#trial-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3-2">trial 2</a> · <a href="#trial-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">100.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3" class="row-ok"><td>kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3</td><td>3/3</td><td>3</td><td>yes</td><td>100.0</td><td>0.0</td><td>$0.0585</td><td>$0.1756</td><td>462.6</td><td>8506398</td><td>$0.0000</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3-1" class="trial pass">
+<h3>kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3 · trial 1 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999712992815254</dd></div>
+<div><dt>cache_read</dt><dd>2508576</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>76603</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.05421156</dd></div>
+<div><dt>egress_denied</dt><dd>10</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>17</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>72</dd></div>
+<div><dt>output</dt><dd>27596</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>95292</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>9062</dd></div>
+<div><dt>reported_cost_usd</dt><dd>1.0842312000000003</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:31,&#34;Edit&#34;:10,&#34;Write&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>42</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>43</dd></div>
+<div><dt>wall_ms</dt><dd>477121</dd></div>
+<div><dt>work</dt><dd>{&#34;diff_lines&#34;:361,&#34;overbuild_ratio&#34;:1.2578397212543555,&#34;out_of_scope_files&#34;:[],&#34;tests_added&#34;:4,&#34;preexisting_broken&#34;:0}</dd></div>
+</dl>
+<details><summary>output.md</summary><pre>Task 3 is implemented and verified, but I did not commit it: git has no author identity configured in this environment. The five files are staged, and the commit is ready to run once an identity is set.
+
+**Changes**
+- `GroupSessionDtos.kt`: added `PatchFloorSetRequest` (weight, effort, confirmed, optional `expected`) and `FloorSetValuesDto`. Both reject unknown fields with `400`, following the solo DTO&#39;s pattern.
+- `GroupSessionWorkoutController.kt`: `patchSet` takes `PatchFloorSetRequest`, passes the authenticated caller as `actorId`, and converts `expected` into `SetValues` through the existing web converters.
+- `GroupSessionExceptionHandler.kt`: new `handleSetChanged` maps `WorkoutSetChangedException` to `409`, `code: set_changed`, the detail message, `current`, and `updatedBy`/`updatedAt`. Unstamped sets omit those two properties rather than sending `null`, matching the existing `startedBy` handling.
+- `GroupSessionFloorSetConflictTest.kt` (new): the four named tests.
+- `GroupSessionWorkoutControllerTest.kt`: the `patch set delegates` stub and verify now include `owner, null`.
+
+**Tests and commands**
+- RED, before the implementation: `./gradlew :groupsession:test --tests &#39;*GroupSessionFloorSetConflictTest*&#39; --tests &#39;*GroupSessionWorkoutControllerTest*&#39;` gave 4 failures. Three new conflict tests failed, and the updated controller stub failed. The unknown-field test already passed.
+- `./gradlew ktlintFormat`: build successful.
+- GREEN: `./gradlew verifyChange :groupsession:test --tests &#39;*GroupSessionFloorSetConflictTest*&#39; --tests &#39;*GroupSessionWorkoutControllerTest*&#39;` passed, including detekt. The XML reports show `GroupSessionFloorSetConflictTest` 4/4 and `GroupSessionWorkoutControllerTest` 17/17 green.
+- I did not run the revert-to-prove-the-guard step; the RED run is the evidence that the new behaviour is exercised.
+
+**Not done**
+- Commit: `git commit` failed with &#34;Author identity unknown&#34;. Set `user.name` and `user.email`, then run the commit with the message from the task and the `Co-Authored-By: Claude Code &lt;noreply@anthropic.com&gt;` trailer.</pre></details>
+<details><summary>verify.log</summary><pre>$ ./gradlew verifyChange
+Starting a Gradle Daemon, 1 incompatible and 2 stopped Daemons could not be reused, use --status for details
+Shared read-only dependency cache is an incubating feature.
+Calculating task graph as no cached configuration is available for tasks: verifyChange
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test FROM-CACHE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :detekt NO-SOURCE
+&gt; Task :admin:loadKtlintReporters UP-TO-DATE
+&gt; Task :loadKtlintReporters UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :admin:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :app:detekt UP-TO-DATE
+&gt; Task :runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :admin:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :admin:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :admin:ktlintCheck UP-TO-DATE
+&gt; Task :admin:detekt UP-TO-DATE
+&gt; Task :app:loadKtlintReporters UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :app:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :ktlintCheck UP-TO-DATE
+&gt; Task :app:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :app:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :app:ktlintCheck UP-TO-DATE
+&gt; Task :auth:loadKtlintReporters UP-TO-DATE
+&gt; Task :common:loadKtlintReporters UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :auth:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :auth:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :common:detekt UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :common:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :auth:detekt UP-TO-DATE
+&gt; Task :common:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :auth:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :common:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :auth:ktlintCheck UP-TO-DATE
+&gt; Task :common:ktlintCheck UP-TO-DATE
+&gt; Task :gateway:loadKtlintReporters UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :gateway:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :gateway:detekt UP-TO-DATE
+&gt; Task :groupsession:loadKtlintReporters UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :groupsession:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :gateway:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :gateway:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :gateway:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :groupsession:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :invite:loadKtlintReporters UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :invite:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :invite:detekt UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :invite:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :invite:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :invite:ktlintCheck UP-TO-DATE
+&gt; Task :profile:loadKtlintReporters UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :profile:detekt UP-TO-DATE
+&gt; Task :profile:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :profile:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :profile:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :profile:ktlintCheck UP-TO-DATE
+&gt; Task :tracking:loadKtlintReporters UP-TO-DATE
+&gt; Task :tracking:detekt UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :tracking:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :tracking:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :tracking:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :tracking:ktlintCheck UP-TO-DATE
+&gt; Task :workout:loadKtlintReporters UP-TO-DATE
+&gt; Task :workout:detekt UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :workout:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :workout:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :workout:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :workout:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverTestSourceSet
+&gt; Task :groupsession:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :groupsession:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:detekt
+&gt; Task :verifyChange
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 35s
+98 actionable tasks: 2 executed, 1 from cache, 95 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+[exit 0]
+$ ./gradlew :groupsession:test --tests &#39;GroupSessionFloorSetConflictTest&#39; --tests &#39;GroupSessionWorkoutControllerTest&#39;
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test --tests GroupSessionFloorSetConflictTest --tests GroupSessionWorkoutControllerTest
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test UP-TO-DATE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :groupsession:processResources NO-SOURCE
+&gt; Task :common:processResources NO-SOURCE
+&gt; Task :workout:processResources NO-SOURCE
+&gt; Task :groupsession:processTestResources NO-SOURCE
+&gt; Task :common:compileKotlin UP-TO-DATE
+&gt; Task :common:compileJava NO-SOURCE
+&gt; Task :common:classes UP-TO-DATE
+&gt; Task :common:jar UP-TO-DATE
+&gt; Task :workout:compileKotlin UP-TO-DATE
+&gt; Task :workout:compileJava NO-SOURCE
+&gt; Task :workout:classes UP-TO-DATE
+&gt; Task :workout:jar UP-TO-DATE
+&gt; Task :groupsession:compileKotlin UP-TO-DATE
+&gt; Task :groupsession:compileJava NO-SOURCE
+&gt; Task :groupsession:classes UP-TO-DATE
+&gt; Task :groupsession:jar UP-TO-DATE
+&gt; Task :groupsession:compileTestKotlin
+&gt; Task :groupsession:compileTestJava NO-SOURCE
+&gt; Task :groupsession:testClasses UP-TO-DATE
+
+&gt; Task :groupsession:test
+
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 35s
+23 actionable tasks: 2 executed, 21 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+$ ./gradlew :groupsession:test
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test UP-TO-DATE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :groupsession:processResources NO-SOURCE
+&gt; Task :common:processResources NO-SOURCE
+&gt; Task :workout:processResources NO-SOURCE
+&gt; Task :groupsession:processTestResources NO-SOURCE
+&gt; Task :common:compileKotlin UP-TO-DATE
+&gt; Task :common:compileJava NO-SOURCE
+&gt; Task :common:classes UP-TO-DATE
+&gt; Task :common:jar UP-TO-DATE
+&gt; Task :workout:compileKotlin UP-TO-DATE
+&gt; Task :workout:compileJava NO-SOURCE
+&gt; Task :workout:classes UP-TO-DATE
+&gt; Task :workout:jar UP-TO-DATE
+&gt; Task :groupsession:compileKotlin UP-TO-DATE
+&gt; Task :groupsession:compileJava NO-SOURCE
+&gt; Task :groupsession:classes UP-TO-DATE
+&gt; Task :groupsession:jar UP-TO-DATE
+&gt; Task :groupsession:compileTestKotlin UP-TO-DATE
+&gt; Task :groupsession:compileTestJava NO-SOURCE
+&gt; Task :groupsession:testClasses UP-TO-DATE
+
+&gt; Task :groupsession:test
+
+2026-10-10T14:20:24.029Z  INFO 4000 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit &#39;default&#39;
+2026-10-10T14:20:24.031Z  INFO 4000 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-10T14:20:24.044Z  INFO 4000 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 33s
+23 actionable tasks: 1 executed, 22 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+</pre></details>
+<details><summary>work.patch</summary><pre>diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+index 2c4dc2f..461e18e 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+@@ -9,9 &#43;9,12 @@ import com.gymie.groupsession.core.exceptions.GroupSessionParticipantNotEligible
+ import com.gymie.groupsession.core.exceptions.GroupSessionValidationException
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+ import com.gymie.workout.core.exceptions.WorkoutNotFoundException
+&#43;import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+ import com.gymie.workout.core.exceptions.WorkoutStaleException
+ import com.gymie.workout.core.exceptions.WorkoutValidationException
+ import com.gymie.workout.infrastructure.presentation.web.converters.ETagWebConverter
+&#43;import com.gymie.workout.infrastructure.presentation.web.converters.SetEffortWebConverter
+&#43;import com.gymie.workout.infrastructure.presentation.web.converters.SetWeightWebConverter
+ import org.springframework.http.HttpStatus
+ import org.springframework.http.ProblemDetail
+ import org.springframework.web.bind.MethodArgumentNotValidException
+@@ -103,4 &#43;106,26 @@ class GroupSessionExceptionHandler(
+         ProblemDetail
+             .forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: &#34;Workout changed&#34;)
+             .apply { setProperty(&#34;etag&#34;, ETagWebConverter.toETag(ex.currentUpdatedAt)) }
+&#43;
+&#43;    /**
+&#43;     * The floor set compare-and-set refusal (decision `value-compare-and-set`). `updatedBy` and
+&#43;     * `updatedAt` are omitted for a set no patch has stamped, for the reason [handleConflict] gives.
+&#43;     */
+&#43;    @ExceptionHandler(WorkoutSetChangedException::class)
+&#43;    fun handleSetChanged(ex: WorkoutSetChangedException): ProblemDetail =
+&#43;        ProblemDetail
+&#43;            .forStatusAndDetail(HttpStatus.CONFLICT, &#34;This set was changed on another phone.&#34;)
+&#43;            .apply {
+&#43;                setProperty(&#34;code&#34;, &#34;set_changed&#34;)
+&#43;                setProperty(
+&#43;                    &#34;current&#34;,
+&#43;                    mapOf(
+&#43;                        &#34;weight&#34; to SetWeightWebConverter.toDto(ex.current.weight),
+&#43;                        &#34;effort&#34; to SetEffortWebConverter.toDto(ex.current.effort),
+&#43;                        &#34;confirmed&#34; to (ex.current.confirmedAt != null),
+&#43;                    ),
+&#43;                )
+&#43;                ex.current.updatedBy?.let { setProperty(&#34;updatedBy&#34;, actorOf(it)) }
+&#43;                ex.current.updatedAt?.let { setProperty(&#34;updatedAt&#34;, it) }
+&#43;            }
+ }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+index 2f11870..98367aa 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+@@ -1,6 &#43;1,8 @@
+ package com.gymie.groupsession.infrastructure.presentation.web
+ 
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+&#43;import com.gymie.groupsession.infrastructure.presentation.web.dto.PatchFloorSetRequest
+&#43;import com.gymie.workout.core.domain.workout.SetValues
+ import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+ import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+ import com.gymie.workout.core.services.workout.WorkoutService
+@@ -16,7 &#43;18,6 @@ import com.gymie.workout.infrastructure.presentation.web.dto.FinishReadinessResp
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutBlockRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutExerciseRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutRequest
+-import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutSetRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.UpdateWorkoutRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse
+ import com.gymie.workout.infrastructure.presentation.web.validators.WorkoutRequestValidator
+@@ -159,9 &#43;160,17 @@ class GroupSessionWorkoutController(
+         @PathVariable id: UUID,
+         @PathVariable userId: UUID,
+         @PathVariable setId: UUID,
+-        @RequestBody request: PatchWorkoutSetRequest,
+&#43;        @RequestBody request: PatchFloorSetRequest,
+     ): WorkoutResponse {
+         val workoutId = resolveForWrite(authentication, id, userId)
+&#43;        val expected =
+&#43;            request.expected?.let {
+&#43;                SetValues(
+&#43;                    weight = SetWeightWebConverter.toDomain(it.weight),
+&#43;                    effort = SetEffortWebConverter.toDomain(it.effort),
+&#43;                    confirmed = it.confirmed,
+&#43;                )
+&#43;            }
+         val updated =
+             workoutFieldPatchService.patchSet(
+                 userId,
+@@ -170,6 &#43;179,8 @@ class GroupSessionWorkoutController(
+                 SetWeightWebConverter.toDomain(request.weight),
+                 SetEffortWebConverter.toDomain(request.effort),
+                 request.confirmed,
+&#43;                actorId = UUID.fromString(authentication.name),
+&#43;                expected = expected,
+             )
+         return responses.respond(updated)
+     }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+index 7c77c30..efa98d6 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+@@ -1,11 &#43;1,16 @@
+ package com.gymie.groupsession.infrastructure.presentation.web.dto
+ 
+&#43;import com.fasterxml.jackson.annotation.JsonAnySetter
+ import com.fasterxml.jackson.annotation.JsonFormat
+&#43;import com.fasterxml.jackson.annotation.JsonProperty
+ import com.fasterxml.jackson.annotation.JsonUnwrapped
+ import com.gymie.groupsession.core.domain.groupsession.GroupSessionStatus
+ import com.gymie.groupsession.core.domain.groupsession.specification.SessionAccess
+ import com.gymie.groupsession.core.domain.groupsession.specification.ViewerAccess
+ import com.gymie.workout.core.domain.workout.WorkoutStatus
+&#43;import com.gymie.workout.core.exceptions.WorkoutValidationException
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.SetEffortDto
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.SetWeightDto
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutSummaryResponse
+ import jakarta.validation.Valid
+ import jakarta.validation.constraints.NotEmpty
+@@ -167,3 &#43;172,45 @@ data class CopyGroupSessionResponse(
+     @get:JsonUnwrapped val session: GroupSessionResponse,
+     val leftOut: List&lt;ParticipantUserResponse&gt;,
+ )
+&#43;
+&#43;/**
+&#43; * `PATCH .../workout/sets/{setId}` on the group-session floor. [expected] is the set&#39;s values as the
+&#43; * phone last read them; when present, a stored set that no longer matches is refused `409 set_changed`
+&#43; * (decision `value-compare-and-set`). Absent, the patch is last-write-wins.
+&#43; */
+&#43;data class PatchFloorSetRequest(
+&#43;    @field:JsonProperty(required = true)
+&#43;    val weight: SetWeightDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val effort: SetEffortDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val confirmed: Boolean,
+&#43;    val expected: FloorSetValuesDto? = null,
+&#43;) {
+&#43;    @JsonAnySetter
+&#43;    fun rejectUnknownField(
+&#43;        name: String,
+&#43;        value: Any?,
+&#43;    ): Unit =
+&#43;        throw WorkoutValidationException(
+&#43;            &#34;The floor set patch accepts weight, effort, confirmed and expected only, but the body carried &#39;$name&#39; ($value)&#34;,
+&#43;        )
+&#43;}
+&#43;
+&#43;data class FloorSetValuesDto(
+&#43;    @field:JsonProperty(required = true)
+&#43;    val weight: SetWeightDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val effort: SetEffortDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val confirmed: Boolean,
+&#43;) {
+&#43;    @JsonAnySetter
+&#43;    fun rejectUnknownField(
+&#43;        name: String,
+&#43;        value: Any?,
+&#43;    ): Unit =
+&#43;        throw WorkoutValidationException(
+&#43;            &#34;The expected set values accept weight, effort and confirmed only, but the body carried &#39;$name&#39; ($value)&#34;,
+&#43;        )
+&#43;}
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+new file mode 100644
+index 0000000..90131c8
+--- /dev/null
+&#43;&#43;&#43; b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+@@ -0,0 &#43;1,270 @@
+&#43;package com.gymie.groupsession.infrastructure.presentation.web
+&#43;
+&#43;import com.fasterxml.jackson.databind.ObjectMapper
+&#43;import com.gymie.groupsession.core.domain.groupsession.specification.ParticipantProfile
+&#43;import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+&#43;import com.gymie.workout.core.domain.workout.SetEffort
+&#43;import com.gymie.workout.core.domain.workout.SetValues
+&#43;import com.gymie.workout.core.domain.workout.SetWeight
+&#43;import com.gymie.workout.core.domain.workout.WeightUnit
+&#43;import com.gymie.workout.core.domain.workout.Workout
+&#43;import com.gymie.workout.core.domain.workout.WorkoutLifecycle
+&#43;import com.gymie.workout.core.domain.workout.WorkoutSet
+&#43;import com.gymie.workout.core.domain.workout.WorkoutStatus
+&#43;import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+&#43;import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+&#43;import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+&#43;import com.gymie.workout.core.services.workout.WorkoutService
+&#43;import com.gymie.workout.infrastructure.presentation.web.WorkoutExceptionHandler
+&#43;import com.gymie.workout.infrastructure.presentation.web.WorkoutResponseAssembler
+&#43;import io.mockk.clearMocks
+&#43;import io.mockk.every
+&#43;import io.mockk.mockk
+&#43;import io.mockk.verify
+&#43;import org.junit.jupiter.api.Assertions.assertEquals
+&#43;import org.junit.jupiter.api.Assertions.assertNull
+&#43;import org.junit.jupiter.api.Assertions.assertTrue
+&#43;import org.junit.jupiter.api.BeforeEach
+&#43;import org.junit.jupiter.api.Test
+&#43;import org.springframework.beans.factory.annotation.Autowired
+&#43;import org.springframework.boot.test.context.TestConfiguration
+&#43;import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+&#43;import org.springframework.context.annotation.Bean
+&#43;import org.springframework.context.annotation.Import
+&#43;import org.springframework.http.MediaType
+&#43;import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
+&#43;import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
+&#43;import org.springframework.test.web.servlet.MockMvc
+&#43;import org.springframework.test.web.servlet.MvcResult
+&#43;import org.springframework.test.web.servlet.patch
+&#43;import java.math.BigDecimal
+&#43;import java.time.Instant
+&#43;import java.time.LocalDate
+&#43;import java.util.UUID
+&#43;
+&#43;@WebMvcTest(controllers = [GroupSessionWorkoutController::class])
+&#43;@Import(
+&#43;    GroupSessionWorkoutController::class,
+&#43;    GroupSessionExceptionHandler::class,
+&#43;    WorkoutExceptionHandler::class,
+&#43;    GroupSessionFloorSetConflictTest.TestConfig::class,
+&#43;)
+&#43;class GroupSessionFloorSetConflictTest {
+&#43;    @Autowired lateinit var mockMvc: MockMvc
+&#43;
+&#43;    @Autowired lateinit var objectMapper: ObjectMapper
+&#43;
+&#43;    @Autowired lateinit var groupSessionQueryService: GroupSessionQueryService
+&#43;
+&#43;    @Autowired lateinit var workoutFieldPatchService: WorkoutFieldPatchService
+&#43;
+&#43;    @Autowired lateinit var responses: WorkoutResponseAssembler
+&#43;
+&#43;    private val owner = UUID.fromString(&#34;11111111-1111-1111-1111-111111111111&#34;)
+&#43;    private val jana = UUID.fromString(&#34;22222222-2222-2222-2222-222222222222&#34;)
+&#43;    private val driver = UUID.fromString(&#34;33333333-3333-3333-3333-333333333333&#34;)
+&#43;    private val sessionId = UUID.randomUUID()
+&#43;    private val workoutId = UUID.randomUUID()
+&#43;    private val setId = UUID.randomUUID()
+&#43;    private val date = LocalDate.of(2026, 9, 4)
+&#43;
+&#43;    @BeforeEach
+&#43;    fun resetMocks() {
+&#43;        clearMocks(groupSessionQueryService, workoutFieldPatchService, responses)
+&#43;    }
+&#43;
+&#43;    private fun basePath() = &#34;/api/group-sessions/$sessionId/participants/$jana/workout&#34;
+&#43;
+&#43;    private val stubWorkout =
+&#43;        Workout(
+&#43;            id = workoutId,
+&#43;            userId = jana,
+&#43;            scheduledDate = date,
+&#43;            scheduledTime = null,
+&#43;            unit = WeightUnit.KG,
+&#43;            lifecycle = WorkoutLifecycle(status = WorkoutStatus.PLANNED),
+&#43;        )
+&#43;
+&#43;    private fun workout(): Workout = stubWorkout
+&#43;
+&#43;    private fun workoutResponse() =
+&#43;        com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse(
+&#43;            id = workoutId,
+&#43;            scheduledDate = date,
+&#43;            scheduledTime = null,
+&#43;            unit = WeightUnit.KG,
+&#43;            name = null,
+&#43;            displayName = &#34;Stub&#34;,
+&#43;            notes = null,
+&#43;            status = WorkoutStatus.PLANNED,
+&#43;            startedAt = null,
+&#43;            finishedAt = null,
+&#43;            blocks = emptyList(),
+&#43;        )
+&#43;
+&#43;    private fun profile(
+&#43;        id: UUID,
+&#43;        name: String,
+&#43;    ) = ParticipantProfile(userId = id, displayName = name, slug = name.lowercase(), avatarUrl = null, gender = null)
+&#43;
+&#43;    private fun patchBody(expected: String?): String {
+&#43;        val expectedPart = expected?.let { &#34;,\&#34;expected\&#34;:$it&#34; } ?: &#34;&#34;
+&#43;        return &#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:70},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:8},&#34;confirmed&#34;:true$expectedPart}&#34;&#34;&#34;
+&#43;    }
+&#43;
+&#43;    private fun sendPatch(body: String): MvcResult =
+&#43;        mockMvc
+&#43;            .patch(&#34;${basePath()}/sets/$setId&#34;) {
+&#43;                with(user(owner.toString()))
+&#43;                with(csrf())
+&#43;                contentType = MediaType.APPLICATION_JSON
+&#43;                content = body
+&#43;            }.andReturn()
+&#43;
+&#43;    @Test
+&#43;    fun `expected reaches the service with the driver as actor`() {
+&#43;        val expectedBody = &#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:60},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:8},&#34;confirmed&#34;:false}&#34;&#34;&#34;
+&#43;        val expected =
+&#43;            SetValues(
+&#43;                weight = SetWeight.Measured(BigDecimal(&#34;60&#34;)),
+&#43;                effort = SetEffort.Count(8),
+&#43;                confirmed = false,
+&#43;            )
+&#43;        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+&#43;        every {
+&#43;            workoutFieldPatchService.patchSet(
+&#43;                jana,
+&#43;                workoutId,
+&#43;                setId,
+&#43;                SetWeight.Measured(BigDecimal(&#34;70&#34;)),
+&#43;                SetEffort.Count(8),
+&#43;                true,
+&#43;                owner,
+&#43;                expected,
+&#43;            )
+&#43;        } returns workout()
+&#43;        every { responses.respond(workout()) } returns workoutResponse()
+&#43;
+&#43;        val result = sendPatch(patchBody(expectedBody))
+&#43;
+&#43;        assertEquals(200, result.response.status)
+&#43;        verify {
+&#43;            workoutFieldPatchService.patchSet(
+&#43;                jana,
+&#43;                workoutId,
+&#43;                setId,
+&#43;                SetWeight.Measured(BigDecimal(&#34;70&#34;)),
+&#43;                SetEffort.Count(8),
+&#43;                true,
+&#43;                owner,
+&#43;                expected,
+&#43;            )
+&#43;        }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `a set_changed refusal carries current updatedBy and updatedAt`() {
+&#43;        val at = Instant.parse(&#34;2026-10-09T10:15:00Z&#34;)
+&#43;        val current =
+&#43;            WorkoutSet(
+&#43;                id = setId,
+&#43;                position = 0,
+&#43;                weight = SetWeight.Measured(BigDecimal(&#34;65&#34;)),
+&#43;                effort = SetEffort.Count(6),
+&#43;                confirmedAt = at,
+&#43;                updatedAt = at,
+&#43;                updatedBy = driver,
+&#43;            )
+&#43;        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+&#43;        every { groupSessionQueryService.profileOf(driver) } returns profile(driver, &#34;Driver&#34;)
+&#43;        every { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) } throws
+&#43;            WorkoutSetChangedException(current)
+&#43;
+&#43;        val result =
+&#43;            sendPatch(patchBody(&#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:60},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:8},&#34;confirmed&#34;:false}&#34;&#34;&#34;))
+&#43;
+&#43;        assertEquals(409, result.response.status)
+&#43;        val body = objectMapper.readTree(result.response.contentAsString)
+&#43;        assertEquals(&#34;set_changed&#34;, body.get(&#34;code&#34;).asText())
+&#43;        assertEquals(&#34;This set was changed on another phone.&#34;, body.get(&#34;detail&#34;).asText())
+&#43;        assertEquals(driver.toString(), body.get(&#34;updatedBy&#34;).get(&#34;id&#34;).asText())
+&#43;        assertEquals(&#34;Driver&#34;, body.get(&#34;updatedBy&#34;).get(&#34;displayName&#34;).asText())
+&#43;        assertEquals(&#34;2026-10-09T10:15:00Z&#34;, body.get(&#34;updatedAt&#34;).asText())
+&#43;        assertEquals(
+&#43;            &#34;MEASURED&#34;,
+&#43;            body
+&#43;                .get(&#34;current&#34;)
+&#43;                .get(&#34;weight&#34;)
+&#43;                .get(&#34;kind&#34;)
+&#43;                .asText(),
+&#43;        )
+&#43;        assertEquals(
+&#43;            65,
+&#43;            body
+&#43;                .get(&#34;current&#34;)
+&#43;                .get(&#34;weight&#34;)
+&#43;                .get(&#34;value&#34;)
+&#43;                .asInt(),
+&#43;        )
+&#43;        assertEquals(
+&#43;            &#34;COUNT&#34;,
+&#43;            body
+&#43;                .get(&#34;current&#34;)
+&#43;                .get(&#34;effort&#34;)
+&#43;                .get(&#34;kind&#34;)
+&#43;                .asText(),
+&#43;        )
+&#43;        assertEquals(
+&#43;            6,
+&#43;            body
+&#43;                .get(&#34;current&#34;)
+&#43;                .get(&#34;effort&#34;)
+&#43;                .get(&#34;value&#34;)
+&#43;                .asInt(),
+&#43;        )
+&#43;        assertTrue(body.get(&#34;current&#34;).get(&#34;confirmed&#34;).asBoolean())
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `a never-stamped set answers null updatedBy and updatedAt`() {
+&#43;        val current = WorkoutSet(id = setId, position = 0, weight = SetWeight.Bodyweight, effort = SetEffort.Max)
+&#43;        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+&#43;        every { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) } throws
+&#43;            WorkoutSetChangedException(current)
+&#43;
+&#43;        val result = sendPatch(patchBody(&#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:false}&#34;&#34;&#34;))
+&#43;
+&#43;        assertEquals(409, result.response.status)
+&#43;        val body = objectMapper.readTree(result.response.contentAsString)
+&#43;        assertEquals(&#34;set_changed&#34;, body.get(&#34;code&#34;).asText())
+&#43;        assertNull(body.get(&#34;updatedBy&#34;))
+&#43;        assertNull(body.get(&#34;updatedAt&#34;))
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `an unknown field is still refused`() {
+&#43;        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+&#43;
+&#43;        val result = sendPatch(&#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;foo&#34;:1}&#34;&#34;&#34;)
+&#43;
+&#43;        assertEquals(400, result.response.status)
+&#43;    }
+&#43;
+&#43;    @TestConfiguration
+&#43;    class TestConfig {
+&#43;        @Bean
+&#43;        fun groupSessionQueryService(): GroupSessionQueryService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutService(): WorkoutService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutFieldPatchService(): WorkoutFieldPatchService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutFinishReadinessService(): WorkoutFinishReadinessService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutResponseAssembler(): WorkoutResponseAssembler = mockk()
+&#43;    }
+&#43;}
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+index 104e5a8..72ab219 100644
+--- a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+@@ -222,7 &#43;222,7 @@ class GroupSessionWorkoutControllerTest {
+         val setId = UUID.randomUUID()
+         every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+         every {
+-            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true)
+&#43;            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, null)
+         } returns workout()
+         every { responses.respond(workout()) } returns workoutResponse()
+ 
+@@ -234,7 &#43;234,7 @@ class GroupSessionWorkoutControllerTest {
+                 content = &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true}&#34;&#34;&#34;
+             }.andExpect { status { isOk() } }
+ 
+-        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true) }
+&#43;        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, null) }
+     }
+ 
+     @Test
+</pre></details>
+<p class="muted">transcript: 20261010T140957Z-impl-claude-code-claude-haiku-5-5-low/kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3-2" class="trial pass">
+<h3>kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3 · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999707121383147</dd></div>
+<div><dt>cache_read</dt><dd>2526570</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>75612</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0543715</dd></div>
+<div><dt>egress_denied</dt><dd>10</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>12</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>74</dd></div>
+<div><dt>output</dt><dd>27952</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>94301</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>10624</dd></div>
+<div><dt>reported_cost_usd</dt><dd>1.0874300000000001</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:24,&#34;Edit&#34;:13,&#34;Write&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>38</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>39</dd></div>
+<div><dt>wall_ms</dt><dd>513116</dd></div>
+<div><dt>work</dt><dd>{&#34;diff_lines&#34;:320,&#34;overbuild_ratio&#34;:1.1149825783972125,&#34;out_of_scope_files&#34;:[],&#34;tests_added&#34;:5,&#34;preexisting_broken&#34;:0}</dd></div>
+</dl>
+<details><summary>output.md</summary><pre>The floor set PATCH now takes an optional `expected` and answers `409 set_changed` on a mismatch. The change is built, tested and staged, but **not committed**: this environment has no git identity configured, and I didn&#39;t set one or invent an author.
+
+**Changes**
+- `GroupSessionDtos.kt`: new `PatchFloorSetRequest` (weight, effort, confirmed, optional `expected`) and `FloorSetValuesDto`. Both reject unknown fields with `WorkoutValidationException`, like `PatchWorkoutSetRequest`.
+- `GroupSessionWorkoutController.kt`: `patchSet` takes `PatchFloorSetRequest`, passes the driver as `actorId`, and converts `expected` to `SetValues` through the existing set converters.
+- `GroupSessionExceptionHandler.kt`: maps `WorkoutSetChangedException` to `409`, `code: set_changed`, `current` in wire shape, `updatedBy` via `actorOf`, and `updatedAt`.
+- `GroupSessionWorkoutControllerTest.kt`: the `patch set` stub and verify now expect `owner` as actor and `expected = null`. The revoked-write verify now lists all eight matchers.
+- `GroupSessionFloorSetConflictTest.kt` (new): five tests. The four named ones, plus `an unknown field inside expected is refused`. The DRIFT rule requires a test for each new refusal path, and the nested rejection had none.
+
+**Commands and results**
+- `./gradlew ktlintFormat`: BUILD SUCCESSFUL (reformatted two files).
+- `./gradlew verifyChange :groupsession:test --tests &#39;*GroupSessionFloorSetConflictTest*&#39; --tests &#39;*GroupSessionWorkoutControllerTest*&#39;`: BUILD SUCCESSFUL. FloorSetConflictTest 5/5, WorkoutControllerTest 17/17.
+- Guard proof: I broke the `expected` pass-through (`takeIf { false }`) and removed the `set_changed` `@ExceptionHandler`, then ran `:groupsession:test --tests &#39;*GroupSessionFloorSetConflictTest*&#39;`. Result: 3 of 4 failed (`expected reaches the service…`, `a set_changed refusal…`, `a never-stamped set…`). The unknown-field test still passed. I then restored both changes and the GREEN run above passed. Ran once, not 10–15 times; this is a deterministic test, not a flake check.
+- `git commit`: failed with &#34;Author identity unknown&#34;. Files are staged.
+
+**Points for you to decide**
+- **Null stamps are absent, not `null`.** The task says an unstamped set answers both `null`. Spring&#39;s `ProblemDetail` drops null properties, so `updatedBy` and `updatedAt` are omitted from the body. The test asserts `doesNotExist()`. This matches the omission rule in Task 2&#39;s `transition-codes` handler, but it differs from the design text (&#34;or `null`&#34;). Say if the phone needs explicit nulls.
+- **Commit:** run `git config user.name/user.email` in this repo, then commit with the message from the task (ending in `Co-Authored-By: Claude Code &lt;noreply@anthropic.com&gt;`). Or tell me which identity to use.</pre></details>
+<details><summary>verify.log</summary><pre>$ ./gradlew verifyChange
+Starting a Gradle Daemon, 1 incompatible and 2 stopped Daemons could not be reused, use --status for details
+Shared read-only dependency cache is an incubating feature.
+Calculating task graph as no cached configuration is available for tasks: verifyChange
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test FROM-CACHE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :detekt NO-SOURCE
+&gt; Task :admin:loadKtlintReporters UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :loadKtlintReporters UP-TO-DATE
+&gt; Task :app:detekt UP-TO-DATE
+&gt; Task :admin:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :admin:detekt UP-TO-DATE
+&gt; Task :ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :admin:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :ktlintCheck UP-TO-DATE
+&gt; Task :app:loadKtlintReporters UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :auth:loadKtlintReporters UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :admin:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :admin:ktlintCheck UP-TO-DATE
+&gt; Task :app:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :app:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :auth:detekt UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :auth:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :auth:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :app:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :app:ktlintCheck UP-TO-DATE
+&gt; Task :auth:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :auth:ktlintCheck UP-TO-DATE
+&gt; Task :gateway:loadKtlintReporters UP-TO-DATE
+&gt; Task :common:loadKtlintReporters UP-TO-DATE
+&gt; Task :common:detekt UP-TO-DATE
+&gt; Task :gateway:detekt UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :common:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :common:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :common:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :gateway:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :common:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:loadKtlintReporters UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :gateway:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :gateway:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :gateway:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :groupsession:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :groupsession:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :invite:loadKtlintReporters UP-TO-DATE
+&gt; Task :invite:detekt UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :invite:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :invite:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :invite:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :invite:ktlintCheck UP-TO-DATE
+&gt; Task :profile:loadKtlintReporters UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :profile:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :profile:detekt UP-TO-DATE
+&gt; Task :profile:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :profile:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :profile:ktlintCheck UP-TO-DATE
+&gt; Task :tracking:loadKtlintReporters UP-TO-DATE
+&gt; Task :tracking:detekt UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :tracking:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :tracking:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :tracking:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :tracking:ktlintCheck UP-TO-DATE
+&gt; Task :workout:loadKtlintReporters UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :workout:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :workout:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :workout:detekt UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :workout:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :workout:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverTestSourceSet
+&gt; Task :groupsession:ktlintTestSourceSetCheck
+&gt; Task :groupsession:ktlintCheck
+&gt; Task :groupsession:detekt
+&gt; Task :verifyChange
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 38s
+98 actionable tasks: 3 executed, 1 from cache, 94 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+[exit 0]
+$ ./gradlew :groupsession:test --tests &#39;GroupSessionFloorSetConflictTest&#39; --tests &#39;GroupSessionWorkoutControllerTest&#39;
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test --tests GroupSessionFloorSetConflictTest --tests GroupSessionWorkoutControllerTest
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test UP-TO-DATE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:processResources NO-SOURCE
+&gt; Task :groupsession:processResources NO-SOURCE
+&gt; Task :workout:processResources NO-SOURCE
+&gt; Task :groupsession:processTestResources NO-SOURCE
+&gt; Task :common:compileKotlin UP-TO-DATE
+&gt; Task :common:compileJava NO-SOURCE
+&gt; Task :common:classes UP-TO-DATE
+&gt; Task :common:jar UP-TO-DATE
+&gt; Task :workout:compileKotlin UP-TO-DATE
+&gt; Task :workout:compileJava NO-SOURCE
+&gt; Task :workout:classes UP-TO-DATE
+&gt; Task :workout:jar UP-TO-DATE
+&gt; Task :groupsession:compileKotlin UP-TO-DATE
+&gt; Task :groupsession:compileJava NO-SOURCE
+&gt; Task :groupsession:classes UP-TO-DATE
+&gt; Task :groupsession:jar UP-TO-DATE
+&gt; Task :groupsession:compileTestKotlin
+&gt; Task :groupsession:compileTestJava NO-SOURCE
+&gt; Task :groupsession:testClasses UP-TO-DATE
+
+&gt; Task :groupsession:test
+
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 24s
+23 actionable tasks: 2 executed, 21 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+$ ./gradlew :groupsession:test
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test UP-TO-DATE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:processResources NO-SOURCE
+&gt; Task :workout:processResources NO-SOURCE
+&gt; Task :groupsession:processResources NO-SOURCE
+&gt; Task :groupsession:processTestResources NO-SOURCE
+&gt; Task :common:compileKotlin UP-TO-DATE
+&gt; Task :common:compileJava NO-SOURCE
+&gt; Task :common:classes UP-TO-DATE
+&gt; Task :common:jar UP-TO-DATE
+&gt; Task :workout:compileKotlin UP-TO-DATE
+&gt; Task :workout:compileJava NO-SOURCE
+&gt; Task :workout:classes UP-TO-DATE
+&gt; Task :workout:jar UP-TO-DATE
+&gt; Task :groupsession:compileKotlin UP-TO-DATE
+&gt; Task :groupsession:compileJava NO-SOURCE
+&gt; Task :groupsession:classes UP-TO-DATE
+&gt; Task :groupsession:jar UP-TO-DATE
+&gt; Task :groupsession:compileTestKotlin UP-TO-DATE
+&gt; Task :groupsession:compileTestJava NO-SOURCE
+&gt; Task :groupsession:testClasses UP-TO-DATE
+
+&gt; Task :groupsession:test
+
+2026-10-10T14:20:51.087Z  INFO 3451 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit &#39;default&#39;
+2026-10-10T14:20:51.090Z  INFO 3451 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-10T14:20:51.094Z  INFO 3451 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 35s
+23 actionable tasks: 1 executed, 22 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+</pre></details>
+<details><summary>work.patch</summary><pre>diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+index 2c4dc2f..ba3e6a3 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+@@ -9,9 &#43;9,12 @@ import com.gymie.groupsession.core.exceptions.GroupSessionParticipantNotEligible
+ import com.gymie.groupsession.core.exceptions.GroupSessionValidationException
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+ import com.gymie.workout.core.exceptions.WorkoutNotFoundException
+&#43;import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+ import com.gymie.workout.core.exceptions.WorkoutStaleException
+ import com.gymie.workout.core.exceptions.WorkoutValidationException
+ import com.gymie.workout.infrastructure.presentation.web.converters.ETagWebConverter
+&#43;import com.gymie.workout.infrastructure.presentation.web.converters.SetEffortWebConverter
+&#43;import com.gymie.workout.infrastructure.presentation.web.converters.SetWeightWebConverter
+ import org.springframework.http.HttpStatus
+ import org.springframework.http.ProblemDetail
+ import org.springframework.web.bind.MethodArgumentNotValidException
+@@ -73,6 &#43;76,30 @@ class GroupSessionExceptionHandler(
+                 ex.actorId?.let { setProperty(&#34;${prefix}By&#34;, actorOf(it)) }
+             }
+ 
+&#43;    /**
+&#43;     * `set_changed` (KAN-757, decision `set-changed-mapped-in-groupsession`): `current` is the set as
+&#43;     * stored, in the request&#39;s wire shape, so a Keep-mine resend can use it as the next `expected`.
+&#43;     */
+&#43;    @ExceptionHandler(WorkoutSetChangedException::class)
+&#43;    fun handleSetChanged(ex: WorkoutSetChangedException): ProblemDetail {
+&#43;        val current = ex.current
+&#43;        return ProblemDetail
+&#43;            .forStatusAndDetail(HttpStatus.CONFLICT, &#34;This set was changed on another phone.&#34;)
+&#43;            .apply {
+&#43;                setProperty(&#34;code&#34;, &#34;set_changed&#34;)
+&#43;                setProperty(
+&#43;                    &#34;current&#34;,
+&#43;                    mapOf(
+&#43;                        &#34;weight&#34; to SetWeightWebConverter.toDto(current.weight),
+&#43;                        &#34;effort&#34; to SetEffortWebConverter.toDto(current.effort),
+&#43;                        &#34;confirmed&#34; to (current.confirmedAt != null),
+&#43;                    ),
+&#43;                )
+&#43;                setProperty(&#34;updatedBy&#34;, current.updatedBy?.let { actorOf(it) })
+&#43;                setProperty(&#34;updatedAt&#34;, current.updatedAt)
+&#43;            }
+&#43;    }
+&#43;
+     /** `{id, displayName}` -- how every 409 here names who got there first. */
+     private fun actorOf(userId: UUID): Map&lt;String, Any?&gt; =
+         mapOf(
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+index 2f11870..888bf32 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+@@ -1,6 &#43;1,8 @@
+ package com.gymie.groupsession.infrastructure.presentation.web
+ 
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+&#43;import com.gymie.groupsession.infrastructure.presentation.web.dto.PatchFloorSetRequest
+&#43;import com.gymie.workout.core.domain.workout.SetValues
+ import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+ import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+ import com.gymie.workout.core.services.workout.WorkoutService
+@@ -16,7 &#43;18,6 @@ import com.gymie.workout.infrastructure.presentation.web.dto.FinishReadinessResp
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutBlockRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutExerciseRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutRequest
+-import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutSetRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.UpdateWorkoutRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse
+ import com.gymie.workout.infrastructure.presentation.web.validators.WorkoutRequestValidator
+@@ -159,7 &#43;160,7 @@ class GroupSessionWorkoutController(
+         @PathVariable id: UUID,
+         @PathVariable userId: UUID,
+         @PathVariable setId: UUID,
+-        @RequestBody request: PatchWorkoutSetRequest,
+&#43;        @RequestBody request: PatchFloorSetRequest,
+     ): WorkoutResponse {
+         val workoutId = resolveForWrite(authentication, id, userId)
+         val updated =
+@@ -170,6 &#43;171,15 @@ class GroupSessionWorkoutController(
+                 SetWeightWebConverter.toDomain(request.weight),
+                 SetEffortWebConverter.toDomain(request.effort),
+                 request.confirmed,
+&#43;                actorId = UUID.fromString(authentication.name),
+&#43;                expected =
+&#43;                    request.expected?.let {
+&#43;                        SetValues(
+&#43;                            weight = SetWeightWebConverter.toDomain(it.weight),
+&#43;                            effort = SetEffortWebConverter.toDomain(it.effort),
+&#43;                            confirmed = it.confirmed,
+&#43;                        )
+&#43;                    },
+             )
+         return responses.respond(updated)
+     }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+index 7c77c30..36147cf 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+@@ -1,11 &#43;1,16 @@
+ package com.gymie.groupsession.infrastructure.presentation.web.dto
+ 
+&#43;import com.fasterxml.jackson.annotation.JsonAnySetter
+ import com.fasterxml.jackson.annotation.JsonFormat
+&#43;import com.fasterxml.jackson.annotation.JsonProperty
+ import com.fasterxml.jackson.annotation.JsonUnwrapped
+ import com.gymie.groupsession.core.domain.groupsession.GroupSessionStatus
+ import com.gymie.groupsession.core.domain.groupsession.specification.SessionAccess
+ import com.gymie.groupsession.core.domain.groupsession.specification.ViewerAccess
+ import com.gymie.workout.core.domain.workout.WorkoutStatus
+&#43;import com.gymie.workout.core.exceptions.WorkoutValidationException
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.SetEffortDto
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.SetWeightDto
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutSummaryResponse
+ import jakarta.validation.Valid
+ import jakarta.validation.constraints.NotEmpty
+@@ -44,6 &#43;49,47 @@ data class PatchGroupSessionRequest(
+     val scheduledTime: Optional&lt;String&gt;? = null,
+ )
+ 
+&#43;/**
+&#43; * The floor&#39;s set PATCH body (decision `floor-set-request-dto`). `expected`, when present, is the
+&#43; * compare-and-set of decision `value-compare-and-set`; absent, the patch is last-write-wins.
+&#43; */
+&#43;data class PatchFloorSetRequest(
+&#43;    @field:JsonProperty(required = true)
+&#43;    val weight: SetWeightDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val effort: SetEffortDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val confirmed: Boolean,
+&#43;    val expected: FloorSetValuesDto? = null,
+&#43;) {
+&#43;    @JsonAnySetter
+&#43;    fun rejectUnknownField(
+&#43;        name: String,
+&#43;        value: Any?,
+&#43;    ): Unit =
+&#43;        throw WorkoutValidationException(
+&#43;            &#34;The floor set patch endpoint accepts weight, effort, confirmed and expected only, but the body carried &#39;$name&#39; ($value)&#34;,
+&#43;        )
+&#43;}
+&#43;
+&#43;data class FloorSetValuesDto(
+&#43;    @field:JsonProperty(required = true)
+&#43;    val weight: SetWeightDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val effort: SetEffortDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val confirmed: Boolean,
+&#43;) {
+&#43;    @JsonAnySetter
+&#43;    fun rejectUnknownField(
+&#43;        name: String,
+&#43;        value: Any?,
+&#43;    ): Unit =
+&#43;        throw WorkoutValidationException(
+&#43;            &#34;The expected set values accept weight, effort and confirmed only, but the body carried &#39;$name&#39; ($value)&#34;,
+&#43;        )
+&#43;}
+&#43;
+ data class AddParticipantRequest(
+     @field:NotNull val userId: UUID?,
+     @field:NotNull val workoutId: UUID?,
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+new file mode 100644
+index 0000000..13d2f36
+--- /dev/null
+&#43;&#43;&#43; b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+@@ -0,0 &#43;1,227 @@
+&#43;package com.gymie.groupsession.infrastructure.presentation.web
+&#43;
+&#43;import com.gymie.groupsession.core.domain.groupsession.specification.ParticipantProfile
+&#43;import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+&#43;import com.gymie.workout.core.domain.workout.SetValues
+&#43;import com.gymie.workout.core.domain.workout.SetWeight
+&#43;import com.gymie.workout.core.domain.workout.WeightUnit
+&#43;import com.gymie.workout.core.domain.workout.Workout
+&#43;import com.gymie.workout.core.domain.workout.WorkoutLifecycle
+&#43;import com.gymie.workout.core.domain.workout.WorkoutSet
+&#43;import com.gymie.workout.core.domain.workout.WorkoutStatus
+&#43;import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+&#43;import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+&#43;import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+&#43;import com.gymie.workout.core.services.workout.WorkoutService
+&#43;import com.gymie.workout.infrastructure.presentation.web.WorkoutExceptionHandler
+&#43;import com.gymie.workout.infrastructure.presentation.web.WorkoutResponseAssembler
+&#43;import io.mockk.clearMocks
+&#43;import io.mockk.every
+&#43;import io.mockk.verify
+&#43;import org.junit.jupiter.api.BeforeEach
+&#43;import org.junit.jupiter.api.Test
+&#43;import org.springframework.beans.factory.annotation.Autowired
+&#43;import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+&#43;import org.springframework.context.annotation.Import
+&#43;import org.springframework.http.MediaType
+&#43;import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
+&#43;import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
+&#43;import org.springframework.test.web.servlet.MockMvc
+&#43;import org.springframework.test.web.servlet.patch
+&#43;import java.math.BigDecimal
+&#43;import java.time.Instant
+&#43;import java.time.LocalDate
+&#43;import java.util.UUID
+&#43;
+&#43;@WebMvcTest(controllers = [GroupSessionWorkoutController::class])
+&#43;@Import(
+&#43;    GroupSessionWorkoutController::class,
+&#43;    GroupSessionExceptionHandler::class,
+&#43;    WorkoutExceptionHandler::class,
+&#43;    GroupSessionWorkoutControllerTest.TestConfig::class,
+&#43;)
+&#43;class GroupSessionFloorSetConflictTest {
+&#43;    @Autowired lateinit var mockMvc: MockMvc
+&#43;
+&#43;    @Autowired lateinit var groupSessionQueryService: GroupSessionQueryService
+&#43;
+&#43;    @Autowired lateinit var workoutFieldPatchService: WorkoutFieldPatchService
+&#43;
+&#43;    @Autowired lateinit var workoutService: WorkoutService
+&#43;
+&#43;    @Autowired lateinit var workoutFinishReadinessService: WorkoutFinishReadinessService
+&#43;
+&#43;    @Autowired lateinit var responses: WorkoutResponseAssembler
+&#43;
+&#43;    private val owner = UUID.fromString(&#34;11111111-1111-1111-1111-111111111111&#34;)
+&#43;    private val jana = UUID.fromString(&#34;22222222-2222-2222-2222-222222222222&#34;)
+&#43;    private val sessionId = UUID.randomUUID()
+&#43;    private val workoutId = UUID.randomUUID()
+&#43;    private val setId = UUID.randomUUID()
+&#43;    private val date = LocalDate.of(2026, 9, 4)
+&#43;
+&#43;    @BeforeEach
+&#43;    fun resetMocks() {
+&#43;        clearMocks(groupSessionQueryService, workoutService, workoutFieldPatchService, workoutFinishReadinessService, responses)
+&#43;        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+&#43;        every { responses.respond(any&lt;Workout&gt;()) } returns workoutResponse()
+&#43;    }
+&#43;
+&#43;    private fun setPath() = &#34;/api/group-sessions/$sessionId/participants/$jana/workout/sets/$setId&#34;
+&#43;
+&#43;    private fun stubWorkout() =
+&#43;        Workout(
+&#43;            id = workoutId,
+&#43;            userId = jana,
+&#43;            scheduledDate = date,
+&#43;            scheduledTime = null,
+&#43;            unit = WeightUnit.KG,
+&#43;            lifecycle = WorkoutLifecycle(status = WorkoutStatus.PLANNED),
+&#43;        )
+&#43;
+&#43;    private fun workoutResponse() =
+&#43;        com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse(
+&#43;            id = workoutId,
+&#43;            scheduledDate = date,
+&#43;            scheduledTime = null,
+&#43;            unit = WeightUnit.KG,
+&#43;            name = null,
+&#43;            displayName = &#34;Stub&#34;,
+&#43;            notes = null,
+&#43;            status = WorkoutStatus.PLANNED,
+&#43;            startedAt = null,
+&#43;            finishedAt = null,
+&#43;            blocks = emptyList(),
+&#43;        )
+&#43;
+&#43;    private val floorBody =
+&#43;        &#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:80},&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;&#34;&#34; &#43;
+&#43;            &#34;&#34;&#34;&#34;expected&#34;:{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:75},&#34;effort&#34;:null,&#34;confirmed&#34;:false}}&#34;&#34;&#34;
+&#43;
+&#43;    @Test
+&#43;    fun `expected reaches the service with the driver as actor`() {
+&#43;        every {
+&#43;            workoutFieldPatchService.patchSet(
+&#43;                jana,
+&#43;                workoutId,
+&#43;                setId,
+&#43;                SetWeight.Measured(BigDecimal(&#34;80&#34;)),
+&#43;                null,
+&#43;                true,
+&#43;                owner,
+&#43;                SetValues(SetWeight.Measured(BigDecimal(&#34;75&#34;)), null, false),
+&#43;            )
+&#43;        } returns stubWorkout()
+&#43;
+&#43;        mockMvc
+&#43;            .patch(setPath()) {
+&#43;                with(user(owner.toString()))
+&#43;                with(csrf())
+&#43;                contentType = MediaType.APPLICATION_JSON
+&#43;                content = floorBody
+&#43;            }.andExpect { status { isOk() } }
+&#43;
+&#43;        verify {
+&#43;            workoutFieldPatchService.patchSet(
+&#43;                jana,
+&#43;                workoutId,
+&#43;                setId,
+&#43;                SetWeight.Measured(BigDecimal(&#34;80&#34;)),
+&#43;                null,
+&#43;                true,
+&#43;                owner,
+&#43;                SetValues(SetWeight.Measured(BigDecimal(&#34;75&#34;)), null, false),
+&#43;            )
+&#43;        }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `a set_changed refusal carries current updatedBy and updatedAt`() {
+&#43;        val driverUpdatedAt = Instant.parse(&#34;2026-10-09T10:15:00Z&#34;)
+&#43;        every { groupSessionQueryService.profileOf(owner) } returns ParticipantProfile(owner, &#34;Owner Ana&#34;, &#34;ana&#34;, null, null)
+&#43;        every {
+&#43;            workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any())
+&#43;        } throws
+&#43;            WorkoutSetChangedException(
+&#43;                WorkoutSet(
+&#43;                    id = setId,
+&#43;                    position = 0,
+&#43;                    weight = SetWeight.Measured(BigDecimal(&#34;80&#34;)),
+&#43;                    effort = null,
+&#43;                    confirmedAt = driverUpdatedAt,
+&#43;                    updatedAt = driverUpdatedAt,
+&#43;                    updatedBy = owner,
+&#43;                ),
+&#43;            )
+&#43;
+&#43;        mockMvc
+&#43;            .patch(setPath()) {
+&#43;                with(user(owner.toString()))
+&#43;                with(csrf())
+&#43;                contentType = MediaType.APPLICATION_JSON
+&#43;                content = floorBody
+&#43;            }.andExpect {
+&#43;                status { isConflict() }
+&#43;                jsonPath(&#34;$.code&#34;) { value(&#34;set_changed&#34;) }
+&#43;                jsonPath(&#34;$.current.weight.value&#34;) { value(80) }
+&#43;                jsonPath(&#34;$.current.confirmed&#34;) { value(true) }
+&#43;                jsonPath(&#34;$.updatedBy.id&#34;) { value(owner.toString()) }
+&#43;                jsonPath(&#34;$.updatedBy.displayName&#34;) { value(&#34;Owner Ana&#34;) }
+&#43;                jsonPath(&#34;$.updatedAt&#34;) { value(driverUpdatedAt.toString()) }
+&#43;            }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `a never-stamped set answers null updatedBy and updatedAt`() {
+&#43;        every {
+&#43;            workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any())
+&#43;        } throws
+&#43;            WorkoutSetChangedException(
+&#43;                WorkoutSet(id = setId, position = 0, weight = SetWeight.Measured(BigDecimal(&#34;75&#34;)), effort = null),
+&#43;            )
+&#43;
+&#43;        mockMvc
+&#43;            .patch(setPath()) {
+&#43;                with(user(owner.toString()))
+&#43;                with(csrf())
+&#43;                contentType = MediaType.APPLICATION_JSON
+&#43;                content = floorBody
+&#43;            }.andExpect {
+&#43;                status { isConflict() }
+&#43;                jsonPath(&#34;$.code&#34;) { value(&#34;set_changed&#34;) }
+&#43;                jsonPath(&#34;$.updatedBy&#34;) { doesNotExist() }
+&#43;                jsonPath(&#34;$.updatedAt&#34;) { doesNotExist() }
+&#43;            }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `an unknown field inside expected is refused`() {
+&#43;        mockMvc
+&#43;            .patch(setPath()) {
+&#43;                with(user(owner.toString()))
+&#43;                with(csrf())
+&#43;                contentType = MediaType.APPLICATION_JSON
+&#43;                content =
+&#43;                    &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;expected&#34;:{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;foo&#34;:1}}&#34;&#34;&#34;
+&#43;            }.andExpect { status { isBadRequest() } }
+&#43;
+&#43;        verify(exactly = 0) {
+&#43;            workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any())
+&#43;        }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `an unknown field is still refused`() {
+&#43;        mockMvc
+&#43;            .patch(setPath()) {
+&#43;                with(user(owner.toString()))
+&#43;                with(csrf())
+&#43;                contentType = MediaType.APPLICATION_JSON
+&#43;                content = &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;foo&#34;:1}&#34;&#34;&#34;
+&#43;            }.andExpect { status { isBadRequest() } }
+&#43;
+&#43;        verify(exactly = 0) {
+&#43;            workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any())
+&#43;        }
+&#43;    }
+&#43;}
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+index 104e5a8..8a7c4b9 100644
+--- a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+@@ -222,7 &#43;222,7 @@ class GroupSessionWorkoutControllerTest {
+         val setId = UUID.randomUUID()
+         every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+         every {
+-            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true)
+&#43;            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, null)
+         } returns workout()
+         every { responses.respond(workout()) } returns workoutResponse()
+ 
+@@ -234,7 &#43;234,7 @@ class GroupSessionWorkoutControllerTest {
+                 content = &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true}&#34;&#34;&#34;
+             }.andExpect { status { isOk() } }
+ 
+-        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true) }
+&#43;        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, null) }
+     }
+ 
+     @Test
+@@ -299,7 &#43;299,7 @@ class GroupSessionWorkoutControllerTest {
+                 jsonPath(&#34;$.code&#34;) { value(&#34;edit_access_required&#34;) }
+             }
+ 
+-        verify(exactly = 0) { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any()) }
+&#43;        verify(exactly = 0) { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) }
+     }
+ 
+     @Test
+</pre></details>
+<p class="muted">transcript: 20261010T140957Z-impl-claude-code-claude-haiku-5-5-low/kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3-3" class="trial pass">
+<h3>kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3 · trial 3 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999728651156451</dd></div>
+<div><dt>cache_read</dt><dd>3169266</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>59448</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.06699108</dd></div>
+<div><dt>egress_denied</dt><dd>12</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>12</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>86</dd></div>
+<div><dt>output</dt><dd>34543</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>100231</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>15282</dd></div>
+<div><dt>reported_cost_usd</dt><dd>1.2172472000000003</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:29,&#34;Edit&#34;:12,&#34;Write&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>42</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>43</dd></div>
+<div><dt>wall_ms</dt><dd>397570</dd></div>
+<div><dt>work</dt><dd>{&#34;diff_lines&#34;:315,&#34;overbuild_ratio&#34;:1.0975609756097562,&#34;out_of_scope_files&#34;:[],&#34;tests_added&#34;:4,&#34;preexisting_broken&#34;:0}</dd></div>
+</dl>
+<details><summary>output.md</summary><pre>Task 3 is implemented and tested, but not committed: no git author identity is configured here, so `git commit` failed. The five files are staged, and HEAD is still `d878f58`. Once you set `user.name`/`user.email` (or tell me the identity to use), the commit is one step.
+
+**Changes**
+- `GroupSessionDtos.kt`: new `PatchFloorSetRequest` (weight, effort, confirmed, optional `expected`) and `FloorSetValuesDto`. Both use the solo request&#39;s required-field and unknown-field rejection, so an unknown key still returns 400.
+- `GroupSessionWorkoutController.kt`: `patchSet` takes `PatchFloorSetRequest`, passes the authenticated caller as `actorId`, and converts `expected` into `SetValues`.
+- `GroupSessionExceptionHandler.kt`: maps `WorkoutSetChangedException` to 409 `set_changed` with `current`, `updatedBy` (via `profileOf`) and `updatedAt`.
+- `GroupSessionWorkoutControllerTest.kt`: the `patch set delegates` stub and verify now use `actorId = owner, expected = null`.
+- `GroupSessionFloorSetConflictTest.kt` (new): the four named tests.
+
+**Runs**
+- `./gradlew ktlintFormat`: BUILD SUCCESSFUL.
+- `./gradlew verifyChange :groupsession:test --tests &#39;*GroupSessionFloorSetConflictTest*&#39; --tests &#39;*GroupSessionWorkoutControllerTest*&#39;`: BUILD SUCCESSFUL, 4/4 new and 17/17 existing tests pass.
+- Regression proof: I dropped `expected` from the controller&#39;s service call. `expected reaches the service with the driver as actor` failed, as the task&#39;s regression note predicts. I then restored the file and the suite passed again.
+- One probe run showed the `never-stamped` test&#39;s `value(null)` assertion was vacuous. The key is absent from the body, and Spring treats a missing path as null. I changed it to `doesNotExist()`.
+
+**Decision for you**
+- The design says `updatedBy`/`updatedAt` answer `null` for an unstamped set. The body omits them instead, because `ProblemDetail` drops null properties, and `handleConflict` already relies on that. The test keeps its specified name but asserts absence. If the phone needs explicit `null`, the handler has to bypass that serialization; say which you want.
+
+**Not run**
+- I did not run the targeted tests before implementing, so the initial failing (RED) run was not captured. The regression mutation above is the failing-run evidence I did capture.
+- The live check against a running stack was not done.</pre></details>
+<details><summary>verify.log</summary><pre>$ ./gradlew verifyChange
+Starting a Gradle Daemon, 1 incompatible and 2 stopped Daemons could not be reused, use --status for details
+Shared read-only dependency cache is an incubating feature.
+Calculating task graph as no cached configuration is available for tasks: verifyChange
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test FROM-CACHE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :detekt NO-SOURCE
+&gt; Task :admin:loadKtlintReporters UP-TO-DATE
+&gt; Task :loadKtlintReporters UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :admin:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :app:detekt UP-TO-DATE
+&gt; Task :ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :ktlintCheck UP-TO-DATE
+&gt; Task :admin:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :app:loadKtlintReporters UP-TO-DATE
+&gt; Task :admin:detekt UP-TO-DATE
+&gt; Task :admin:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :app:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :admin:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :app:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :admin:ktlintCheck UP-TO-DATE
+&gt; Task :app:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :app:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :app:ktlintCheck UP-TO-DATE
+&gt; Task :auth:loadKtlintReporters UP-TO-DATE
+&gt; Task :common:loadKtlintReporters UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :auth:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :common:detekt UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :common:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :auth:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :auth:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :auth:detekt UP-TO-DATE
+&gt; Task :common:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :common:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :auth:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :auth:ktlintCheck UP-TO-DATE
+&gt; Task :common:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :common:ktlintCheck UP-TO-DATE
+&gt; Task :gateway:loadKtlintReporters UP-TO-DATE
+&gt; Task :groupsession:loadKtlintReporters UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :gateway:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :gateway:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :gateway:detekt UP-TO-DATE
+&gt; Task :gateway:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :groupsession:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :gateway:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :gateway:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :groupsession:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :invite:loadKtlintReporters UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :invite:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :invite:detekt UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :invite:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :invite:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :invite:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :invite:ktlintCheck UP-TO-DATE
+&gt; Task :profile:loadKtlintReporters UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :profile:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :profile:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :profile:detekt UP-TO-DATE
+&gt; Task :profile:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :profile:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :profile:ktlintCheck UP-TO-DATE
+&gt; Task :tracking:loadKtlintReporters UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :tracking:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :tracking:detekt UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :tracking:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :tracking:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :tracking:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :tracking:ktlintCheck UP-TO-DATE
+&gt; Task :workout:loadKtlintReporters UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :workout:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :workout:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :workout:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :workout:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :workout:detekt UP-TO-DATE
+&gt; Task :workout:ktlintCheck UP-TO-DATE
+&gt; Task :groupsession:detekt
+&gt; Task :groupsession:runKtlintCheckOverTestSourceSet
+&gt; Task :groupsession:ktlintTestSourceSetCheck
+&gt; Task :groupsession:ktlintCheck
+&gt; Task :verifyChange
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 10s
+98 actionable tasks: 3 executed, 1 from cache, 94 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+[exit 0]
+$ ./gradlew :groupsession:test --tests &#39;GroupSessionFloorSetConflictTest&#39; --tests &#39;GroupSessionWorkoutControllerTest&#39;
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test --tests GroupSessionFloorSetConflictTest --tests GroupSessionWorkoutControllerTest
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test UP-TO-DATE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:processResources NO-SOURCE
+&gt; Task :workout:processResources NO-SOURCE
+&gt; Task :groupsession:processResources NO-SOURCE
+&gt; Task :groupsession:processTestResources NO-SOURCE
+&gt; Task :common:compileKotlin UP-TO-DATE
+&gt; Task :common:compileJava NO-SOURCE
+&gt; Task :common:classes UP-TO-DATE
+&gt; Task :common:jar UP-TO-DATE
+&gt; Task :workout:compileKotlin UP-TO-DATE
+&gt; Task :workout:compileJava NO-SOURCE
+&gt; Task :workout:classes UP-TO-DATE
+&gt; Task :workout:jar UP-TO-DATE
+&gt; Task :groupsession:compileKotlin UP-TO-DATE
+&gt; Task :groupsession:compileJava NO-SOURCE
+&gt; Task :groupsession:classes UP-TO-DATE
+&gt; Task :groupsession:jar UP-TO-DATE
+&gt; Task :groupsession:compileTestKotlin
+&gt; Task :groupsession:compileTestJava NO-SOURCE
+&gt; Task :groupsession:testClasses UP-TO-DATE
+
+&gt; Task :groupsession:test
+
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 10s
+23 actionable tasks: 2 executed, 21 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+$ ./gradlew :groupsession:test
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test
+&gt; Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :buildSrc:compileKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileJava NO-SOURCE
+&gt; Task :buildSrc:compileGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginDescriptors UP-TO-DATE
+&gt; Task :buildSrc:processResources UP-TO-DATE
+&gt; Task :buildSrc:classes UP-TO-DATE
+&gt; Task :buildSrc:jar UP-TO-DATE
+&gt; Task :buildSrc:compileTestKotlin UP-TO-DATE
+&gt; Task :buildSrc:compileTestJava NO-SOURCE
+&gt; Task :buildSrc:compileTestGroovy NO-SOURCE
+&gt; Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+&gt; Task :buildSrc:processTestResources NO-SOURCE
+&gt; Task :buildSrc:testClasses UP-TO-DATE
+&gt; Task :buildSrc:test UP-TO-DATE
+&gt; Task :buildSrc:loadKtlintReporters UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+&gt; Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+&gt; Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+&gt; Task :buildSrc:ktlintCheck UP-TO-DATE
+&gt; Task :buildSrc:detekt UP-TO-DATE
+&gt; Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+&gt; Task :common:processResources NO-SOURCE
+&gt; Task :workout:processResources NO-SOURCE
+&gt; Task :groupsession:processTestResources NO-SOURCE
+&gt; Task :groupsession:processResources NO-SOURCE
+&gt; Task :common:compileKotlin UP-TO-DATE
+&gt; Task :common:compileJava NO-SOURCE
+&gt; Task :common:classes UP-TO-DATE
+&gt; Task :common:jar UP-TO-DATE
+&gt; Task :workout:compileKotlin UP-TO-DATE
+&gt; Task :workout:compileJava NO-SOURCE
+&gt; Task :workout:classes UP-TO-DATE
+&gt; Task :workout:jar UP-TO-DATE
+&gt; Task :groupsession:compileKotlin UP-TO-DATE
+&gt; Task :groupsession:compileJava NO-SOURCE
+&gt; Task :groupsession:classes UP-TO-DATE
+&gt; Task :groupsession:jar UP-TO-DATE
+&gt; Task :groupsession:compileTestKotlin UP-TO-DATE
+&gt; Task :groupsession:compileTestJava NO-SOURCE
+&gt; Task :groupsession:testClasses UP-TO-DATE
+
+&gt; Task :groupsession:test
+
+2026-10-10T14:28:20.480Z  INFO 4084 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit &#39;default&#39;
+2026-10-10T14:28:20.482Z  INFO 4084 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-10T14:28:20.483Z  INFO 4084 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use &#39;--warning-mode all&#39; to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 20s
+23 actionable tasks: 1 executed, 22 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+</pre></details>
+<details><summary>work.patch</summary><pre>diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+index 2c4dc2f..238e2e5 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+@@ -9,9 &#43;9,12 @@ import com.gymie.groupsession.core.exceptions.GroupSessionParticipantNotEligible
+ import com.gymie.groupsession.core.exceptions.GroupSessionValidationException
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+ import com.gymie.workout.core.exceptions.WorkoutNotFoundException
+&#43;import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+ import com.gymie.workout.core.exceptions.WorkoutStaleException
+ import com.gymie.workout.core.exceptions.WorkoutValidationException
+ import com.gymie.workout.infrastructure.presentation.web.converters.ETagWebConverter
+&#43;import com.gymie.workout.infrastructure.presentation.web.converters.SetEffortWebConverter
+&#43;import com.gymie.workout.infrastructure.presentation.web.converters.SetWeightWebConverter
+ import org.springframework.http.HttpStatus
+ import org.springframework.http.ProblemDetail
+ import org.springframework.web.bind.MethodArgumentNotValidException
+@@ -103,4 &#43;106,28 @@ class GroupSessionExceptionHandler(
+         ProblemDetail
+             .forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: &#34;Workout changed&#34;)
+             .apply { setProperty(&#34;etag&#34;, ETagWebConverter.toETag(ex.currentUpdatedAt)) }
+&#43;
+&#43;    /**
+&#43;     * The floor set PATCH&#39;s compare-and-set refusal (decision `value-compare-and-set`): nothing was
+&#43;     * written, and the body carries what the stored set holds now and who last changed it.
+&#43;     */
+&#43;    @ExceptionHandler(WorkoutSetChangedException::class)
+&#43;    fun handleSetChanged(ex: WorkoutSetChangedException): ProblemDetail {
+&#43;        val current = ex.current
+&#43;        return ProblemDetail
+&#43;            .forStatusAndDetail(HttpStatus.CONFLICT, &#34;This set was changed on another phone.&#34;)
+&#43;            .apply {
+&#43;                setProperty(&#34;code&#34;, &#34;set_changed&#34;)
+&#43;                setProperty(
+&#43;                    &#34;current&#34;,
+&#43;                    mapOf(
+&#43;                        &#34;weight&#34; to SetWeightWebConverter.toDto(current.weight),
+&#43;                        &#34;effort&#34; to SetEffortWebConverter.toDto(current.effort),
+&#43;                        &#34;confirmed&#34; to (current.confirmedAt != null),
+&#43;                    ),
+&#43;                )
+&#43;                setProperty(&#34;updatedBy&#34;, current.updatedBy?.let { actorOf(it) })
+&#43;                setProperty(&#34;updatedAt&#34;, current.updatedAt)
+&#43;            }
+&#43;    }
+ }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+index 2f11870..98367aa 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+@@ -1,6 &#43;1,8 @@
+ package com.gymie.groupsession.infrastructure.presentation.web
+ 
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+&#43;import com.gymie.groupsession.infrastructure.presentation.web.dto.PatchFloorSetRequest
+&#43;import com.gymie.workout.core.domain.workout.SetValues
+ import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+ import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+ import com.gymie.workout.core.services.workout.WorkoutService
+@@ -16,7 &#43;18,6 @@ import com.gymie.workout.infrastructure.presentation.web.dto.FinishReadinessResp
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutBlockRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutExerciseRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutRequest
+-import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutSetRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.UpdateWorkoutRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse
+ import com.gymie.workout.infrastructure.presentation.web.validators.WorkoutRequestValidator
+@@ -159,9 &#43;160,17 @@ class GroupSessionWorkoutController(
+         @PathVariable id: UUID,
+         @PathVariable userId: UUID,
+         @PathVariable setId: UUID,
+-        @RequestBody request: PatchWorkoutSetRequest,
+&#43;        @RequestBody request: PatchFloorSetRequest,
+     ): WorkoutResponse {
+         val workoutId = resolveForWrite(authentication, id, userId)
+&#43;        val expected =
+&#43;            request.expected?.let {
+&#43;                SetValues(
+&#43;                    weight = SetWeightWebConverter.toDomain(it.weight),
+&#43;                    effort = SetEffortWebConverter.toDomain(it.effort),
+&#43;                    confirmed = it.confirmed,
+&#43;                )
+&#43;            }
+         val updated =
+             workoutFieldPatchService.patchSet(
+                 userId,
+@@ -170,6 &#43;179,8 @@ class GroupSessionWorkoutController(
+                 SetWeightWebConverter.toDomain(request.weight),
+                 SetEffortWebConverter.toDomain(request.effort),
+                 request.confirmed,
+&#43;                actorId = UUID.fromString(authentication.name),
+&#43;                expected = expected,
+             )
+         return responses.respond(updated)
+     }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+index 7c77c30..563e26f 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+@@ -1,11 &#43;1,16 @@
+ package com.gymie.groupsession.infrastructure.presentation.web.dto
+ 
+&#43;import com.fasterxml.jackson.annotation.JsonAnySetter
+ import com.fasterxml.jackson.annotation.JsonFormat
+&#43;import com.fasterxml.jackson.annotation.JsonProperty
+ import com.fasterxml.jackson.annotation.JsonUnwrapped
+ import com.gymie.groupsession.core.domain.groupsession.GroupSessionStatus
+ import com.gymie.groupsession.core.domain.groupsession.specification.SessionAccess
+ import com.gymie.groupsession.core.domain.groupsession.specification.ViewerAccess
+ import com.gymie.workout.core.domain.workout.WorkoutStatus
+&#43;import com.gymie.workout.core.exceptions.WorkoutValidationException
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.SetEffortDto
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.SetWeightDto
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutSummaryResponse
+ import jakarta.validation.Valid
+ import jakarta.validation.constraints.NotEmpty
+@@ -44,6 &#43;49,43 @@ data class PatchGroupSessionRequest(
+     val scheduledTime: Optional&lt;String&gt;? = null,
+ )
+ 
+&#43;data class PatchFloorSetRequest(
+&#43;    @field:JsonProperty(required = true)
+&#43;    val weight: SetWeightDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val effort: SetEffortDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val confirmed: Boolean,
+&#43;    val expected: FloorSetValuesDto? = null,
+&#43;) {
+&#43;    @JsonAnySetter
+&#43;    fun rejectUnknownField(
+&#43;        name: String,
+&#43;        value: Any?,
+&#43;    ): Unit =
+&#43;        throw WorkoutValidationException(
+&#43;            &#34;The floor set patch accepts weight, effort, confirmed and expected only, but the body carried &#39;$name&#39; ($value)&#34;,
+&#43;        )
+&#43;}
+&#43;
+&#43;data class FloorSetValuesDto(
+&#43;    @field:JsonProperty(required = true)
+&#43;    val weight: SetWeightDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val effort: SetEffortDto?,
+&#43;    @field:JsonProperty(required = true)
+&#43;    val confirmed: Boolean,
+&#43;) {
+&#43;    @JsonAnySetter
+&#43;    fun rejectUnknownField(
+&#43;        name: String,
+&#43;        value: Any?,
+&#43;    ): Unit =
+&#43;        throw WorkoutValidationException(
+&#43;            &#34;expected accepts weight, effort and confirmed only, but the body carried &#39;$name&#39; ($value)&#34;,
+&#43;        )
+&#43;}
+&#43;
+ data class AddParticipantRequest(
+     @field:NotNull val userId: UUID?,
+     @field:NotNull val workoutId: UUID?,
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+new file mode 100644
+index 0000000..926960f
+--- /dev/null
+&#43;&#43;&#43; b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+@@ -0,0 &#43;1,227 @@
+&#43;package com.gymie.groupsession.infrastructure.presentation.web
+&#43;
+&#43;import com.gymie.groupsession.core.domain.groupsession.specification.ParticipantProfile
+&#43;import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+&#43;import com.gymie.workout.core.domain.workout.SetEffort
+&#43;import com.gymie.workout.core.domain.workout.SetValues
+&#43;import com.gymie.workout.core.domain.workout.SetWeight
+&#43;import com.gymie.workout.core.domain.workout.WeightUnit
+&#43;import com.gymie.workout.core.domain.workout.Workout
+&#43;import com.gymie.workout.core.domain.workout.WorkoutLifecycle
+&#43;import com.gymie.workout.core.domain.workout.WorkoutSet
+&#43;import com.gymie.workout.core.domain.workout.WorkoutStatus
+&#43;import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+&#43;import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+&#43;import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+&#43;import com.gymie.workout.core.services.workout.WorkoutService
+&#43;import com.gymie.workout.infrastructure.presentation.web.WorkoutExceptionHandler
+&#43;import com.gymie.workout.infrastructure.presentation.web.WorkoutResponseAssembler
+&#43;import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse
+&#43;import io.mockk.clearMocks
+&#43;import io.mockk.every
+&#43;import io.mockk.mockk
+&#43;import io.mockk.verify
+&#43;import org.junit.jupiter.api.BeforeEach
+&#43;import org.junit.jupiter.api.Test
+&#43;import org.springframework.beans.factory.annotation.Autowired
+&#43;import org.springframework.boot.test.context.TestConfiguration
+&#43;import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+&#43;import org.springframework.context.annotation.Bean
+&#43;import org.springframework.context.annotation.Import
+&#43;import org.springframework.http.MediaType
+&#43;import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
+&#43;import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
+&#43;import org.springframework.test.web.servlet.MockMvc
+&#43;import org.springframework.test.web.servlet.patch
+&#43;import java.math.BigDecimal
+&#43;import java.time.Instant
+&#43;import java.time.LocalDate
+&#43;import java.util.UUID
+&#43;
+&#43;@WebMvcTest(controllers = [GroupSessionWorkoutController::class])
+&#43;@Import(
+&#43;    GroupSessionWorkoutController::class,
+&#43;    GroupSessionExceptionHandler::class,
+&#43;    WorkoutExceptionHandler::class,
+&#43;    GroupSessionFloorSetConflictTest.TestConfig::class,
+&#43;)
+&#43;class GroupSessionFloorSetConflictTest {
+&#43;    @Autowired lateinit var mockMvc: MockMvc
+&#43;
+&#43;    @Autowired lateinit var groupSessionQueryService: GroupSessionQueryService
+&#43;
+&#43;    @Autowired lateinit var workoutFieldPatchService: WorkoutFieldPatchService
+&#43;
+&#43;    @Autowired lateinit var responses: WorkoutResponseAssembler
+&#43;
+&#43;    private val owner = UUID.fromString(&#34;11111111-1111-1111-1111-111111111111&#34;)
+&#43;    private val jana = UUID.fromString(&#34;22222222-2222-2222-2222-222222222222&#34;)
+&#43;    private val sessionId = UUID.randomUUID()
+&#43;    private val workoutId = UUID.randomUUID()
+&#43;    private val setId = UUID.randomUUID()
+&#43;
+&#43;    @BeforeEach
+&#43;    fun resetMocks() {
+&#43;        clearMocks(groupSessionQueryService, workoutFieldPatchService, responses)
+&#43;        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+&#43;    }
+&#43;
+&#43;    private fun setPath() = &#34;/api/group-sessions/$sessionId/participants/$jana/workout/sets/$setId&#34;
+&#43;
+&#43;    private fun workout() =
+&#43;        Workout(
+&#43;            id = workoutId,
+&#43;            userId = jana,
+&#43;            scheduledDate = LocalDate.of(2026, 9, 4),
+&#43;            scheduledTime = null,
+&#43;            unit = WeightUnit.KG,
+&#43;            lifecycle = WorkoutLifecycle(status = WorkoutStatus.PLANNED),
+&#43;        )
+&#43;
+&#43;    private fun workoutResponse() =
+&#43;        WorkoutResponse(
+&#43;            id = workoutId,
+&#43;            scheduledDate = LocalDate.of(2026, 9, 4),
+&#43;            scheduledTime = null,
+&#43;            unit = WeightUnit.KG,
+&#43;            name = null,
+&#43;            displayName = &#34;Stub&#34;,
+&#43;            notes = null,
+&#43;            status = WorkoutStatus.PLANNED,
+&#43;            startedAt = null,
+&#43;            finishedAt = null,
+&#43;            blocks = emptyList(),
+&#43;        )
+&#43;
+&#43;    private fun patchSet(body: String) =
+&#43;        mockMvc.patch(setPath()) {
+&#43;            with(user(owner.toString()))
+&#43;            with(csrf())
+&#43;            contentType = MediaType.APPLICATION_JSON
+&#43;            content = body
+&#43;        }
+&#43;
+&#43;    @Test
+&#43;    fun `expected reaches the service with the driver as actor`() {
+&#43;        val expected = SetValues(SetWeight.Measured(BigDecimal(&#34;60&#34;)), SetEffort.Count(10), confirmed = false)
+&#43;        every {
+&#43;            workoutFieldPatchService.patchSet(
+&#43;                jana,
+&#43;                workoutId,
+&#43;                setId,
+&#43;                SetWeight.Measured(BigDecimal(&#34;62.5&#34;)),
+&#43;                SetEffort.Count(10),
+&#43;                true,
+&#43;                actorId = owner,
+&#43;                expected = expected,
+&#43;            )
+&#43;        } returns workout()
+&#43;        every { responses.respond(any()) } returns workoutResponse()
+&#43;
+&#43;        patchSet(
+&#43;            &#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:62.5},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:10},&#34;confirmed&#34;:true,&#34;&#34;&#34; &#43;
+&#43;                &#34;&#34;&#34;&#34;expected&#34;:{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:60},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:10},&#34;confirmed&#34;:false}}&#34;&#34;&#34;,
+&#43;        ).andExpect { status { isOk() } }
+&#43;
+&#43;        verify {
+&#43;            workoutFieldPatchService.patchSet(
+&#43;                jana,
+&#43;                workoutId,
+&#43;                setId,
+&#43;                SetWeight.Measured(BigDecimal(&#34;62.5&#34;)),
+&#43;                SetEffort.Count(10),
+&#43;                true,
+&#43;                actorId = owner,
+&#43;                expected = expected,
+&#43;            )
+&#43;        }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `a set_changed refusal carries current updatedBy and updatedAt`() {
+&#43;        val stored =
+&#43;            WorkoutSet(
+&#43;                id = setId,
+&#43;                position = 1,
+&#43;                weight = SetWeight.Measured(BigDecimal(&#34;62.5&#34;)),
+&#43;                effort = SetEffort.Count(8),
+&#43;                confirmedAt = Instant.parse(&#34;2026-10-10T07:55:00Z&#34;),
+&#43;                updatedAt = Instant.parse(&#34;2026-10-10T08:00:00Z&#34;),
+&#43;                updatedBy = owner,
+&#43;            )
+&#43;        every { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) } throws
+&#43;            WorkoutSetChangedException(stored)
+&#43;        every { groupSessionQueryService.profileOf(owner) } returns
+&#43;            ParticipantProfile(owner, &#34;Mira Novak&#34;, &#34;mira&#34;, null, null)
+&#43;
+&#43;        patchSet(
+&#43;            &#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:60},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:10},&#34;confirmed&#34;:false,&#34;&#34;&#34; &#43;
+&#43;                &#34;&#34;&#34;&#34;expected&#34;:{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:60},&#34;effort&#34;:{&#34;kind&#34;:&#34;COUNT&#34;,&#34;value&#34;:10},&#34;confirmed&#34;:false}}&#34;&#34;&#34;,
+&#43;        ).andExpect {
+&#43;            status { isConflict() }
+&#43;            jsonPath(&#34;$.code&#34;) { value(&#34;set_changed&#34;) }
+&#43;            jsonPath(&#34;$.current.weight.kind&#34;) { value(&#34;MEASURED&#34;) }
+&#43;            jsonPath(&#34;$.current.weight.value&#34;) { value(62.5) }
+&#43;            jsonPath(&#34;$.current.effort.kind&#34;) { value(&#34;COUNT&#34;) }
+&#43;            jsonPath(&#34;$.current.effort.value&#34;) { value(8) }
+&#43;            jsonPath(&#34;$.current.confirmed&#34;) { value(true) }
+&#43;            jsonPath(&#34;$.updatedBy.id&#34;) { value(owner.toString()) }
+&#43;            jsonPath(&#34;$.updatedBy.displayName&#34;) { value(&#34;Mira Novak&#34;) }
+&#43;            jsonPath(&#34;$.updatedAt&#34;) { value(&#34;2026-10-10T08:00:00Z&#34;) }
+&#43;        }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `a never-stamped set answers null updatedBy and updatedAt`() {
+&#43;        val stored =
+&#43;            WorkoutSet(
+&#43;                id = setId,
+&#43;                position = 1,
+&#43;                weight = SetWeight.Measured(BigDecimal(&#34;60&#34;)),
+&#43;                effort = null,
+&#43;                confirmedAt = null,
+&#43;            )
+&#43;        every { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) } throws
+&#43;            WorkoutSetChangedException(stored)
+&#43;
+&#43;        patchSet(
+&#43;            &#34;&#34;&#34;{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:61},&#34;effort&#34;:null,&#34;confirmed&#34;:false,&#34;&#34;&#34; &#43;
+&#43;                &#34;&#34;&#34;&#34;expected&#34;:{&#34;weight&#34;:{&#34;kind&#34;:&#34;MEASURED&#34;,&#34;value&#34;:62},&#34;effort&#34;:null,&#34;confirmed&#34;:false}}&#34;&#34;&#34;,
+&#43;        ).andExpect {
+&#43;            status { isConflict() }
+&#43;            jsonPath(&#34;$.code&#34;) { value(&#34;set_changed&#34;) }
+&#43;            // Absent rather than null: ProblemDetail drops null properties (NON_EMPTY), as handleConflict does.
+&#43;            jsonPath(&#34;$.updatedBy&#34;) { doesNotExist() }
+&#43;            jsonPath(&#34;$.updatedAt&#34;) { doesNotExist() }
+&#43;        }
+&#43;    }
+&#43;
+&#43;    @Test
+&#43;    fun `an unknown field is still refused`() {
+&#43;        listOf(
+&#43;            &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;foo&#34;:1}&#34;&#34;&#34;,
+&#43;            &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;expected&#34;:{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true,&#34;foo&#34;:1}}&#34;&#34;&#34;,
+&#43;        ).forEach { body -&gt;
+&#43;            patchSet(body).andExpect { status { isBadRequest() } }
+&#43;        }
+&#43;        verify(exactly = 0) { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) }
+&#43;    }
+&#43;
+&#43;    @TestConfiguration
+&#43;    class TestConfig {
+&#43;        @Bean
+&#43;        fun groupSessionQueryService(): GroupSessionQueryService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutService(): WorkoutService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutFieldPatchService(): WorkoutFieldPatchService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutFinishReadinessService(): WorkoutFinishReadinessService = mockk()
+&#43;
+&#43;        @Bean
+&#43;        fun workoutResponseAssembler(): WorkoutResponseAssembler = mockk()
+&#43;    }
+&#43;}
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+index 104e5a8..71c91dd 100644
+--- a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+&#43;&#43;&#43; b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+@@ -222,7 &#43;222,7 @@ class GroupSessionWorkoutControllerTest {
+         val setId = UUID.randomUUID()
+         every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+         every {
+-            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true)
+&#43;            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, actorId = owner, expected = null)
+         } returns workout()
+         every { responses.respond(workout()) } returns workoutResponse()
+ 
+@@ -234,7 &#43;234,7 @@ class GroupSessionWorkoutControllerTest {
+                 content = &#34;&#34;&#34;{&#34;weight&#34;:null,&#34;effort&#34;:null,&#34;confirmed&#34;:true}&#34;&#34;&#34;
+             }.andExpect { status { isOk() } }
+ 
+-        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true) }
+&#43;        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, actorId = owner, expected = null) }
+     }
+ 
+     @Test
+</pre></details>
+<p class="muted">transcript: 20261010T140957Z-impl-claude-code-claude-haiku-5-5-low/kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

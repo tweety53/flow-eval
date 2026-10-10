@@ -1,0 +1,57 @@
+---
+description: Write the simplest implementation that satisfies what was actually asked for
+alwaysApply: true
+---
+
+# Build the simplest thing that meets the requirement
+
+<!-- core -->
+**Complexity is opt-in.** Write the simplest implementation that satisfies what was actually asked
+for. If something more elaborate is wanted, the user will say so — until then the elaborate version
+is not the careful choice, it is the wrong one. Always on, every project and every subagent.
+
+Derive state rather than storing it. No abstraction until a second caller exists. No configurability
+nobody asked for. No speculative cases.
+
+**Correctness, security and stated requirements always win** — when the simple version genuinely
+won't do, say why in one sentence and build the one that works. If what you are building outgrows the
+requirement mid-task, cut it back then rather than refactoring later.
+
+<!-- /core -->
+
+The test is the requirement, not a judgment about what might be needed later. A design handling cases
+nobody asked for isn't more robust — it's more code to read, more state to keep consistent, and more
+surface for a defect to hide in.
+
+## The specific habits
+
+- **Derive state; don't store it.** A value computable from what you already have needs no field, no
+  `remember`, no state holder, no synchronisation rule. Storing it creates a second source of truth
+  and the obligation to keep both agreeing.
+- **No abstraction until there is a second caller.** One implementation needs no interface, strategy,
+  registry or factory. Add the seam when the second case arrives and shows you where it belongs.
+- **No configurability nobody asked for.** A hard-coded value that is right beats an option never set
+  to anything else.
+- **No speculative cases.** Don't handle inputs, states or failure modes the requirement doesn't
+  mention and the code can't produce.
+- **Fewer moving parts beats fewer lines.** Simple means less to reason about, not tersest syntax. A
+  clear loop beats a clever one-liner.
+
+## The limits
+
+**Correctness, security and stated requirements always win.** This governs the space where several
+correct designs exist and one is smaller — it is never licence to under-build or ignore a real
+constraint.
+
+## The incident behind it
+
+Gymie KAN-144 needed one behaviour: after logging a set, focus the next set's weight field. It
+shipped as a dedicated focus-state holder with its own tracking, update rules and synchronisation
+against workout state. It was later replaced by deriving the focused input from the current set —
+removing 67 lines of `commonMain` and a whole class of desynchronisation bug.
+
+The derived version was always available, met the requirement exactly, and should have been written
+first. The user's own statement of the requirement:
+
+> *"focus should be easy no? If already started and is a log then focus its weight field. Otherwise
+> just go next after user action."*

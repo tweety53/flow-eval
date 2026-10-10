@@ -1,0 +1,6 @@
+{
+  "id": "f1",
+  "role": "foo",
+  "source": {"repo": "gymie", "change": "kan-4-example"},
+  "notes": "fixture with an unknown role"
+}

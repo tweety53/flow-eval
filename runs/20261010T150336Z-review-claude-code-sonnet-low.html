@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261010T150336Z-review-claude-code-sonnet-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261010T150336Z-review-claude-code-sonnet-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>sonnet</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>principles</dd>
+<dt>judge</dt><dd>claude-code sonnet medium</dd>
+<dt>prompt pin</dt><dd>b35b350c2573184c56c37138e627d33f8a3de927</dd>
+<dt>case set</dt><dd>0d21dc9b189bde272a3eeb276a866c8403318f30df8e3c209c3f346d1216913d</dd>
+<dt>flow-eval</dt><dd>cdd6abe71d5aa223fe9fa31a57eafdef8a241ccf</dd>
+<dt>started</dt><dd>2026-10-10T15:03:36Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">0.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-fail"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>0</td><td>no</td><td>0.0</td><td>0.0</td><td>–</td><td>$0.2476</td><td>14.5</td><td>211082</td><td>$0.0631</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999137931034483</dd></div>
+<div><dt>cache_read</dt><dd>46396</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>22328</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1126496</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>1869</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>34783</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>530</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1172892</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>15777</dd></div>
+</dl>
+<details><summary>output.md</summary><pre>### Summary
+The diff adds a `SessionView` workout-mode preference. It touches the API interface and impl, the models, the Settings screen, `SettingsState`, and the tests. The Project standards field was empty, so no standards files resolved and there are no hard invariants to enforce. I applied only the universal principle list in `engineering-principles.md`, and found no new suppression or lint-config change in the diff. The structure is sound, and duplicating the `chooseUnit` flow is a stated, defensible WET tradeoff. I found a few DRY and Single Source of Truth nits.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+None.
+
+#### Minor (Nice to Have)
+1. **`SettingsState.kt` (`load`, failure branch)** — DRY / Single Source of Truth. The diff replaces `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` with the inline literal `&#34;Could not load your settings.&#34;`, so failure messages no longer come from one place. The `FailureMessages` constant is still used at `WorkoutEditorScreen.kt:387`, so the screens now word the same kind of failure differently.
+   - Fix: add a `FailureMessages.COULD_NOT_LOAD_SETTINGS` constant and reuse it.
+   - Reproducer: `grep -rn &#34;Could not load your&#34; shared/src --include=*.kt`
+
+2. **`SettingsState.kt` (`chooseSessionView`)** — DRY. `&#34;Could not save your workout mode.&#34;` is written three times in one function: the `error(...)` call and both failure branches.
+   - Fix: add `FailureMessages.COULD_NOT_SAVE_WORKOUT_MODE`, or a local `val`.
+   - Reproducer: `grep -c &#34;Could not save your workout mode&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`
+
+3. **`WorkoutModels.kt` (`WorkoutPreferences.sessionView = FOCUS`), `SettingsState.kt` (`OptimisticWrite(SessionView.FOCUS)`), `FakeWorkoutApi.kt` (`?: SessionView.FOCUS`)** — Single Source of Truth. The server default `FOCUS` is hardcoded in three places.
+   - Fix: add a `SessionView.DEFAULT` companion constant, or point the other two at `WorkoutPreferences`&#39;s default.
+   - Reproducer: `grep -rn &#34;SessionView.FOCUS&#34; shared/src/commonMain shared/src/commonTest`
+
+4. **`AppScreens.kt` (`label = { if (it == SessionView.FOCUS) &#34;Focus&#34; else &#34;Quick&#34; }`)** — Open/closed, a SOLID entry. The `else` silently labels any future enum entry &#34;Quick&#34;.
+   - Fix: use an exhaustive `when`, or give the enum a `label` property.
+   - Reproducer: none — the problem only shows once a third enum entry is added.
+
+5. **`SettingsState.kt` (`chooseSessionView`)** — WET, noted rather than a violation. This is the near-copy of `chooseUnit` that the KDoc acknowledges. The tradeoff is defensible because the two writes differ in their `sendMutex` and confirmed-unit handling. Extract a shared helper only if a third preference field is added.
+
+### Assessment
+**Principles-compliant?** With fixes
+**Reasoning:** No standards files resolved and the diff has no hard-invariant or behavior-affecting violations. The remaining items are minor: scattered message literals, a default value repeated in three places, and a non-exhaustive label mapping.</pre></details>
+<p class="muted">transcript: 20261010T150336Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999137931034483</dd></div>
+<div><dt>cache_read</dt><dd>46396</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>22530</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1129376</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>1817</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>34985</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>429</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.11757719999999999</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>15672</dd></div>
+</dl>
+<details><summary>output.md</summary><pre>### Summary
+The diff adds a `sessionView` (Focus/Quick) preference across the shared API, domain models, `SettingsState`, the Settings screen and tests. The **Project standards** field was empty, so no standards files resolved. I applied the universal principle list only and enforced no project-specific hard invariants. I grepped the touched files to confirm the findings below. The diff adds no suppressions or lint-config changes. It is largely sound, with a few DRY and Single Source of Truth problems.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+None.
+
+#### Minor (Nice to Have)
+
+1. **`SettingsState.kt:335, 347, 352`: DRY.** The literal &#34;Could not save your workout mode.&#34; is written three times. One of them is the `error(...)` message that the failure branches then re-display through `it.message`. The same knowledge sits in three places, so a copy change has to be made three times.
+   - **Fix:** Add a `FailureMessages.COULD_NOT_SAVE_WORKOUT_MODE` constant, or a private `const` in the file, and use it in all three places.
+   - **Reproducer:** `grep -n &#34;Could not save your workout mode&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt` (three hits).
+
+2. **`SettingsState.kt:276`: Single Source of Truth.** This line replaces the named constant `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` with the inline literal &#34;Could not load your settings.&#34; and drops the import. The rest of the codebase keeps load-failure copy in `FailureMessages`. For example, `WorkoutEditorScreen.kt:387` still uses the constant. The message for this path is now split between the constant and the literal.
+   - **Fix:** Add a `FailureMessages.COULD_NOT_LOAD_SETTINGS` constant and use it here.
+   - **Reproducer:** `grep -rn &#34;Could not load your&#34; shared/src/commonMain`
+
+3. **`AppScreens.kt` (`WorkoutModeSetting`, the `label = { if (it == SessionView.FOCUS) &#34;Focus&#34; else &#34;Quick&#34; }` line): Open/closed and encapsulation.** The binary `if`/`else` silently maps any future `SessionView` entry to &#34;Quick&#34;. An exhaustive `when` would turn that into a compile error instead. The same applies to the `Quick` entry in the test.
+   - **Fix:** Use `when (it) { FOCUS -&gt; &#34;Focus&#34;; QUICK -&gt; &#34;Quick&#34; }`, or give the enum a `label` property.
+   - **Reproducer:** none — this only shows up when a third enum entry is added.
+
+4. **`SettingsState.kt` (`chooseSessionView`, whole function): WET without a full explanation.** The function mirrors `chooseUnit` closely, including the `WriteFailureOutcome` branches. The KDoc says it works &#34;exactly as [chooseUnit]&#34;, so the duplication is a knowing choice. It is defensible, because the two writes differ in what they send, and sharing the code would need a parameterised helper. The cost is that a change to the failure policy now has to be made in two functions. This is acceptable for now. If a third preference field is added, extract a shared helper.
+   - **Reproducer:** none — this is a tradeoff note.
+
+### Assessment
+**Principles-compliant?** With fixes
+
+**Reasoning:** There are no structural or hard-invariant violations. The nullable-parameter API is simple, and writing the unit under `sendMutex` is a deliberate Single Source of Truth choice. The only blemishes are the scattered message literals and the non-exhaustive label mapping, which are small and cheap to fix.</pre></details>
+<p class="muted">transcript: 20261010T150336Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999410811607011</dd></div>
+<div><dt>cache_read</dt><dd>67886</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>549</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0219826</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>1299</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>34494</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>209</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.028771200000000004</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>12145</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>535</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>15762</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0631355</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>2</dd></div>
+<div><dt>output</dt><dd>3</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.06313550000000001</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Summary
+The diff adds a `sessionView` (Focus/Quick) preference across the API, models, `SettingsState` and the Settings screen, plus tests. No project standards were resolved: the Project standards field was empty and no standards files exist in the repo. I applied only the universal principle list, and the Hard Invariants section is empty. The structure is sound overall: a second `OptimisticWrite` is reused rather than copied. I found one Important issue and two Minor ones.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+1. **`SettingsState.kt:276` (the `onFailureNotCancelled` branch in `load`) — Single Source of Truth / DRY.**
+   - The diff replaces the shared constant `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` with the inline literal `&#34;Could not load your settings.&#34;`, and drops the import. The constant is still defined at `FailureHandling.kt:15` and used at `WorkoutEditorScreen.kt:387`. User-facing failure copy now lives in two mechanisms.
+   - The new `&#34;Could not save your workout mode.&#34;` literal also appears three times in `chooseSessionView`.
+   - Fix: add `COULD_NOT_LOAD_SETTINGS` and `COULD_NOT_SAVE_WORKOUT_MODE` to `FailureMessages` and reference them. If the &#34;weight unit&#34; wording is no longer accurate for `load`, change it in the constant.
+   - Reproducer: `grep -n &#39;&#34;Could not&#39; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`
+
+#### Minor (Nice to Have)
+1. **`SettingsState.kt` (the `load` hunk) — KISS / readability.**
+   - `load` now repeats `current &amp;&amp; ...` across three `if`s, and the three booleans (`current`, `noWriteSucceeded`, plus the per-field flags) are hard to follow. Wrapping the whole block in `if (current) { ... }` would be simpler.
+   - Reproducer: none — readability nit.
+2. **`AppScreens.kt` (`WorkoutModeSetting`, the `label = { if (it == SessionView.FOCUS) &#34;Focus&#34; else &#34;Quick&#34; }` lambda) — Open/closed.**
+   - The two-way `if` silently maps any future enum entry to &#34;Quick&#34;. An exhaustive `when` or a `label` property on the enum would catch a new entry at compile time.
+   - Reproducer: none — only matters once a third entry is added.
+
+### Assessment
+**Principles-compliant?** With fixes
+**Reasoning:** No project standards were available, so no hard invariants apply. The only real principle violation is the scattered failure-message strings, which break Single Source of Truth against the existing `FailureMessages` convention. The remaining items are small.</pre></details>
+<p class="muted">transcript: 20261010T150336Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>
