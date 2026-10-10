@@ -6,7 +6,10 @@ Any agent that writes, changes, reviews or debugs Go in this repository uses the
 to the work, at every depth. A dispatcher names the applicable ones in every Go implementer, fixer and
 reviewer prompt.
 
-- `modern-go-guidelines:use-modern-go` — invoke through the Skill tool for any Go written or changed.
+- `modern-go-guidelines:use-modern-go` — invoke through the Skill tool for any Go written or changed;
+  an agent without the Skill tool (the `flow-*` agents) reads
+  `~/.claude/plugins/marketplaces/goland-claude-marketplace/plugin/skills/use-modern-go/SKILL.md`
+  instead.
 - The `go-*` skills at `~/.agents/skills/<name>/SKILL.md` — not in the Skill list; read the file
   before the work it governs.
 
