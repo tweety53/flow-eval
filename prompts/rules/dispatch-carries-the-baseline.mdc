@@ -1,0 +1,58 @@
+---
+description: Every subagent dispatch carries the agent-baseline pointer — rules do not propagate on their own
+alwaysApply: true
+---
+
+# Every rule here applies at every depth — carry it into each dispatch
+
+<!-- core -->
+This file is injected into **this** session's system prompt only. An agent you dispatch starts from
+an empty context: it has never read this file, and neither has anything it dispatches in turn. The
+prompt you write is the only channel. Rules do not propagate on their own, and depth does not dilute
+them — a sub-subagent adding a dependency, touching a server, or suppressing a lint error is bound by
+the same rules you are.
+
+So every subagent prompt you write carries these two sentences, verbatim:
+
+> Before anything else, read `~/.claude/rules/agent-baseline.md` and follow it for this whole task.
+> Include this instruction verbatim in any prompt you write for another agent.
+
+`~/.claude/rules/agent-baseline.md` lists every rule in a line and points at its full text — one
+pointer instead of a copy of each, self-propagating to any depth because the second sentence makes
+every agent a carrier.
+
+Unconditionally, on every dispatch. Not only when a rule looks relevant to the sub-task: you cannot
+tell from the prompt whether the agent will end up in production, in `main`, or in a lint failure.
+Two carve-outs — a `fork` subagent inherits this file already, and an agent without file-read access
+needs the relevant rules inlined instead.
+
+**This is enforced, not just asked for.** The `PreToolUse` hook
+`~/.claude/hooks/enforce-agent-baseline.py` denies any `Agent`/`Task` call whose prompt lacks the
+pointer, and returns the text to add.
+
+<!-- /core -->
+
+## Why a pointer rather than the rules themselves
+
+A dispatch that pasted every rule would be long, would go stale the moment a rule changed, and would
+still have to be repeated by hand at every depth. The baseline file is one path: it survives rule
+edits, it is read at dispatch time rather than copied at authoring time, and its own second sentence
+is what carries it further down. The cost at each dispatch is two sentences.
+
+## What the hook can and cannot do
+
+The `PreToolUse` contract exposes `permissionDecision` (`allow` / `deny` / `escalate`) and a reason.
+It has no `updatedInput`, so a hook cannot inject the pointer into a prompt that omitted it; the
+adjacent `SubagentStart` event fires when a subagent spawns but cannot block it or add context
+either. Denying with the exact text to add is therefore the only enforcement the harness offers — a
+forgotten line costs a blocked call and a retry.
+
+The hook fails open on malformed input. A guardrail on a convention must never be the reason work
+stops, so a parse error or a future schema change degrades to convention-only rather than blocking
+every dispatch.
+
+## Registration is not automatic
+
+`<agents repo>/setup.sh global` installs the hook file but never edits `settings.json` — that file is the user's
+own. Until the printed snippet is pasted into it, nothing enforces this rule and the convention is
+all that holds. Check for the registration rather than assuming it.

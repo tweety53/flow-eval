@@ -1,0 +1,83 @@
+# Sections removed from each vendored prompt, in removal order: `<target>: <heading>`, where the
+# heading is the literal start of the line that opens the section, or `~<clause>` cutting that
+# literal clause (internal/prompts.Strip). Sync fails when a heading opens no section or a clause is
+# found nowhere, so upstream drift is seen.
+#
+# impl — the implementer dispatch blocks of skills/flow/implement.md: drop the Claude-only and
+# flow-store scaffolding (commit guards, Claude plugin skills, the context bundle and report file
+# under .superpowers/sdd, the model handshake, ToolSearch, the Agent tool).
+impl: **FLOW — COMMIT-PER-TASK:**
+impl: **REQUIRED SUB-SKILL:**
+impl: **REQUIRED READING:**
+impl: **CONTEXT BUNDLE:**
+impl: **PROJECT HAZARDS:**
+impl: **MODEL HANDSHAKE:**
+impl: **TOOLS:**
+impl: **NO DELEGATION:**
+impl: **REPORT FILE:**
+#
+# review-primary — skills/flow/primary-reviewer-prompt.md: the diff arrives inline, and a review
+# case carries no change artifacts, context bundle or calibration file. `## Scope` keeps only its
+# order to grep the touched files and confirm a suspected defect before reporting it: the trial's
+# /work is the repository at the change's head.
+review-primary: ~**Diff file:** [DIFF_PATH] **Change artifacts:** [ARTIFACT_PATHS] **Context bundle:** [CONTEXT_BUNDLE_PATHS]
+review-primary: ~Read the diff file in full first — the diff is the thing under review.
+review-primary: ~Then read the context bundle: its `proposal.md`, `design.md` and `tasks.md` sections carry the change artifacts whole — read them there and never re-open those files.
+review-primary: ~Open a path from the Change artifacts field only for an artifact the bundle's census lists as skipped or refused, or when your prompt names the bundle as absent.
+review-primary: ~The rest of the bundle is background for judging whether a defect is this diff's own or a pre-existing condition the diff did not touch.
+review-primary: **Plan alignment:**
+review-primary: ## Calibration
+#
+# review-principles — skills/flow/principles-reviewer-prompt.md: the diff arrives inline, the
+# principles file is appended whole, and a review case carries no global constraints (no change
+# artifacts), so the diff, principles and global-constraints path lines and the read-order sentences
+# go. `**Project standards:**` stays, its [STANDARDS_PATHS] filled per trial from the case snapshot's
+# own `.flow/project.md` (internal/prompts.Standards), empty when none resolve, as flow fills it; so
+# the standards-as-data rule, `## Hard Invariants` — it reads only the standards files and the
+# touched files, both in the trial — and the no-standards paragraph stay as upstream has them.
+# `## Scope` keeps its order to grep the touched files and confirm a suspected violation before
+# reporting it.
+review-principles: ~**Diff file:** [DIFF_PATH] **Principles:** [PRINCIPLES_PATH]
+review-principles: ~**Global constraints:** [GLOBAL_CONSTRAINTS]
+review-principles: ~Read the principles FIRST: the context bundle your prompt names carries the principles file whole, under a section headed with the Principles path above — read it there and never re-open that file.
+review-principles: ~Open the Principles path itself only when your prompt names the bundle as absent or the bundle's census lists that path as skipped.
+review-principles: ~Then read the project standards files, then the diff.
+#
+# review-failure-modes — skills/flow/failure-modes-reviewer-prompt.md: the diff arrives inline,
+# and a review case carries no context bundle. `## Scope` keeps only its order to grep the touched
+# files for the boundary calls a changed behaviour crosses before reporting a gap.
+review-failure-modes: ~**Diff file:** [DIFF_PATH] **Context bundle:** [CONTEXT_BUNDLE_PATHS]
+review-failure-modes: ~Read the diff file in full before reading the context bundle — the diff is the thing under review; the bundle is background for judging whether a gap is this diff's own or a pre-existing condition the diff did not touch.
+#
+# visual — skills/flow/visual-verify-verifier.md: keep the judging and measurement procedure — the
+# band and seam pairing, the text, bounded-row and ink sweeps, the element × property matrix and the
+# per-control measurement, all run with the measure-visual-properties.sh the runner image carries
+# (decision visual-measure-tool-in-runner) — and drop only what a static pair cannot do: the stack,
+# capture, compose and live-state steps, the merge-base attribution, and the record-writing step
+# with the report template it carries; a case supplies the pair, its mockup already cut to the frame
+# (decision visual-mockup-frame-crop). Sweep 6 stays — its order and ink-bounds checks need only the
+# two images — less its clause driving a seeded value.
+visual: # Visual verification — the verifier's steps
+visual: 4. **Run `setup`
+visual: 7. **Run `verify`.**
+visual: 8. **Capture**
+visual: **Pin the clock and the viewport before the first navigation.**
+visual: **Every mockup frame this change adds or updates gets a capture
+visual: **Then update the full app suite
+visual: 9. **Read every captured PNG
+visual: 10. **Compose captured frames
+visual: **Every departure is attributed at the merge base
+visual: **Enumerate every mockup frame the change touches
+visual: **Exercise the states below and capture each one
+visual: 1. **Every appearance of a named state
+visual: 2. **The whole range of every ranged control
+visual: 3. **Every option of every picker or selector
+visual: 4. **Every intermediate screen of a scripted navigation.
+visual: ~— driving the out-of-range value step 8 seeded and stating whether the app clamps it or hides it
+visual: 7. **Every scrollable region scrolled to its end
+visual: 8. **Every derived value re-derived
+visual: 2. **Exercise every interactive state the mockup draws
+visual: **No sidecar is never a silent skip.**
+visual: **The motion step
+visual: 11. **Write `<changeRoot>/visual-verification.md`**
+visual: **No required step is left undone

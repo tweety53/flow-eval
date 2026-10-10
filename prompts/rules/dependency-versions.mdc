@@ -1,0 +1,46 @@
+---
+description: Look up the current stable version before adding any dependency or service
+alwaysApply: true
+---
+
+# Latest stable version for new dependencies and services
+
+<!-- core -->
+Before adding any new dependency or service (library, package, image, DB like Postgres or Redis),
+look up its current latest stable version. Never use a remembered or training-data version — it is a
+guess about the past, and it fails quietly. If the lookup is inconclusive, ask the user to confirm
+before proceeding.
+
+<!-- /core -->
+
+## Why the lookup is not optional
+
+A version recalled from training data is a guess about the past. It is routinely several major
+versions behind, and the failure is quiet: the build resolves, the code compiles, and the project
+starts life on an unsupported release with known CVEs and a migration already owed.
+
+## How to look it up
+
+- Package registry or the project's own releases page for the authoritative current version.
+- Context7 (`resolve-library-id`, then `query-docs`) for the docs that go with that version — see
+  `~/.claude/rules/context7.md`.
+- For Docker images, the registry's tag list. Do not assume two images from the same vendor share a
+  release cadence or a tag scheme.
+
+## Stable means stable
+
+Not a release candidate, alpha, beta, nightly or `-SNAPSHOT`, unless the user asked for one or the
+project already pins pre-releases deliberately.
+
+## When the lookup is inconclusive
+
+Inconclusive includes: sources disagreeing,
+no clear stable line, a project that has forked or been renamed, or a major version whose migration
+cost you cannot assess from the release notes.
+
+## Existing dependencies
+
+This rule is about *adding*. Upgrading what is already pinned is a separate decision with its own
+blast radius — raise it, do not fold it silently into unrelated work.
+
+Applies globally, all projects, no exceptions.

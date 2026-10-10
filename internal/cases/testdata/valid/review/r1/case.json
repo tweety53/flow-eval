@@ -1,0 +1,7 @@
+{
+  "id": "r1",
+  "role": "review",
+  "source": {"repo": "gymie", "change": "kan-2-example", "url": "https://example.invalid/pr/2"},
+  "snapshot": "0123456789abcdef0123456789abcdef01234567",
+  "notes": "fixture"
+}

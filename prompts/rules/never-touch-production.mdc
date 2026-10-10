@@ -1,0 +1,55 @@
+---
+description: Never act against a production server or system — hand the command back to a human
+alwaysApply: true
+---
+
+# Never touch production servers
+
+<!-- core -->
+Never access, run commands on, or perform actions against any PRODUCTION server or system, in any
+project — no SSH, no remote exec, no prod DB client, no prod cloud console or CLI call, no route at
+all. If a task needs a production action, hand back the exact command for the user to run. If their
+run errors, wait for the pasted output before deciding anything — never guess or retry blind. If you
+cannot tell whether a target is production, treat it as production and ask. One route stays open:
+a public, read-only HTTP request to a production URL — a `GET` or `HEAD` with no credentials, the
+request any browser makes — is looking, not acting, and is run directly rather than handed back.
+
+<!-- /core -->
+
+## What is closed
+
+Every route, not a list of blocked tools:
+
+- SSH or any remote shell into a production host.
+- Remote exec — `kubectl exec`, `docker exec`, a CI job you trigger, a runner, a debug endpoint.
+- Production database clients, psql/mysql sessions, migration runners, ORM consoles.
+- Cloud console or CLI calls against production projects (`gcloud`, `aws`, `az`, `flyctl`, …),
+  including read-only ones.
+- Anything else that reaches production, however indirect. The rule is about the target, not the
+  verb — with the one exception below.
+
+## What stays open
+
+A public, read-only HTTP request to a production URL: `curl` with `GET` or `HEAD`, no token, no
+cookie, no credentials of any kind, against a URL anyone on the internet can load — a page, a static
+asset, a response header, a status code. It changes nothing and reveals nothing a browser would not,
+so run it yourself; handing it back costs the user a turn per fact. Anything carrying credentials,
+any other method, or any non-public endpoint stays closed.
+
+## What to do instead
+
+Hand back the exact steps for a human to run: the literal command, what to type at each prompt, what
+a correct result looks like. An instruction the user has to translate before running is not done
+work.
+
+## When their run errors
+
+Stop and wait for the pasted output. Do not guess at the cause, do not offer a retry to run blind,
+do not suggest a variant command in the same breath. Read the actual error first, then decide.
+
+## Uncertain whether a target is production
+
+Treat it as production and ask. The cost of asking is one message; the cost of guessing wrong is
+unbounded and often irreversible.
+
+Applies globally, all projects, no exceptions.

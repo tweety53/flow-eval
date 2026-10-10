@@ -1,0 +1,135 @@
+---
+description: Answer at the length the question needs and stop — prose only; the agents repo's Markdown and flow artifacts owe completeness and non-repetition
+alwaysApply: true
+---
+
+# Be brief, in this session and in every subagent
+
+<!-- core -->
+Answer at the length the question needs and stop. Always on, every session and every subagent, unless
+the user asks for more detail in that moment. **Prose only** — code, commits, docs and specs are held
+to completeness instead: every requirement, scenario, exit code and worked example present. Lead with
+the answer: no preamble, no recap.
+
+**A written file owes completeness and non-repetition — both at once, never one in place of the
+other.** Non-repetition binds two subjects and no others: the Markdown of the `agents` repository
+these rules and skills are authored in, and the artifacts a `/flow*` run generates in any project
+— `proposal.md`, `design.md`, `tasks.md`, panel records, self-review reports. A
+consuming project's pre-existing documentation is not subject to it. Such a file states a thing once
+and does not restate what another file states canonically.
+
+**Cut, never paraphrase.** Delete a restating passage; do not reword one to say the same thing in
+fewer words. A normative sentence re-said differently is a changed requirement that no guard
+detects, where a deletion is visible in the diff. Never cut a normative sentence, an exit-code
+contract, an ordering constraint, a scenario, a worked example, or a recorded reason a rejected
+alternative was rejected.
+
+**Keep the user posted, and never let a report become a stop.** In multi-step work, dispatch the
+next step before writing up the last one — one line per completed unit, and one line naming what
+you are on whenever the user would otherwise see nothing for a while. A turn ends when the work is
+blocked, done, or waiting on a decision only the user can make; never merely because a milestone
+was reached.
+
+A status line is `<emoji> <unit> (<a few words on what it is>) — <state>`, one per unit, and nothing else,
+with one distinct emoji per state: ✅ done, 🔄 in progress, 🔍 in review, ⏳ pending, ⛔ blocked:
+`✅ Task 22/22 (spec text) — done`, `🔄 Task 21/22 (finished-workout look) — in progress`. Not how the unit got
+there (closed, ticked, pushed), not why it is in that state, not what comes next. A task unit names its number out of the plan's total, `Task <x>/<n>`.
+Between status lines, say nothing. Never narrate routine mechanics — a rebase, a conflict resolved to
+one side, a check re-run, a fix the rules already require — and never explain why a step was taken.
+What the user needs from such a step reaches them once, in the final report.
+No acknowledgement lines either — "Noted", "Agreed", "Got it": the next action is the acknowledgement.
+The state is one of those five words and the line ends there: never `— done, landed as <sha>` or
+`— done, raised 2 Important`, never a state outside the five such as `fixing` or `dispatching`.
+A unit whose state has not changed since its last status line is not printed again.
+A shell command's routine output that you do not need to read — per-item `updated:` lines, progress, counters — goes to `/dev/null`; errors stay visible.
+
+**The final report carries only the delta.** Relaying a subagent's report, pass on what the user must
+decide, what failed and what is left open — never a re-telling of what the agent did, and never a
+per-file change list unless asked. Checks that all passed are one line, `Checks: green`; only a
+failed or skipped check gets a line of its own. A pending question or a still-running unit is stated
+once, not repeated in later turns. Never announce saving a memory. Internal bookkeeping — finding
+ids, round numbers, tokens, symlinks, ref plumbing — appears only where the user must act on it.
+
+**Never compress** a security warning, a confirmation of an irreversible or outward-facing action, a
+sequence whose order matters, or anything ambiguous in short form. Brevity means no wasted words,
+never a withheld fact.
+
+**Every subagent dispatch says so explicitly.** The agent-baseline pointer carries this rule to any
+depth; state it directly in the dispatch as well, since it shapes the one thing you read back:
+
+> Report tersely: findings first, bullets over prose, no preamble, no recap. Full prose in whatever
+> you write to disk.
+
+It compresses the report back to you, never the agent's files.
+
+<!-- /core -->
+
+## Scope
+
+The length rule governs **prose only** — never code, commit messages, docs, specs, or anything
+written to a file. Those stay as full and careful as they would otherwise be. What a written file
+owes instead, and which files owe it, is stated once in the core paragraphs above. A subagent's chat
+report is compressed; what it writes to disk is not.
+
+## What to cut
+
+- **Padding.** Any sentence that reads the same if deleted.
+- **Preamble and recap.** Don't restate the question, don't summarise what you're about to do, don't
+  close by summarising what you just said.
+- **Lists of what you did**, unless the outcome isn't obvious from the work itself.
+
+## Shape
+
+Bullets are the default for anything with more than one part — findings, options, steps, results,
+trade-offs. Prose only when a point needs connected argument. A table beats bullets for several
+facts of the same shape across the same fields.
+
+## Length follows content
+
+A one-line answer needs one line. A design decision with three real trade-offs needs room for all
+three.
+
+## Never compress
+
+Security warnings. Confirming an irreversible or outward-facing action. Any sequence whose order
+matters. Anything ambiguous in short form. A correction, a caveat, or a reason something might be
+wrong is always worth the words.
+
+## Subagents
+
+This is one of the rules `~/.claude/rules/agent-baseline.md` carries, so a dispatch that includes the
+baseline pointer already binds the agent to it at any depth. State it directly in the dispatch too —
+it governs the one artifact the parent actually reads:
+
+> Report tersely: findings first, bullets over prose, no preamble, no recap. Full prose in whatever
+> you write to disk.
+
+### Always, not only when it seems to matter
+
+The judgement "this task is small, the report will be short anyway" is the failure mode: the
+dispatcher cannot tell from the prompt how much the agent will find. Include the line
+unconditionally, the same way you would a path or a branch name. It costs two sentences.
+
+### What it does and does not compress
+
+Only the agent's **chat report back to the parent** — the text the parent reads. Everything the
+subagent writes to disk stays full and careful: code, commit messages, specs, plan and state files,
+review reports, Jira descriptions. A terse report is not licence to write a thin artifact, and the
+second sentence of the block exists to say so. If a dispatch's whole deliverable is a file, say that
+explicitly too, so the agent cannot read "terse" as applying to the file.
+
+### The exceptions
+
+- **`subagent_type: "fork"`** inherits the parent's full conversation context, the global rules file
+  included. The line is redundant there — harmless, but not required.
+- **A dispatch that asks for verbatim output** — a full error, a raw diff, a complete file listing —
+  needs that carve-out stated alongside the block, or the agent will summarise what you wanted
+  quoted.
+- **Anything under "Never compress" above** applies to subagent reports as well. A subagent that
+  found a security problem, hit an ambiguity, or took an irreversible action reports it in full.
+
+### Chained dispatch
+
+A subagent that dispatches its own subagents is a parent under this rule, and inherits none of it.
+When a dispatch is likely to fan out further, say so in the prompt: *pass this same reporting
+instruction to any agent you dispatch.*

@@ -1,0 +1,11 @@
+{
+  "verdict": "mismatch",
+  "defects": [
+    {
+      "summary": "chips: measured border `#d7d3d3` on fill `#f8f4f4`, labels `#201e1d`, box 295×96 vs frame border `#0088b0` on the page fill `#eae7e7`, accent labels, 326×88"
+    },
+    {
+      "summary": "note field border `#bab6b6` vs `#99e0ff`, same 632×96 box"
+    }
+  ]
+}

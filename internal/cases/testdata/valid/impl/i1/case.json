@@ -1,0 +1,10 @@
+{
+  "id": "i1",
+  "role": "impl",
+  "source": {"repo": "gymie", "change": "kan-1-example"},
+  "snapshot": "0123456789abcdef0123456789abcdef01234567",
+  "notes": "fixture",
+  "needsDocker": true,
+  "verify": ["./gradlew :app:test --tests 'ExampleTest'"],
+  "files": ["src/app/Example.kt"]
+}

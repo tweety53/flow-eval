@@ -1,0 +1,144 @@
+---
+description: Kotlin backend core/infrastructure architecture — domain, ports, services, presentation, and integrations for Gymie Spring modules
+globs: src/**/*.kt,**/*.kts
+alwaysApply: false
+---
+
+> **OPT-IN RULE — not globally active.** This standard applies **only** in projects whose `.flow/project.md` lists it in its `## standards` section — as the bare filename `kotlin-backend-development-standard.mdc`, which resolves to `<agents repo>/rules/<name>` per **Project configuration** in `skills/flow-contracts/project-configuration.md`. It is deliberately **not** installed as an always-on global rule: its Kotlin globs (`src/**/*.kt`, `**/*.kts`) would otherwise match Compose Multiplatform frontends and IntelliJ/IDE plugin repositories, instructing them to adopt a Spring backend layering (`core/domain`, `core/ports`, `infrastructure/persistence`) that is wrong for those project shapes. If the current project has not opted in, ignore this file and impose none of its layering requirements.
+
+# Kotlin Backend Development Standard
+
+Follow [JetBrains Kotlin coding conventions](https://kotlinlang.org/docs/coding-conventions.html). The lint commands this project declares in its `.flow/project.md` `## lint` section — rendered under **10. Before claiming work done** — must pass with zero violations.
+
+detekt 1.x's `>=`-compared `threshold` fields — the size and count ceilings a plan cites: `TooManyFunctions`' `thresholdInClasses`/`thresholdInFiles`, `LongMethod`, `LargeClass`, `LongParameterList`, `NestedBlockDepth`, `ComplexCondition`, `CyclomaticComplexMethod` — are **first-failing counts, not safe maxima**: the rule fires once the count reaches the threshold, so `TooManyFunctions` with `thresholdInClasses: 20` fails a class at exactly 20 functions and the largest compliant class holds 19. Two thresholds are the exceptions and already are safe maxima — `NamedArguments` and `NestedScopeFunctions` compare with strict `>` — and detekt 2.x renames the size fields to `allowed*` under that same strict comparison. A plan citing a first-failing ceiling must state the safe maximum — the configured threshold minus one, read off the project's `detekt.yml` — never the bare threshold, which fails the first file or class that reaches it.
+
+## 2. Gymie Gradle layout
+
+| Path | Module | Role |
+|------|--------|------|
+| `src/app/` | `:app` | Composition root, Flyway migrations, Boot entry point |
+| `src/gateway/` | `:gateway` | Public edge — routing, JWT validation, CORS |
+| `src/app/<domain>/` | `:auth`, … | Domain library — `core` + `infrastructure` below |
+| `src/app/common/` | `:common` | Shared cross-cutting types and filters |
+
+## 3. Domain module layout (`core` + `infrastructure`)
+
+Every domain Gradle module (e.g. `:auth`) splits **all** code into two top-level packages under `com.gymie.<module>`:
+
+```
+com/gymie/auth/
+├── core/                                    # business logic ONLY
+│   ├── domain/                              # domain models (data class / sealed class)
+│   │   └── <domainName>/
+│   │       └── specification/               # query/response shapes for this domain
+│   ├── exceptions/                          # business exceptions from core services
+│   ├── ports/                               # outbound interfaces core depends on
+│   │   ├── persistence/
+│   │   │   └── <domainName>/                # e.g. UserRepository.kt (interface)
+│   │   ├── jwt/                             # e.g. AccessTokenIssuer
+│   │   ├── token/                           # refresh, email verification, password reset stores
+│   │   └── security/                        # e.g. PasswordHasher
+│   └── services/
+│       └── <serviceName>/
+│           ├── <Service>.kt                 # interface
+│           └── impl/
+│               └── <Service>Impl.kt         # implementation
+└── infrastructure/                          # everything non-business
+    ├── common/
+    ├── configurations/                      # Spring @Configuration beans
+    ├── integrations/                        # port implementations for external systems
+    │   ├── redis/
+    │   ├── jwt/
+    │   └── …
+    ├── metrics/
+    ├── persistence/                         # DB adapters, DAOs, entities, converters
+    │   ├── dao/
+    │   ├── entities/                        # when split from core domain
+    │   └── converters/
+    ├── presentation/                        # inbound user-facing entry points
+    │   └── web/
+    │       ├── dto/
+    │       ├── exceptions/
+    │       ├── validators/
+    │       ├── converters/
+    │       └── security/                    # filters, OAuth handlers for HTTP
+    └── scheduler/
+```
+
+### Dependency rules
+
+- **`core`** operates on `core.domain` models and **`core.ports`** interfaces only.
+- **`core.services`** may depend only on `core` packages (`domain`, `exceptions`, `ports`, other `services` interfaces).
+- **`infrastructure`** implements `ports`, hosts HTTP/gRPC, DB, caches, schedulers, and Spring wiring.
+- **`infrastructure.presentation`** converts DTOs ↔ domain before/after calling `core.services`.
+- **`infrastructure.configurations`** wires beans; no business logic.
+
+```
+presentation/web → core.services → core.ports ← infrastructure.persistence / integrations
+                      ↓
+                 core.domain
+```
+
+Do **not** use top-level `application/`, `api/`, `dto/`, `config/`, or legacy `service/` packages in domain modules.
+
+## 4. Core — `domain/`
+
+- All domain models live here — usually `data class`, sometimes `sealed class`.
+- Each domain concept gets its own subpackage (e.g. `core/domain/user/User.kt`).
+
+### `domain/.../specification/`
+
+Use when:
+
+- A response combines multiple domains or selected fields.
+- A service/port method needs typed query parameters.
+
+Name types clearly; keep them in `core`, not in `infrastructure`.
+
+## 5. Core — `exceptions/`
+
+All business exceptions thrown from `core.services` belong here. Map them to HTTP in `infrastructure.presentation.web.exceptions`.
+
+## 6. Core — `ports/`
+
+Every outbound dependency of `core.services` exposes an interface here, grouped by integration (e.g. `ports/persistence/user/UserRepository.kt`).
+
+- Persistence ports: `ports/persistence/<domainName>/`
+- JWT ports: `ports/jwt/` (e.g. `AccessTokenIssuer`)
+- Token/session ports: `ports/token/` (refresh store, email verification, password reset)
+- Security ports: `ports/security/` (e.g. `PasswordHasher`)
+- Other external system ports: `ports/<systemName>/`
+
+**Core must not import Spring, JPA, Redis, HTTP, or JWT types.**
+
+## 7. Core — `services/`
+
+- One package per service: interface at package root, implementation in `impl/`.
+- Implementation may use `@Service` / `@Component` when wired by Spring.
+- Services depend on **ports**, not concrete infrastructure classes.
+
+## 8. Infrastructure
+
+When implementing ports or serving requests, use **core domain types** at boundaries. Provide reusable `converters` and `validators` under the relevant infrastructure subtree.
+
+| Subpackage | Role |
+|------------|------|
+| `configurations/` | `@Configuration`, filter-chain wiring, DI grouping facades |
+| `persistence/dao/` | Spring Data JPA (or other) DAO interfaces |
+| `persistence/` | Adapters implementing `core.ports.persistence` |
+| `integrations/<tech>/` | Redis, JWT library, external HTTP/gRPC clients |
+| `presentation/web/` | REST controllers, DTOs, exception handlers, security filters |
+| `scheduler/` | Cron / scheduled jobs |
+| `metrics/` | Module-specific metrics (prefer `:common/observability` when cross-cutting) |
+
+## 9. Tests
+
+Mirror `core/` and `infrastructure/` paths in test source sets. Layout is enforced by `BaselineLayoutTest` in `:app`.
+
+## 10. Before claiming work done
+
+```bash
+{{lint-commands}}
+```
+
+Reference: `README.md`, `src/app/auth/README.md`

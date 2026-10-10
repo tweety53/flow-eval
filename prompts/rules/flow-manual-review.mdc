@@ -1,0 +1,77 @@
+---
+description: flow state machine — the three states, the human gate, and where to load the pipeline contract before acting on any of it
+globs:
+alwaysApply: true
+---
+<!-- core -->
+
+# flow — /flow, start to finish
+
+When running `/flow`, follow this **fixed three-state pipeline**:
+
+```text
+/flow  (no state)          → STARTED                  you: /clear, then /flow <name> to implement
+/flow  (reachability end)  → FINISHED (withdrawn)     nothing to plan — the operator may withdraw
+/flow  (STARTED, planned)  → IN_PROGRESS              you: review the staged diff — the stack is running
+/flow  <fix instructions>  → IN_PROGRESS (unchanged)  you: review the staged diff — the stack is running
+/flow  (bare, IN_PROGRESS) → IN_PROGRESS or FINISHED  terminal only on the merge-and-push route
+```
+
+One invocation carries the run named after wherever it stops. The human gate is a property of the
+state, not a separate step — which is why no command exists whose only job is to record that a
+review happened. A creating or fix run produces both the staged diff and the run instructions, so
+reviewing and testing are one gate. Every invocation is re-entrant, and a fix never moves the state.
+
+A bare invocation at `IN_PROGRESS` lands the branch by the project's `## default landing route`, and
+asks only when none is declared: open a PR by default, merge and push, or leave it to you. Choosing merge-and-push continues the same invocation once the branch is
+merged, syncing, archiving, pushing and removing the worktrees; open PR and manual stop and hand off
+instead.
+
+## Load the pipeline before acting
+
+This rule is always on, in every session, so it carries **only the trigger above** — not the
+pipeline itself. The pipeline is one file, loaded on demand:
+
+**States** and **State transitions** (`skills/flow-contracts/pipeline.md`) — **load that file
+first**, before any other step of `/flow`. It is canonical for the state
+definitions, the command→state transition table, the wrong-state handoff, the
+handoff output shape. The finish contract itself is split by run:
+`skills/flow-contracts/finish-contract-run1.md`, canonical for run 1 and loaded by `/flow`'s
+integrate phase alone, and `skills/flow-contracts/finish-contract-run2.md`, canonical for run 2
+and loaded by `/flow`'s cleanup phase alone.
+
+Never act on a remembered version of any of that. A command that skips the load is running on a
+stale copy of the state machine — the failure this split exists to prevent.
+
+<!-- /core -->
+
+Narrower contracts sit beside it; load the one a step actually needs, not the directory. **The table
+is the list, and this sentence deliberately carries no count of it** — a written count goes stale the
+first time a contract is added, nothing checks it against the table, and that is the same reason
+`<project>/.flow/project.md` cites its own guard list by count nowhere:
+
+| Contract | Load it before |
+|----------|----------------|
+| **State file** (`skills/flow-contracts/state-file.md`) | reading or writing a change's state file |
+| **Project configuration** (`skills/flow-contracts/project-configuration.md`) | resolving `<project>/.flow/project.md` |
+| **Jira integration** (`skills/flow-contracts/jira-integration.md`) | any Jira-related step |
+| **Follow-up issues** (`skills/flow-contracts/jira-followups.md`) | filing or joining a follow-up issue — `/flow`'s integrate run 1 |
+| **Joining a follow-up** (`skills/flow-contracts/jira-followups-join.md`) | joining a follow-up the search found — only when that search returned a candidate |
+| **Plan provenance** (`skills/flow-contracts/plan-provenance.md`) | writing or checking a plan's provenance tags |
+| **Plan provenance — the guard** (`skills/flow-contracts/plan-provenance-guard.md`) | what the plan-provenance guard enforces |
+| **The build-green tag** (`skills/flow-contracts/build-green.md`) | writing or checking a task's build tag |
+| **Workspace isolation** (`skills/flow-contracts/workspace-isolation.md`) | resolving a worktree's own database, cache index, bucket or ports |
+| **Finish contract — run 1 (the branch is not merged)** (`skills/flow-contracts/finish-contract-run1.md`) | `/flow`'s integrate phase — the preflight verdicts, run 1's procedure, base-branch resolution |
+| **Finish contract — hand fallbacks** (`skills/flow-contracts/finish-hand-fallbacks.md`) | either finish run, only when the guard presence check named one of its scripts missing |
+| **Finish contract — run 2 (the branch is merged)** (`skills/flow-contracts/finish-contract-run2.md`) | `/flow`'s cleanup phase — run 2's procedure and worktree cleanup |
+
+**A `/flow` run never loads a rationale appendix.** `pipeline-rationale.md` and
+`jira-integration-rationale.md` hold the reasoning behind the two largest contracts — why an
+ordering is what it is, what was rejected, what was measured — and exist for whoever *edits* a
+contract. They are deliberately absent from the table above, because that table is what a command
+reads. Nothing enforces this.
+
+These files are installed alongside the skills in every harness — `~/.claude/skills/` and
+`~/.zcode/skills/`, and `<project>/.agents/skills/` on a Muse project install — so the paths above
+resolve wherever this rule is read. A Muse session without a project install reads them through the
+Claude Code layer, which Muse discovers natively.

@@ -1,0 +1,21 @@
+---
+description: Agents must fix lint violations — never suppress, disable, or ignore them
+alwaysApply: true
+---
+
+# Lint Fix Priority
+
+<!-- core -->
+Fixing lint violations is **mandatory** and takes **priority** over finishing unrelated work. Do not bypass checks to ship faster.
+
+Fix, don't bypass: refactor until the linter passes. **No new inline suppressions** (`@Suppress`, `eslint-disable`, `# noqa`, `//nolint`, `#[allow(...)]` — all the same violation), and no weakening of lint or formatter config. Auto-fix first, then run the project's check command before claiming the work is done.
+
+Lint and formatter commands are project-specific. Resolve them from the project's configured lint commands (see `<project>/.flow/project.md`); if that file is absent, detect them from the repository's build or task configuration. This rule governs the policy, not the tool names. Pre-approved exceptions live in the project's `CONTRIBUTING.md`; do not expand that list without user approval.
+
+<!-- /core -->
+
+## The suppression syntaxes this covers
+
+`@Suppress`, `@SuppressWarnings`, `// detekt:ignore`, `eslint-disable`, `# noqa`, `# type: ignore`,
+`//nolint`, `#[allow(...)]` — and any other linter's disable comment. All the same violation.
+Adding one is allowed only when the user explicitly asks for that approach.

@@ -1,0 +1,6 @@
+ .../web/GroupSessionExceptionHandler.kt            |  27 +++
+ .../web/GroupSessionWorkoutController.kt           |  10 +-
+ .../presentation/web/dto/GroupSessionDtos.kt       |  46 +++++
+ .../web/GroupSessionFloorSetConflictTest.kt        | 200 +++++++++++++++++++++
+ .../web/GroupSessionWorkoutControllerTest.kt       |   4 +-
+ 5 files changed, 283 insertions(+), 4 deletions(-)

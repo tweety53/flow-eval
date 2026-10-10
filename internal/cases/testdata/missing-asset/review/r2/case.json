@@ -1,0 +1,6 @@
+{
+  "id": "r2",
+  "role": "review",
+  "source": {"repo": "gymie", "change": "kan-3-example"},
+  "notes": "fixture without diff.patch"
+}

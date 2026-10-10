@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261010T143215Z-review-claude-code-claude-haiku-5-5-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261010T143215Z-review-claude-code-claude-haiku-5-5-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>claude-haiku-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>failure-modes</dd>
+<dt>judge</dt><dd>claude-code sonnet medium</dd>
+<dt>prompt pin</dt><dd>b35b350c2573184c56c37138e627d33f8a3de927</dd>
+<dt>case set</dt><dd>0d21dc9b189bde272a3eeb276a866c8403318f30df8e3c209c3f346d1216913d</dd>
+<dt>flow-eval</dt><dd>cdd6abe71d5aa223fe9fa31a57eafdef8a241ccf</dd>
+<dt>started</dt><dd>2026-10-10T14:32:15Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">0.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-fail"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>0</td><td>no</td><td>0.0</td><td>0.0</td><td>–</td><td>$0.0174</td><td>21.2</td><td>277126</td><td>$0.4531</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999401278270892</dd></div>
+<div><dt>cache_read</dt><dd>66805</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>21500</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0067719500000000005</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>3607</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>45589</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2026</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.135439</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>19633</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>535</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>15704</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0629035</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>2</dd></div>
+<div><dt>output</dt><dd>3</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0629035</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Summary
+
+The diff adds a `sessionView` field to the preferences GET/PUT, a Workout mode row in Settings, and `SettingsState.chooseSessionView`, which reuses the unit&#39;s `OptimisticWrite` and `sendMutex` pattern. I walked the four lenses over these behaviours:
+
+- **Error return:** `chooseSessionView` wraps the send in `runCatching`, so the `error(...)` for an unconfirmed unit lands in the failure branch. `load()` keeps its stale-response guard and now also checks the view write. Both are handled.
+- **Timeout:** the PUT runs under `sendMutex.withLock`. `GymieApiClient.kt:255` installs `HttpTimeout`, so the lock is bounded by the request timeout. A slow mode PUT can delay queued unit saves for that long, but it cannot hang indefinitely.
+- **Partial write:** each save is a single PUT, and the client writes no local state of its own. The server&#39;s atomicity is outside this diff.
+- **Concurrent re-entry:** the mode write reads `unitWrite.confirmed` inside `sendMutex`, so it never carries a unit that is still queued. Two mode writes are serialised, so the last one sent wins on the server.
+
+The one real dependency this diff does not verify is that a unit-only PUT (no `sessionView` key) leaves the stored mode untouched. If the server treats a missing key as FOCUS, changing units would silently reset the athlete&#39;s mode.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+- **`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt` (`chooseUnit`, the `updatePreferences(displayUnit = unit)` call), concurrent re-entry / contract.**
+  - Failure scenario: the unit PUT omits `sessionView`. If the server&#39;s PUT handler replaces the whole preferences row, a unit change resets the stored mode to FOCUS. The client then shows QUICK until the next `load()`, and the test suite cannot catch it because `FakeWorkoutApi` models the omission itself.
+  - Fix sketch: confirm the backend treats an absent `sessionView` as &#34;unchanged&#34; (the wire-level comment assumes this), and add a contract or integration test that sets QUICK, changes the unit, and re-reads the mode.
+  - Reproducer: none — the server handler is not in this diff, so there is no runnable command here that demonstrates it.
+
+#### Minor (Nice to Have)
+- **`SettingsState.kt`, `chooseSessionView` `WriteFailureOutcome.STALE` branch, error return.**
+  - Failure scenario: a mode write is superseded by a newer one and then fails. The user sees no notification for the failed write. This is probably intended, since the newer write owns the feedback, but nothing in the code says so.
+  - Fix sketch: add a one-line comment stating that the newer write owns the feedback.
+  - Reproducer: none — it is a behaviour choice, not a runtime defect.
+- **`SettingsState.kt`, `chooseSessionView` `NOTHING_CONFIRMED` branch, error return.**
+  - Failure scenario: the failure text is hardcoded to &#34;Could not save your workout mode.&#34;, and the `error(...)` path produces the same string. Any server message is shown instead when one exists. This matches the unit path, so it is cosmetic.
+  - Fix sketch: none required; a shared message constant would reduce the duplicated literal.
+  - Reproducer: none — cosmetic.
+
+### Assessment
+**Ready for the human gate?** With fixes
+
+**Reasoning:** No critical failure modes. The mutex is bounded by the HTTP timeout, the failed-load path refuses to send a guessed unit, and the concurrent-write ordering is handled. The gating question is whether the backend preserves the stored `sessionView` on a unit-only PUT. That contract is unverified in this diff, and if it is wrong a unit change silently resets the user&#39;s mode. Confirm it, or add a contract test, before shipping.</pre></details>
+<p class="muted">transcript: 20261010T143215Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999401278270892</dd></div>
+<div><dt>cache_read</dt><dd>66805</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>22529</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.007235750000000001</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>4123</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>46618</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2089</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.144715</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>21686</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>1070</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>31844</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.134751</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>726</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>437</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.134751</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Summary
+
+The diff adds a second optimistic-write field, `sessionView`, to the Settings preferences PUT. It reuses the existing `OptimisticWrite` and `sendMutex` machinery for `chooseSessionView`, and `load()` now tracks both fields. Two failure paths matter. A cancelled write can leave the optimistic value on screen with no revert and no notification. And a missing `sessionView` key on the wire silently decodes to `FOCUS`, which then gets recorded as the confirmed server value. The request timeout in `GymieApiClient` (HttpTimeout, lines ~255-258) bounds the `sendMutex` hold, so a hung PUT cannot block the queue forever. Error return on the unit lookup (`unitWrite.confirmed ?: error(...)`) is handled correctly: nothing is sent, and the failure is surfaced with `loadFailed` set.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+
+1. **`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`, `chooseSessionView` (the `runCatching { sendMutex.withLock … }` / `.onFailureNotCancelled` chain)**
+   - **Lens:** interrupt (cancellation), a variant of partial write.
+   - **Scenario:** The athlete taps Quick, and `viewWrite.begin` sets `value = QUICK`. The screen leaves composition, or the scope is cancelled, while the PUT is in flight or queued behind `sendMutex`. `runCatching` captures the `CancellationException` as a failure. `onFailureNotCancelled` deliberately skips cancellations, so `viewWrite.onFailure(token)` never runs. `finally { viewWrite.end() }` only decrements the in-flight count. Result: the control keeps showing Quick, `confirmed` still holds the old value, no revert happens, and no notification is shown. The server may hold either value. The discrepancy persists until the next `load()`, which only runs when Settings is reopened.
+   - **Fix sketch:** On cancellation, resolve the token the same way a failure would. Either call `viewWrite.onFailure(token)` and revert in a `finally`-style branch, or make the outcome explicit. A reasonable middle ground is to revert `value` to `confirmed` when the write was not confirmed, without notifying.
+   - **Reproducer:** none — a deterministic reproducer would need a test that cancels the `chooseSessionView` job while `api.beforeUpdatePreferences` is suspended on a `CompletableDeferred`, then asserts `state.sessionView`. That test does not exist in the diff, and it is the one that would expose this.
+
+2. **`shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt`, `WorkoutPreferences.sessionView = SessionView.FOCUS`, consumed by `SettingsState.chooseSessionView` `onSuccess`**
+   - **Lens:** error return / silent wrong answer. The decoder default masks a missing field.
+   - **Scenario:** A server that does not yet echo `sessionView` (or a payload without the key, which the comment in the diff explicitly says means FOCUS) answers the PUT with no `sessionView`. The client decodes FOCUS. `viewWrite.onSuccess(token, FOCUS)` then sets `confirmed = FOCUS` and `value = FOCUS`, so the athlete&#39;s Quick choice is silently reverted with no error. The same default also flows into `load()` via `adoptLoad`.
+   - **Fix sketch:** Make the response field nullable, or treat an absent key as &#34;unknown&#34; and keep the optimistic value rather than adopting a default. Keep the FOCUS default for the request side only if it is needed there.
+   - **Reproducer:** `curl -X PUT $API/api/workouts/preferences -H &#39;content-type: application/json&#39; -d &#39;{&#34;displayUnit&#34;:&#34;KG&#34;,&#34;sessionView&#34;:&#34;QUICK&#34;}&#39;` against a server build without the field, then observe the answer. That is an external check, not something this diff can run.
+
+#### Minor (Nice to Have)
+
+3. **`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`, `load()` `onFailureNotCancelled` branch**
+   - **Lens:** error return reporting. The fallback message `&#34;Could not load your settings.&#34;` replaces the previous `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT`. This is a regression in specificity for the unit control, which now shares a generic message. It is a cosmetic failure-reporting issue.
+   - **Fix sketch:** Keep the existing constant for the unit path, or add a dedicated message for the combined load.
+   - **Reproducer:** none — a UI-level failure string check would be needed, and no such test exists.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** The core write path is bounded by the client timeout and serialised by the mutex, and the unit-missing case fails safely. Issue 1 leaves a torn UI/server state after cancellation that is only corrected on the next Settings open. Issue 2 can silently revert a user&#39;s choice against a server that omits the field. Both should be fixed or explicitly accepted before merge. Issue 1 in particular needs a cancellation test, which the current suite lacks.</pre></details>
+<p class="muted">transcript: 20261010T143215Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999531835205993</dd></div>
+<div><dt>cache_read</dt><dd>85436</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>2195</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0033507600000000004</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>4114</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>44915</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2184</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0670152</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>22279</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>2140</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>62121</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.255424</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>8</dd></div>
+<div><dt>output</dt><dd>671</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>656</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.255424</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Summary
+
+The diff adds a second optimistic-write field, `sessionView`, to the Settings preferences payload. It covers the PUT in `WorkoutApiImpl.updatePreferences`, the `load()` reconciliation in `SettingsState`, the new `chooseSessionView` write, and a Settings row. The HTTP client has bounded timeouts (`HttpTimeout` in `GymieApiClient.kt:255`), so a hung PUT cannot wait forever. The main failure-mode gap is in `chooseSessionView`: it re-sends the last *confirmed* unit, which can be stale after a unit write whose response was lost.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+
+**1. `SettingsState.kt` `chooseSessionView` (around lines 327–332): stale unit overwrites the server&#39;s stored unit after a lost response.**
+- Lens: timeout / error return, combined with the non-atomic relationship between the two writes.
+- Scenario: `chooseUnit(LBS)` sends a PUT. The server commits `LBS`, but the response is lost and the client times out. `unitWrite` reverts to `confirmed = KG` and the user sees a failure. The user then taps Quick. `chooseSessionView` reads `unitWrite.confirmed` (`KG`) and sends `PUT {displayUnit: KG, sessionView: QUICK}`. The server now holds `KG`, silently reversing the unit the user had just chosen. The user is told nothing about this second change, and the unit they can see on screen is the one they saw before the mode tap. Stored preferences are changed without the user&#39;s intent.
+- Fix sketch: either (a) have the mode write refuse to send a unit when the last unit write failed without a confirmed server answer (mark the unit as &#34;unknown&#34; after a timeout rather than reverting to the old confirmed value), or (b) re-`load()` before sending the mode write when `unitWrite` has an unresolved failure. Option (a) is the smaller change: track &#34;server state uncertain&#34; on `onFailure` for timeouts (`SocketTimeoutException` / `HttpRequestTimeoutException`) and make `chooseSessionView` fail through the `error(...)` path in that case.
+- Reproducer: none — this needs a new unit test in `SettingsStateTest.kt` where the fake&#39;s `updatePreferences` records a server-side write and then throws a timeout, followed by `chooseSessionView` and an assertion on the fake&#39;s stored unit. The test does not exist in the diff, so there is no current command that demonstrates it.
+
+#### Minor (Nice to Have)
+
+**2. `SettingsState.kt` `sendMutex` (around lines 247 and 327): one hung PUT blocks every queued write.**
+- Lens: timeout.
+- Scenario: a PUT takes the full `REQUEST_TIMEOUT_MILLIS` before failing. Every `chooseUnit` and `chooseSessionView` queued behind it waits that long, and the unit control shows a spinner through `isSaving`. The wait is bounded, so this is not a hang, but it is a latency cliff from the serialization.
+- Fix sketch: none required; document the bound or surface a per-write indicator. Accept as-is if the timeout is short.
+- Reproducer: none — it depends on the real HTTP timeout value, which the fake does not model.
+
+**3. `SettingsState.kt` `load()` failure message (around line 276): a user-facing string constant was replaced with a literal.**
+- Lens: error return (reporting).
+- The message changed from `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` to `&#34;Could not load your settings.&#34;`. This is a copy change that also affects the unit control&#39;s failure text. It is not a failure-path defect, but it is a silent UX change in a failure path.
+- Reproducer: none — it is a string literal change, visible only in the UI.
+
+**4. `SettingsState.kt` `chooseSessionView` cancellation path (around lines 333–343): cancellation is not explicitly covered by the `viewWrite` token.**
+- Lens: concurrent re-entry / interruption. `onFailureNotCancelled` skips cancellation, and `finally { viewWrite.end() }` is the only cleanup. I did not read `OptimisticWrite` to confirm that `end()` clears a pending token on cancellation. If it does not, a cancelled mode write could leave `isSaving` stuck true.
+- Fix sketch: confirm in `OptimisticWrite` that `end()` resets the in-flight token; add a test that cancels `chooseSessionView` mid-PUT and asserts `isSaving == false`.
+- Reproducer: none — requires reading `OptimisticWrite`&#39;s `end()`, which is outside this diff; the test sketched above would check it.
+
+### Assessment
+
+**Ready for the human gate?** With fixes
+
+**Reasoning:** The HTTP boundary is bounded, the wire format keeps unit-only writes from clobbering the mode, and the load reconciliation guards against stale answers. The one real failure-mode gap is Important #1: after a lost unit response, a later mode tap silently writes back the pre-failure unit. It needs a guard and a test before merge.</pre></details>
+<p class="muted">transcript: 20261010T143215Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Hosts a trial container may reach through cmd/egress-proxy (design.md §2). One host per line: an
+# exact host, or "*.suffix" for any subdomain of suffix. Never a wildcard beyond a provider's own
+# domain.
+
+# Provider APIs and auth
+api.anthropic.com
+*.anthropic.com
+api.openai.com
+*.openai.com
+chatgpt.com
+# Muse Code: the Meta model API (the CLI's api_base_url) and its OAuth token refresh
+api.meta.ai
+auth.meta.com
+
+# Maven Central
+repo.maven.apache.org
+repo1.maven.org
+
+# Gradle plugin portal and distributions
+plugins.gradle.org
+plugins-artifacts.gradle.org
+services.gradle.org
+downloads.gradle.org
+
+# npm registry
+registry.npmjs.org
+
+# Docker Hub, for dind pulls only
+registry-1.docker.io
+auth.docker.io
+production.cloudflare.docker.com
+production.cloudfront.docker.com

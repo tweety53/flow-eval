@@ -1,0 +1,10 @@
+{
+  "id": "kan-870-qm-q6",
+  "role": "visual",
+  "source": {
+    "repo": "gymie",
+    "change": "kan-870-prod-test-fixes-quick-mode-polish-and-smoothness"
+  },
+  "notes": "mockup docs/design/mockups/QM-Q6.png, capture qm-q6-asks-darwin.png; labels from spectre/changes/archive/kan-870-prod-test-fixes-quick-mode-polish-and-smoothness/visual-verification.md:107",
+  "needsDocker": false
+}
