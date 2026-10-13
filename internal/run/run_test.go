@@ -1426,3 +1426,73 @@ func TestPrinciplesGetsTheSnapshotStandards(t *testing.T) {
 		}
 	})
 }
+
+func TestServedModelIsDerivedFromTrials(t *testing.T) {
+	served := func(models ...string) []Line {
+		var ls []Line
+		for _, m := range models {
+			ls = append(ls, Line{Trial: metrics.Trial{ServedModel: m}})
+		}
+		return ls
+	}
+	infra := served("c")
+	infra[0].InfraError = true
+	tests := []struct {
+		name  string
+		lines []Line
+		want  string
+	}{
+		{name: "no line names a model", lines: served("", ""), want: ""},
+		{name: "one model on every line", lines: served("claude-sonnet-5-5", "claude-sonnet-5-5"), want: "claude-sonnet-5-5"},
+		{name: "several per line, an infra-error line included", lines: append(served("a,b", "b"), infra...), want: "a, b, c"},
+		{name: "an empty line beside a named one", lines: served("", "x"), want: "x"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Served(tt.lines); got != tt.want {
+				t.Errorf("Served = %q, want %q", got, tt.want)
+			}
+		})
+	}
+
+	t.Run("report, page and index name it, – when none", func(t *testing.T) {
+		dir := t.TempDir()
+		writeFiles(t, dir, map[string]string{
+			"named.jsonl": `{"role":"visual","k":1,"started":"2026-10-10T09:00:00Z"}` + "\n" +
+				`{"case":"a","trial":1,"score":100,"passed":true,"served_model":"claude-sonnet-5-5"}` + "\n",
+			"named.html": "page",
+			"none.jsonl": `{"role":"visual","k":1,"started":"2026-10-10T08:00:00Z"}` + "\n" +
+				`{"case":"a","trial":1,"score":100,"passed":true}` + "\n",
+			"none.html": "page",
+		})
+		if err := errors.Join(Repaint(dir, t.TempDir())); err != nil {
+			t.Fatal(err)
+		}
+		for id, want := range map[string]string{"named": "claude-sonnet-5-5", "none": "–"} {
+			h, lines, err := Load(dir, id)
+			if err != nil {
+				t.Fatal(err)
+			}
+			s := summarize(h, []cases.Case{{ID: "a"}}, lines)
+			if md := report(id, h, s); !strings.Contains(md, ", served "+want+"\n") {
+				t.Errorf("%s report lacks served %s:\n%s", id, want, md)
+			}
+			html, err := os.ReadFile(filepath.Join(dir, id+".html"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if w := "<dt>served</dt><dd>" + want + "</dd>"; !strings.Contains(string(html), w) {
+				t.Errorf("%s page lacks %q", id, w)
+			}
+		}
+		index, err := os.ReadFile(filepath.Join(dir, "index.html"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, want := range []string{"<th>model</th><th>served</th>", "<td></td><td>claude-sonnet-5-5</td>", "<td></td><td>–</td>"} {
+			if !strings.Contains(string(index), want) {
+				t.Errorf("index lacks %q", want)
+			}
+		}
+	})
+}

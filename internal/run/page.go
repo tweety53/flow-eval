@@ -210,6 +210,7 @@ var _page = template.Must(template.New("page").Funcs(template.FuncMap{
 <dt>role</dt><dd>{{.H.Role}}</dd>
 <dt>harness</dt><dd>{{.H.Harness}}</dd>
 <dt>model</dt><dd>{{.H.Model}}</dd>
+<dt>served</dt><dd>{{or .S.Served "–"}}</dd>
 <dt>effort</dt><dd>{{.H.Effort}}</dd>
 <dt>k</dt><dd>{{.H.K}}</dd>
 {{- if .H.Slot}}

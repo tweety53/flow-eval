@@ -74,8 +74,8 @@ flow-eval compare <candidate-run-id> --baseline <run-id> --margin 5
 ```
 
 The pass rule is design.md §7. Writes `runs/<cand>-vs-<base>.md`. Runs with different flow-eval
-shas, judges or prompt pins are still compared, with a `DIFFER` warning: check `git log <base
-sha>..<cand sha> -- internal/grade` before trusting a verdict across shas.
+shas, judges, prompt pins or served models are still compared, with a `DIFFER` warning: check
+`git log <base sha>..<cand sha> -- internal/grade` before trusting a verdict across shas.
 
 ### `baseline set`
 
@@ -115,6 +115,8 @@ records it in `prompts/PIN`. Then rebuild the runner image, re-run each role and
   uncoloured — no valid trial; blue — beats the role's baseline in a run `compare` would accept.
 - **`runs/<id>.html`** — one self-contained page per run: header, role score, the case table,
   infra errors, and every trial with its metrics, error, `output.md`, `verify.log` and `work.patch`.
+- **`served`** — the model id(s) the run's trials were served, read from their `served_model`, so it
+  names what an alias such as `sonnet` resolved to; `–` when the harness names none (codex).
 - **Case table:** `valid/k` (infra errors are excluded and listed apart), `passes` and `pass^k`,
   `score` and `stddev`, and the candidate's cost, wall-clock and tokens. `judge cost` is never
   charged to the candidate. A review trial passes when its recall is 1.

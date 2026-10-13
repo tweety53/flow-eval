@@ -1,6 +1,7 @@
 package compare
 
 import (
+	"cmp"
 	"fmt"
 	"maps"
 	"slices"
@@ -263,6 +264,41 @@ func TestCompareWarnsOnMixedPromptPins(t *testing.T) {
 			if inReport := strings.Contains(d.Report, "- warning: prompt pin"); inReport != (tc.want != "") ||
 				tc.want != "" && !strings.Contains(d.Report, "- "+tc.want+"\n") {
 				t.Errorf("report:\n%s\nwant the warning %q exactly when the pins differ", d.Report, tc.want)
+			}
+		})
+	}
+}
+
+func TestCompareWarnsOnDifferentServedModels(t *testing.T) {
+	const warning = "warning: served model m2 vs m1 — DIFFER: the runs were served different models"
+	for _, tc := range []struct {
+		name, candServed string
+		candScores       []float64
+		exit             int
+		want             string
+	}{
+		{"same served model", "m1", []float64{100, 100, 100}, ExitNonInferior, ""},
+		{"different served models", "m2", []float64{100, 100, 100}, ExitNonInferior, warning},
+		{"different served models, a regression", "m2", []float64{0, 0, 0}, ExitRegression, warning},
+		{"candidate names none", "", []float64{100, 100, 100}, ExitNonInferior, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			base := fixture("base", "review", 3, map[string][]float64{"a": {100, 100, 100}})
+			cand := fixture("cand", "review", 3, map[string][]float64{"a": tc.candScores})
+			for i := range base.Lines {
+				base.Lines[i].ServedModel, cand.Lines[i].ServedModel = "m1", tc.candServed
+			}
+			d := decide(t, cand, base)
+			if d.Exit != tc.exit || d.Served != tc.want {
+				t.Errorf("exit %d (%s), Served %q; want exit %d and %q", d.Exit, d.Verdict, d.Served, tc.exit, tc.want)
+			}
+			if inReport := strings.Contains(d.Report, "- warning: served model"); inReport != (tc.want != "") ||
+				tc.want != "" && !strings.Contains(d.Report, "- "+tc.want+"\n") {
+				t.Errorf("report:\n%s\nwant the warning %q exactly when the served models differ", d.Report, tc.want)
+			}
+			line := fmt.Sprintf("served %s; baseline `` `` `` served m1\n", cmp.Or(tc.candServed, "–"))
+			if !strings.Contains(d.Report, line) {
+				t.Errorf("report lacks %q:\n%s", line, d.Report)
 			}
 		})
 	}
