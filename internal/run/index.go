@@ -41,14 +41,18 @@ type indexRun struct {
 	lines  []Line
 }
 
-// indexRole is one role's runs, newest first.
+// indexRole is one index section's runs, newest first: a role's, or one slot's of a role whose runs
+// carry a slot (review-primary), keyed like its baseline.
 type indexRole struct {
-	Role string
+	Key  string
 	Runs []indexRun
 }
 
-// _indexRoles is the order the index lists roles in.
-var _indexRoles = []string{"impl", "review", "visual"}
+// _indexRoles is the order the index lists roles in, and _indexSlots the order of a role's slots.
+var (
+	_indexRoles = []string{"impl", "review", "visual"}
+	_indexSlots = []string{"", "primary", "principles", "failure-modes"}
+)
 
 // Baseline is baselines/<key>.json: the run a role's candidates are compared against. The key is the
 // role, or role-slot for a run of a slot (review-primary), so each review slot has its own baseline.
@@ -220,18 +224,27 @@ func Repaint(runsDir, baselinesDir string) (pages, err error) {
 		}
 	}
 	var roles []indexRole
-	// The known roles first, in their order, then any other role a run file names, by name.
+	// The known roles first, in their order, then any other role a run file names, by name; each
+	// split by slot.
 	others := slices.Sorted(maps.Keys(byRole))
 	others = slices.DeleteFunc(others, func(r string) bool { return slices.Contains(_indexRoles, r) })
 	for _, role := range slices.Concat(_indexRoles, others) {
-		runs := byRole[role]
-		if len(runs) == 0 {
-			continue
+		bySlot := map[string][]indexRun{}
+		for _, r := range byRole[role] {
+			bySlot[r.H.Slot] = append(bySlot[r.H.Slot], r)
 		}
-		slices.SortFunc(runs, func(a, b indexRun) int {
-			return cmp.Or(b.H.Started.Compare(a.H.Started), strings.Compare(b.ID, a.ID))
-		})
-		roles = append(roles, indexRole{role, runs})
+		// The known slots first, in their order, then any other slot, by name.
+		slots := slices.DeleteFunc(slices.Sorted(maps.Keys(bySlot)), func(s string) bool { return slices.Contains(_indexSlots, s) })
+		for _, slot := range slices.Concat(_indexSlots, slots) {
+			runs := bySlot[slot]
+			if len(runs) == 0 {
+				continue
+			}
+			slices.SortFunc(runs, func(a, b indexRun) int {
+				return cmp.Or(b.H.Started.Compare(a.H.Started), strings.Compare(b.ID, a.ID))
+			})
+			roles = append(roles, indexRole{BaselineKey(role, slot), runs})
+		}
 	}
 	var b bytes.Buffer
 	if err := _index.Execute(&b, struct {
@@ -339,7 +352,7 @@ var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDeci
 <body>
 <h1>flow-eval runs</h1>
 {{- if .Roles}}
-<nav><p><a href="#baselines">baselines</a> · {{range $i, $r := .Roles}}{{if $i}} · {{end}}<a href="#{{$r.Role}}">{{$r.Role}}</a> ({{len $r.Runs}}){{end}}</p></nav>
+<nav><p><a href="#baselines">baselines</a> · {{range $i, $r := .Roles}}{{if $i}} · {{end}}<a href="#{{$r.Key}}">{{$r.Key}}</a> ({{len $r.Runs}}){{end}}</p></nav>
 ` + _legend + `
 {{- else}}
 <p class="muted">No run recorded yet.</p>
@@ -356,7 +369,7 @@ var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDeci
 {{- end}}
 {{- range .Roles}}
 
-<h2 id="{{.Role}}">{{.Role}}</h2>
+<h2 id="{{.Key}}">{{.Key}}</h2>
 <div class="table"><table>
 <tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>vs baseline</th><th>flow-eval</th></tr>
 {{- range .Runs}}

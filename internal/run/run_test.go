@@ -1256,6 +1256,10 @@ func TestEachReviewSlotHasItsOwnBaseline(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Each slot is its own section, primary before principles.
+	if p, q := strings.Index(string(index), `<h2 id="review-primary">`), strings.Index(string(index), `<h2 id="review-principles">`); p < 0 || q < p {
+		t.Errorf("index.html sections: review-primary at %d, review-principles at %d; want both, primary first", p, q)
+	}
 	for _, want := range []string{
 		`<h2 id="baselines">baselines</h2>`,
 		`<tr><td>review-primary</td><td>p-base`, `<tr><td>review-principles</td><td>q-base`,
@@ -1327,7 +1331,7 @@ func TestIndexShowsTrialWallRange(t *testing.T) {
 	if err := _index.Execute(&b, struct {
 		Roles      []indexRole
 		Unreadable []error
-	}{Roles: []indexRole{{Role: "impl", Runs: []indexRun{r}}}}); err != nil {
+	}{Roles: []indexRole{{Key: "impl", Runs: []indexRun{r}}}}); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(b.String(), "<th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th>"+
