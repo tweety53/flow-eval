@@ -1,5 +1,5 @@
 {
   "harness": "claude-code",
   "model": "sonnet",
-  "effort": "medium"
+  "effort": "low"
 }

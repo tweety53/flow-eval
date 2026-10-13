@@ -209,7 +209,7 @@ func TestJudgeCostSeparate(t *testing.T) {
 			t.Fatal(err)
 		}
 		t.Setenv("PATH", bin+string(os.PathListSeparator)+os.Getenv("PATH"))
-		j, err := LoadJudge("../../judge.json") // the repository's pin: claude-code, sonnet, medium
+		j, err := LoadJudge("../../judge.json") // the repository's pin: claude-code, sonnet, low
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -224,7 +224,7 @@ func TestJudgeCostSeparate(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !strings.HasSuffix(string(args), "--tools\n\n") || !strings.Contains(string(args), "--model\nsonnet\n--effort\nmedium\n") {
+		if !strings.HasSuffix(string(args), "--tools\n\n") || !strings.Contains(string(args), "--model\nsonnet\n--effort\nlow\n") {
 			t.Errorf("claude argv lacks the pinned model/effort or a trailing --tools \"\":\n%s", args)
 		}
 		home, _ := os.ReadFile(envFile)
