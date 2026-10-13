@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"cmp"
 	"context"
+	"crypto/rand"
 	json "encoding/json/v2"
 	"errors"
 	"fmt"
@@ -215,12 +216,16 @@ func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 		wg       sync.WaitGroup
 	)
 	sem := make(chan struct{}, cfg.Parallel) // one slot per concurrent trial
+	// tag keeps this run's sandboxes apart from a run with the same id in another runs directory,
+	// which O_EXCL above cannot see.
+	var tag [2]byte
+	rand.Read(tag[:]) // crypto/rand.Read never returns an error
 	n := 0
 jobs:
 	for _, p := range preps {
 		for trial := 1; trial <= cfg.K; trial++ {
 			n++
-			sandboxID := fmt.Sprintf("%s-%d", strings.ToLower(id), n)
+			sandboxID := fmt.Sprintf("%s-%x-%d", strings.ToLower(id), tag, n)
 			art := filepath.Join(cfg.RunsDir, id, p.c.ID, fmt.Sprint(trial))
 			select {
 			case sem <- struct{}{}:

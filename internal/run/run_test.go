@@ -730,6 +730,27 @@ func TestRunIDsNeverShareSandboxesOrRecords(t *testing.T) {
 	}
 }
 
+// Two runs with the same id in different runs directories, which O_EXCL cannot tell apart, still
+// never share a sandbox name.
+func TestSameRunIDInAnotherRunsDirGetsItsOwnSandboxes(t *testing.T) {
+	stamp := time.Date(2026, 10, 9, 12, 0, 0, 0, time.UTC)
+	now = func() time.Time { return stamp }
+	t.Cleanup(func() { now = time.Now })
+	d := &hostDocker{root: t.TempDir()}
+	cfg := visualConfig(t, 1)
+	other := cfg
+	other.RunsDir = t.TempDir()
+	for _, c := range []Config{cfg, other} {
+		if _, err := Run(t.Context(), c, d); err != nil {
+			t.Fatal(err)
+		}
+	}
+	starts := slices.DeleteFunc(slices.Clone(d.log), func(s string) bool { return !strings.HasPrefix(s, "start ") })
+	if len(starts) != 2 || starts[0] == starts[1] {
+		t.Errorf("sandbox starts %v, want two distinct names", starts)
+	}
+}
+
 // A failure of the harness's own after the agent's output — pricing the trial's model, counting its
 // egress denials, writing an artifact — is an infra error, not a fail charged to the candidate.
 func TestHarnessSideFailureAfterOutputIsInfra(t *testing.T) {
