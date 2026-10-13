@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261013T120012Z-review-claude-code-sonnet-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261013T120012Z-review-claude-code-sonnet-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>sonnet</dd>
+<dt>served</dt><dd>claude-sonnet-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>failure-modes</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>2e053aaa95ce00195dac3b208e1769dcc45862da</dd>
+<dt>case set</dt><dd>0d21dc9b189bde272a3eeb276a866c8403318f30df8e3c209c3f346d1216913d</dd>
+<dt>flow-eval</dt><dd>3ec26bad71d9d5092cdd2feca4655c9b9c126143</dd>
+<dt>started</dt><dd>2026-10-13T12:00:12Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">0.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-fail"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>0</td><td>no</td><td>0.0</td><td>0.0</td><td>–</td><td>$0.3023</td><td>19.2</td><td>133112</td><td>$0.1269</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9998394219189081</dd></div>
+<div><dt>cache_read</dt><dd>12453</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>18640</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0956893</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>2</dd></div>
+<div><dt>output</dt><dd>1988</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>31095</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>842</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.09693460000000001</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>wall_ms</dt><dd>18236</dd></div>
+</dl>
+<details><summary>output.md</summary><pre>### Summary
+This diff adds three behaviours:
+- **Preferences PUT:** `updatePreferences` now carries an optional `sessionView`.
+- **`load()`:** it now adopts two fields, each guarded by its own stale-write counter.
+- **`chooseSessionView`:** a new optimistic write. It is serialised on `sendMutex` and reads `unitWrite.confirmed` inside the lock, so it sends the unit that was last confirmed.
+
+I walked each through all four lenses.
+
+- **Error return:**
+  - A failed `getPreferences` is handled as before: `loadFailed` is set and the user is notified.
+  - A failed PUT is routed through `viewWrite.onFailure` and reverts to the confirmed mode, or sets `loadFailed` if nothing is confirmed.
+  - With no confirmed unit, `error(...)` raises a failure before any PUT is sent, so a stored LBS is never overwritten with the default KG. The failure message is user-facing.
+  - Cancellation is excluded by `onFailureNotCancelled`.
+- **Timeout:** the PUT runs while holding `sendMutex`, so a hung request blocks every later unit and mode write. This is the existing pattern from `chooseUnit`, and the diff adds no new unbounded call. I did not check the Ktor client&#39;s timeout configuration.
+- **Partial write:**
+  - Each PUT is a single request, with no multi-step state on the server side.
+  - Locally, the unit and mode fields move through separate `OptimisticWrite`s. `load` adopts each field only if no write to that field succeeded since the load began, so a stale load cannot clobber a newer write.
+  - A load started before a unit write can still adopt its view. That is correct, because a unit write never changes the view.
+- **Concurrent re-entry:**
+  - Rapid taps are serialised by the mutex, and the PUT is idempotent.
+  - The `unitWrite.confirmed` read happens inside the lock. This avoids sending a unit that is still queued, and the added test covers that case.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+None.
+
+#### Minor (Nice to Have)
+- **`SettingsState.kt`, `chooseSessionView`, error return.** The write adopts `it.sessionView` from the answer, and the answer defaults to `FOCUS` when the key is missing (`WorkoutModels.kt`: `sessionView = SessionView.FOCUS`). If the server is an older build that ignores or omits `sessionView`, a PUT of `QUICK` succeeds and returns no key. The client then adopts `FOCUS`, so the user&#39;s tap silently snaps back with no notification.
+  - Fix sketch: make the response field nullable and treat a missing value as a failed write.
+  - Reproducer: none — it needs a server build that omits `sessionView`. You can approximate it by making `FakeWorkoutApi.updatePreferencesResult` return `WorkoutPreferences(KG)` after `chooseSessionView(QUICK)` and asserting that a notification is raised. The current code raises none.
+
+### Assessment
+**Ready for the human gate?** Yes
+**Reasoning:** The new write path handles failure, stale loads and queued writes correctly, and the added tests cover the failed-load and queued-unit races. The only gap is the minor version-skew case above, and the lock-held PUT has no new timeout exposure.</pre></details>
+<p class="muted">transcript: 20261013T120012Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999081515499426</dd></div>
+<div><dt>cache_read</dt><dd>43546</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>21241</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1096566</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>2033</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>33696</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>648</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.11401120000000001</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Read&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>19562</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>535</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>15878</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0636095</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>2</dd></div>
+<div><dt>output</dt><dd>4</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0636095</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Summary
+This diff adds a `sessionView` preference. It covers the API, the model, `SettingsState.chooseSessionView` with `load` changes, and the Settings row. I checked it against `OptimisticWrite` and `SettingsState.kt`, but did not open `requests.apiCall` or the client&#39;s timeout configuration.
+
+- **Error return:** `chooseSessionView` handles errors. The `error(...)` raised when no unit is confirmed is caught by `runCatching` and routed to the failure outcome. `load` keeps its stale-response guards for both fields.
+- **Partial write:** the PUT is a single request, so there is no torn state. The one exception is the ambiguous-failure case below.
+- **Concurrent re-entry:** `sendMutex` serialises the two write types. Reading `unitWrite.confirmed` inside the lock is correct against writes from this client.
+- **Timeout:** no new boundary call is added. It reuses `updatePreferences`, and I did not inspect the client&#39;s timeout configuration.
+
+The remaining gaps come from the backend requiring `displayUnit` on every PUT. That makes a mode-only change write the unit as well.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+
+1. **`SettingsState.kt`, `chooseSessionView`:** concurrent re-entry, with an ambiguous-failure variant.
+   - **Scenario 1, two devices:** device A loads with KG confirmed. Device B changes the unit to LBS. The user then taps Quick on A. A&#39;s PUT sends `displayUnit=KG`, which silently reverts B&#39;s LBS. The new &#34;mode-only&#34; action therefore mutates the unit using a stale cached value. The returned unit is also deliberately not adopted, so A keeps showing KG, but the server now holds KG.
+   - **Scenario 2, ambiguous unit write:** a `chooseUnit(LBS)` PUT times out or drops after the server applied it. The client treats it as failed and reverts `confirmed` to KG. A following mode write then sends KG and overwrites the stored LBS.
+   - **Fix sketch:** have the server accept a PUT with only `sessionView` (make `displayUnit` optional). Failing that, re-fetch `getPreferences()` inside `sendMutex` just before the mode write and use that unit.
+   - **Reproducer:** none — needs the real backend. In the fake, you can show Scenario 2 by queuing `updatePreferencesResult = failure` for `chooseUnit(LBS)` and then calling `chooseSessionView`. `api.updatePreferencesRequests` will end with `[LBS, KG]`, so the mode write sent the stale KG.
+
+#### Minor (Nice to Have)
+
+2. **`SettingsState.kt`, `chooseSessionView`:** error return. When the load has failed (`confirmed == null`), the write is refused with `NOTHING_CONFIRMED`. `viewWrite.value` stays at the optimistic Quick, so the control shows a mode that was never saved. The `hasLoaded` gate probably hides this today. If a failed load can still render the row, the control will show a lie.
+   - **Fix sketch:** revert the value to Focus, or leave the control disabled while `loadFailed` is set.
+   - **Reproducer:** none — the `hasLoaded` gate would have to be bypassed. The test `a workout mode write after a failed load…` does not assert `state.sessionView`.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** The write ordering and stale-load handling hold up. The one real gap is that the mode write sends the unit it last saw, so it can overwrite a unit changed by another device or by an unconfirmed write. That needs either a server-side partial update or a fresh read before the PUT.</pre></details>
+<p class="muted">transcript: 20261013T120012Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9998394219189081</dd></div>
+<div><dt>cache_read</dt><dd>12453</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>18640</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0969093</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>2</dd></div>
+<div><dt>output</dt><dd>2110</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>31095</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>749</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.09815460000000001</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>wall_ms</dt><dd>19694</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>535</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>15787</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0632455</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>2</dd></div>
+<div><dt>output</dt><dd>4</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0632455</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Summary
+This diff adds a `sessionView` field to the preferences API and a `chooseSessionView` write path in `SettingsState`. It also changes how `load` handles stale results, and adds a Settings row. I read the diff only and did not open `OptimisticWrite`, `Sequencer` or `onFailureNotCancelled`. I judged them by their names and call sites, so the cancellation and token handling below rests on that.
+
+The four lenses apply as follows:
+- **Error return.**
+  - Both a failed `load` and a failed `PUT` are surfaced and revert correctly.
+  - `error(...)` inside `runCatching` is caught and turned into a notification.
+  - With no confirmed unit, no request is sent.
+- **Timeout.** `sendMutex.withLock` has no bound of its own, so a mode write waits behind any hung unit write. The unit path already behaved this way, and the diff adds no new external call. Nothing new to report.
+- **Partial write.** There is one PUT per action. The &#34;carry the confirmed unit&#34; design avoids a torn write that would clobber the stored unit with a default. Failed writes revert to the last confirmed value.
+- **Concurrent re-entry.** Writes within one process are serialised by `sendMutex`, and the test covers the queued-unit case. The gap is across devices (see Important).
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+- **`SettingsState.kt`, `chooseSessionView` (`unitWrite.confirmed` sent in the PUT)** — *concurrent re-entry (cross-process).*
+  - **Scenario:** Device A loads with unit KG. On device B the user changes the unit to LBS. Back on device A, the user taps Quick. Device A sends `displayUnit=KG, sessionView=QUICK`, which silently reverts the unit to KG on the server. Device A then drops the returned unit, so nothing on that device shows the change.
+  - **Why it&#39;s new:** Before this diff, a PUT only ever carried a value the user had just chosen. Now a PUT can carry a stale value the user never touched.
+  - **Fix sketch:** Have the backend accept `displayUnit` as optional, with null meaning unchanged, which matches how `sessionView` already works. Otherwise, call `getPreferences()` inside the mutex just before the PUT and use that unit.
+  - **Reproducer:** none — needs two clients against a real server. A fake-API test could simulate it by changing `preferencesResult` after `load()` and then calling `chooseSessionView`; the PUT would still carry the old unit.
+
+#### Minor (Nice to Have)
+- **`SettingsState.kt`, `load` success branch** — *error return / state.**
+  - **Scenario:** If a unit write succeeded during a load but no view write did, `loadFailed` is not cleared (`noWriteSucceeded` is false), even though the view value was adopted. A previously failed load can then stay flagged as failed while the view has been refreshed.
+  - **Fix sketch:** Clear `loadFailed` when either field was adopted.
+  - **Reproducer:** none — benign and unlikely, since the successful write path already clears `loadFailed` itself.
+- **`SettingsState.kt`, `chooseSessionView`&#39;s `onSuccess`** — *error return.*
+  - **Scenario:** If `viewWrite.onSuccess` reports the answer as stale, nothing is logged. This is the same as the unit path and is not an issue on its own.
+  - **Fix sketch:** None needed.
+  - **Reproducer:** none — nothing to demonstrate.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** The in-process failure handling is sound, and the new tests cover refusal, a failed load, and queue ordering. The one real gap is the cross-device lost update. A mode write now writes back a possibly stale unit that the user never chose. That is recoverable and not data loss, so it needs a decision from the human reviewer: make the backend field optional, or re-read the unit before the PUT.</pre></details>
+<p class="muted">transcript: 20261013T120012Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flow-eval runs</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<h1>flow-eval runs</h1>
+<nav><p><a href="#impl">impl</a> (3) · <a href="#review">review</a> (9) · <a href="#visual">visual</a> (3)</p></nav>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+
+<h2 id="impl">impl</h2>
+<div class="table"><table>
+<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th></tr>
+<tr class="row-ok"><td><a href="./20261013T120126Z-impl-claude-code-opus-low.html">20261013T120126Z-impl-claude-code-opus-low</a></td><td>2026-10-13 12:01</td><td>claude-code</td><td>opus</td><td>claude-opus-5-5</td><td>low</td><td></td><td>–</td><td>3</td><td>1</td><td>100.0</td><td>3/3</td><td>3</td><td>0</td><td>$2.7357</td><td>$0.0000</td><td>543.7</td><td>544.5</td><td>545.1</td><td>3ec26ba</td></tr>
+<tr class="row-ok"><td><a href="./20261013T114334Z-impl-claude-code-sonnet-low.html">20261013T114334Z-impl-claude-code-sonnet-low</a></td><td>2026-10-13 11:43</td><td>claude-code</td><td>sonnet</td><td>claude-sonnet-5-5</td><td>low</td><td></td><td>–</td><td>3</td><td>1</td><td>100.0</td><td>3/3</td><td>3</td><td>0</td><td>$1.2175</td><td>$0.0000</td><td>274.2</td><td>644.0</td><td>833.1</td><td>3ec26ba</td></tr>
+<tr class="row-ok"><td><a href="./20261013T112730Z-impl-claude-code-claude-haiku-5-5-low.html">20261013T112730Z-impl-claude-code-claude-haiku-5-5-low</a></td><td>2026-10-13 11:27</td><td>claude-code</td><td>claude-haiku-5-5</td><td>claude-haiku-5-5</td><td>low</td><td></td><td>–</td><td>3</td><td>1</td><td>100.0</td><td>3/3</td><td>3</td><td>0</td><td>$0.1485</td><td>$0.0000</td><td>437.2</td><td>539.8</td><td>614.1</td><td>3ec26ba</td></tr>
+</table></div>
+
+<h2 id="review">review</h2>
+<div class="table"><table>
+<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th></tr>
+<tr class="row-fail"><td><a href="./20261013T121524Z-review-claude-code-opus-low.html">20261013T121524Z-review-claude-code-opus-low</a></td><td>2026-10-13 12:15</td><td>claude-code</td><td>opus</td><td>claude-opus-5-5</td><td>low</td><td>failure-modes</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.7642</td><td>$1.3466</td><td>29.9</td><td>33.1</td><td>36.1</td><td>3ec26ba</td></tr>
+<tr class="row-fail"><td><a href="./20261013T121433Z-review-claude-code-opus-low.html">20261013T121433Z-review-claude-code-opus-low</a></td><td>2026-10-13 12:14</td><td>claude-code</td><td>opus</td><td>claude-opus-5-5</td><td>low</td><td>principles</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.7374</td><td>$0.4075</td><td>18.7</td><td>24.5</td><td>28.3</td><td>3ec26ba</td></tr>
+<tr class="row-ok"><td><a href="./20261013T121250Z-review-claude-code-opus-low.html">20261013T121250Z-review-claude-code-opus-low</a></td><td>2026-10-13 12:12</td><td>claude-code</td><td>opus</td><td>claude-opus-5-5</td><td>low</td><td>primary</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>61.1</td><td>3/3</td><td>3</td><td>0</td><td>$0.8702</td><td>$1.4543</td><td>34.0</td><td>37.0</td><td>40.5</td><td>3ec26ba</td></tr>
+<tr class="row-fail"><td><a href="./20261013T120012Z-review-claude-code-sonnet-low.html">20261013T120012Z-review-claude-code-sonnet-low</a></td><td>2026-10-13 12:00</td><td>claude-code</td><td>sonnet</td><td>claude-sonnet-5-5</td><td>low</td><td>failure-modes</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.3023</td><td>$0.1269</td><td>18.2</td><td>19.2</td><td>19.7</td><td>3ec26ba</td></tr>
+<tr class="row-fail"><td><a href="./20261013T115946Z-review-claude-code-sonnet-low.html">20261013T115946Z-review-claude-code-sonnet-low</a></td><td>2026-10-13 11:59</td><td>claude-code</td><td>sonnet</td><td>claude-sonnet-5-5</td><td>low</td><td>principles</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.3302</td><td>$0.1267</td><td>16.1</td><td>17.0</td><td>18.7</td><td>3ec26ba</td></tr>
+<tr class="row-fail"><td><a href="./20261013T115858Z-review-claude-code-sonnet-low.html">20261013T115858Z-review-claude-code-sonnet-low</a></td><td>2026-10-13 11:58</td><td>claude-code</td><td>sonnet</td><td>claude-sonnet-5-5</td><td>low</td><td>primary</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.4020</td><td>$0.2002</td><td>28.6</td><td>30.1</td><td>31.0</td><td>3ec26ba</td></tr>
+<tr class="row-fail"><td><a href="./20261013T114128Z-review-claude-code-claude-haiku-5-5-low.html">20261013T114128Z-review-claude-code-claude-haiku-5-5-low</a></td><td>2026-10-13 11:41</td><td>claude-code</td><td>claude-haiku-5-5</td><td>claude-haiku-5-5</td><td>low</td><td>failure-modes</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.0213</td><td>$0.8239</td><td>18.8</td><td>25.2</td><td>32.3</td><td>3ec26ba</td></tr>
+<tr class="row-fail"><td><a href="./20261013T114007Z-review-claude-code-claude-haiku-5-5-low.html">20261013T114007Z-review-claude-code-claude-haiku-5-5-low</a></td><td>2026-10-13 11:40</td><td>claude-code</td><td>claude-haiku-5-5</td><td>claude-haiku-5-5</td><td>low</td><td>principles</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>0.0</td><td>3/3</td><td>0</td><td>0</td><td>$0.0295</td><td>$1.0790</td><td>41.2</td><td>42.9</td><td>44.5</td><td>3ec26ba</td></tr>
+<tr class="row-partial"><td><a href="./20261013T113901Z-review-claude-code-claude-haiku-5-5-low.html">20261013T113901Z-review-claude-code-claude-haiku-5-5-low</a></td><td>2026-10-13 11:39</td><td>claude-code</td><td>claude-haiku-5-5</td><td>claude-haiku-5-5</td><td>low</td><td>primary</td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>33.3</td><td>3/3</td><td>1</td><td>0</td><td>$0.0264</td><td>$0.2696</td><td>26.4</td><td>29.8</td><td>35.4</td><td>3ec26ba</td></tr>
+</table></div>
+
+<h2 id="visual">visual</h2>
+<div class="table"><table>
+<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th></tr>
+<tr class="row-ok"><td><a href="./20261013T121649Z-visual-claude-code-opus-low.html">20261013T121649Z-visual-claude-code-opus-low</a></td><td>2026-10-13 12:16</td><td>claude-code</td><td>opus</td><td>claude-opus-5-5</td><td>low</td><td></td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>100.0</td><td>3/3</td><td>3</td><td>0</td><td>$0.4117</td><td>$0.1443</td><td>11.2</td><td>12.5</td><td>13.5</td><td>3ec26ba</td></tr>
+<tr class="row-ok"><td><a href="./20261013T120039Z-visual-claude-code-sonnet-low.html">20261013T120039Z-visual-claude-code-sonnet-low</a></td><td>2026-10-13 12:00</td><td>claude-code</td><td>sonnet</td><td>claude-sonnet-5-5</td><td>low</td><td></td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>100.0</td><td>3/3</td><td>3</td><td>0</td><td>$0.2437</td><td>$0.1726</td><td>10.0</td><td>10.2</td><td>10.7</td><td>3ec26ba</td></tr>
+<tr class="row-ok"><td><a href="./20261013T114239Z-visual-claude-code-claude-haiku-5-5-low.html">20261013T114239Z-visual-claude-code-claude-haiku-5-5-low</a></td><td>2026-10-13 11:42</td><td>claude-code</td><td>claude-haiku-5-5</td><td>claude-haiku-5-5</td><td>low</td><td></td><td>claude-code sonnet low</td><td>3</td><td>1</td><td>100.0</td><td>3/3</td><td>3</td><td>0</td><td>$0.0157</td><td>$0.1886</td><td>9.5</td><td>13.0</td><td>15.9</td><td>3ec26ba</td></tr>
+</table></div>
+</body>
+</html>

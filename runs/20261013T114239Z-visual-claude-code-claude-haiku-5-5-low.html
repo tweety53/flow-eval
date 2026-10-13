@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261013T114239Z-visual-claude-code-claude-haiku-5-5-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261013T114239Z-visual-claude-code-claude-haiku-5-5-low</h1>
+<dl class="header">
+<dt>role</dt><dd>visual</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>claude-haiku-5-5</dd>
+<dt>served</dt><dd>claude-haiku-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>2e053aaa95ce00195dac3b208e1769dcc45862da</dd>
+<dt>case set</dt><dd>d3ed92f7592902ba0ab84c1346ab1e8ff597f2a68e3a63f03d22438a04de3455</dd>
+<dt>flow-eval</dt><dd>3ec26bad71d9d5092cdd2feca4655c9b9c126143</dd>
+<dt>started</dt><dd>2026-10-13T11:42:39Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-870-qm-q6">kan-870-qm-q6</a> · <a href="#trial-kan-870-qm-q6-1">trial 1</a> · <a href="#trial-kan-870-qm-q6-2">trial 2</a> · <a href="#trial-kan-870-qm-q6-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">100.0</span> <span class="muted">balanced accuracy: mean of each labelled verdict&#39;s mean case score, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-870-qm-q6" class="row-ok"><td>kan-870-qm-q6</td><td>3/3</td><td>3</td><td>yes</td><td>100.0</td><td>0.0</td><td>$0.0052</td><td>$0.0157</td><td>13.0</td><td>271238</td><td>$0.1886</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-870-qm-q6-1" class="trial pass">
+<h3>kan-870-qm-q6 · trial 1 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999376772303761</dd></div>
+<div><dt>cache_read</dt><dd>96267</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>17519</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.005495570000000001</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>2057</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>41608</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>1273</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1099114</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>13646</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>2675</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>11101</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0448615</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>10</dd></div>
+<div><dt>output</dt><dd>17</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.04486150000000001</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>5</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Both images were read, and the band pairing found zero matching bands, so the layouts differ. The mockup-side band output also lists one band spanning the whole frame, so the pairing is weaker evidence here; the departures below rest mainly on the visual read.
+
+- defect: progress bar: the first segment is dark grey in the mockup and blue in the capture, so the segment colours differ.
+- defect: &#34;Next time?&#34; buttons (Weight/Reps/Keep the same): the mockup draws blue-outlined buttons with blue labels, while the capture draws neutral grey-bordered buttons with dark labels. The capture&#39;s buttons are also inset about 8px further from the card edge.
+- defect: Evaluation note field: the mockup&#39;s border is light blue, the capture&#39;s is grey.
+- defect: Save button: the mockup&#39;s button is about 166px wide and right-aligned at x≈704; the capture&#39;s is about 145px and ends at x≈696.
+- defect: header and title row: the mockup&#39;s header row sits about 4px lower, and its title is set at a different size; the capture&#39;s title is also set at a different weight.
+- defect: band structure: the script pairs zero of the frame&#39;s bands with the capture&#39;s (one band missing, three extra), so the card-to-control layout differs wholesale in its band structure.
+
+Text differences (the timer 25:50 vs 0:00, &#34;Close Grip Lat Pulldown&#34; vs &#34;Lat Pulldown&#34;, A1/B1 labels) are data and not counted as departures.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261013T114239Z-visual-claude-code-claude-haiku-5-5-low/kan-870-qm-q6/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-870-qm-q6-2" class="trial pass">
+<h3>kan-870-qm-q6 · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999314234771726</dd></div>
+<div><dt>cache_read</dt><dd>58325</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>17222</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.00469005</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>1324</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>41311</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>579</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.093801</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>9463</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>2675</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>11182</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0451855</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>10</dd></div>
+<div><dt>output</dt><dd>17</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0451855</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>5</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>- defect: The band pairing finds zero paired bands (1 mockup band missing, 3 capture bands extra), so the layout differs wholesale. The mockup&#39;s full-height outer band has no counterpart in the capture, and the capture&#39;s header rule and card bands have no counterpart in the mockup.
+- defect: The &#34;Next time?&#34; buttons (Weight/Reps/Keep the same) are styled differently. The mockup draws them with a blue border, blue text and a light fill. The capture draws them with a grey border, dark text and the card&#39;s pale fill.
+- defect: The &#34;Evaluation note&#34; field border is light blue in the mockup and grey in the capture.
+- defect: The button grid is inset differently. The mockup&#39;s buttons start about 72px from the image&#39;s left edge, the capture&#39;s at about 80px, and the capture&#39;s button columns sit narrower than the mockup&#39;s.
+- defect: The mockup&#39;s exercise card and its header differ from the capture&#39;s. The mockup shows a two-line title &#34;Close Grip Lat Pulldown&#34; with a &#34;&#43; Note&#34; link and a &#34;Show sets&#34; control, and the capture shows &#34;Lat Pulldown&#34; on one line with a different header offset. The title text is data, but the header&#39;s layout and the card&#39;s vertical position (mockup card top about 160px, capture about 152px) are not.
+- defect: The top progress bar&#39;s segments differ. In the mockup the first segment is dark grey and the second is blue, while in the capture the first two segments are both blue.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261013T114239Z-visual-claude-code-claude-haiku-5-5-low/kan-870-qm-q6/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-870-qm-q6-3" class="trial pass">
+<h3>kan-870-qm-q6 · trial 3 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999314234771726</dd></div>
+<div><dt>cache_read</dt><dd>58325</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>17288</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.00548975</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>2897</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>41377</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>1997</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.109795</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>15910</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>5885</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>24388</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0985345</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>22</dd></div>
+<div><dt>output</dt><dd>35</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0985345</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>11</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>- defect: band pairing fails. The mockup yields one band and the capture yields three, with 0 paired, 1 missing and 3 extra, so the page&#39;s horizontal structure does not line up.
+- defect: outer panel seams differ. The mockup&#39;s panel edges sit at x=0 and x=744, while the capture&#39;s sit at x=32 and x=712, so the cell widths (712 vs 648) differ.
+- defect: top progress bar colour differs. In the mockup the first segment is dark grey and the bar sits near y≈124; in the capture the first two segments are blue and the bar sits near y≈116.
+- defect: &#34;Next time?&#34; choice buttons are a different control style. The mockup draws them as accent-blue outlined buttons with blue text, while the capture draws neutral grey-bordered, light filled buttons with dark text.
+- defect: &#34;Keep the same&#34; button has the same style mismatch: blue outline and text in the mockup, grey border and dark text in the capture.
+- defect: the choice-button block is narrower in the capture. The mockup spans roughly x≈72–704, the capture roughly x≈80–696.
+- defect: the evaluation note field border is light blue in the mockup and grey in the capture.
+- defect: the Save button is a different size. The mockup is about 166px wide (x≈538–704, right-aligned to the content edge); the capture is about 145px wide (x≈551–696).
+- defect: header title is offset. The mockup title starts at x≈120 and the capture&#39;s at x≈104, and the header row sits about 5px lower in the mockup, which pushes the content below it down by a similar amount.
+
+Data differences (title text, &#34;25:50&#34; vs &#34;0:00&#34; timer, A1 vs B1 badge, set rows) were not counted as departures. I did not run the per-control `--region-a/--region-b` measurements or the full element matrix, so the list above rests on the band/seam pairing and visual reading only.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261013T114239Z-visual-claude-code-claude-haiku-5-5-low/kan-870-qm-q6/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

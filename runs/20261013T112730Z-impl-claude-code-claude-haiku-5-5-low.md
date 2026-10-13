@@ -1,0 +1,9 @@
+# Run 20261013T112730Z-impl-claude-code-claude-haiku-5-5-low
+
+- role `impl`, harness `claude-code`, model `claude-haiku-5-5`, effort `low`, k 3, served claude-haiku-5-5
+- prompt pin `2e053aaa95ce00195dac3b208e1769dcc45862da`, case set `395d8bd4caf5299dbac80dc5f1d0023d3370b640d0dd4f23c7ace8d835a8ffe9`, flow-eval `3ec26bad71d9d5092cdd2feca4655c9b9c126143`, started 2026-10-13T11:27:30Z
+- role score **100.0** (mean of the case scores, infra errors excluded)
+
+| case | valid/k | passes | pass^k | score | stddev | cost/pass | cost | mean wall s | tokens | judge cost |
+|---|---|---|---|---|---|---|---|---|---|---|
+| kan-757-offline-l5-be-per-item-if-match-on-group-session-task-3 | 3/3 | 3 | yes | 100.0 | 0.0 | $0.0495 | $0.1485 | 539.8 | 7303579 | $0.0000 |
