@@ -128,9 +128,15 @@ func cleanPath(p string) string {
 	return strings.TrimPrefix(path.Clean(p), "./")
 }
 
-// near reports whether f sits in l's file within _window lines of it.
+// near reports whether f sits in l's file within _window lines of it. A reviewer may name the file
+// from the trial's working tree root (/work/a/b.go), relative to it (a/b.go) or by a shorter tail
+// (b.go): the file matches when one path is the other's tail at a directory boundary.
 func near(f Finding, l Label) bool {
-	return f.File != "" && f.File == cleanPath(l.File) && max(f.Line-l.Line, l.Line-f.Line) <= _window
+	return f.File != "" && sameFile(f.File, cleanPath(l.File)) && max(f.Line-l.Line, l.Line-f.Line) <= _window
+}
+
+func sameFile(a, b string) bool {
+	return a == b || strings.HasSuffix(a, "/"+b) || strings.HasSuffix(b, "/"+a)
 }
 
 // GradeReview scores report against labels per design.md §5. Every finding near a label is put to
