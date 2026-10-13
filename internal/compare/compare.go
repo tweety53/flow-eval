@@ -3,6 +3,7 @@
 package compare
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"maps"
@@ -92,13 +93,17 @@ type Decision struct {
 	// Prompts is a warning naming both runs' prompt pins when they differ, "" otherwise. Like Judges,
 	// it never refuses the comparison nor changes its exit.
 	Prompts string
-	Report  string // the Markdown report
+	// Served is a warning naming both runs' served models when both name one and they differ, ""
+	// otherwise: a side naming none (codex) is no evidence of a change. Like Judges, it never refuses
+	// the comparison nor changes its exit.
+	Served string
+	Report string // the Markdown report
 }
 
 // Warnings returns the decision's non-empty warnings in the order compare prints them.
 func (d Decision) Warnings() []string {
 	var ws []string
-	for _, w := range []string{d.Prompts, d.Judges} {
+	for _, w := range []string{d.Prompts, d.Judges, d.Served} {
 		if w != "" {
 			ws = append(ws, w)
 		}
@@ -164,6 +169,11 @@ func Compare(cand, base Run, margin float64) (Decision, error) {
 		d.Prompts = fmt.Sprintf("warning: prompt pin %s vs %s — DIFFER: prompts may have changed between the runs",
 			ch.PromptPin, bh.PromptPin)
 	}
+	cServed, bServed := run.Served(cand.Lines), run.Served(base.Lines)
+	if cServed != "" && bServed != "" && cServed != bServed {
+		d.Served = fmt.Sprintf("warning: served model %s vs %s — DIFFER: the runs were served different models",
+			cServed, bServed)
+	}
 	d.Report = report(cand, base, cs, bs, ids, flips, margin, d)
 	return d, nil
 }
@@ -179,8 +189,9 @@ func report(cand, base Run, cs, bs side, ids, flips []string, margin float64, d 
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s vs %s\n\n", cand.ID, base.ID)
 	fmt.Fprintf(&b, "- role `%s`, margin %g points\n", cand.Header.Role, margin)
-	fmt.Fprintf(&b, "- candidate `%s` `%s` `%s`; baseline `%s` `%s` `%s`\n",
-		cand.Header.Harness, cand.Header.Model, cand.Header.Effort, base.Header.Harness, base.Header.Model, base.Header.Effort)
+	fmt.Fprintf(&b, "- candidate `%s` `%s` `%s` served %s; baseline `%s` `%s` `%s` served %s\n",
+		cand.Header.Harness, cand.Header.Model, cand.Header.Effort, cmp.Or(run.Served(cand.Lines), "–"),
+		base.Header.Harness, base.Header.Model, base.Header.Effort, cmp.Or(run.Served(base.Lines), "–"))
 	fmt.Fprintf(&b, "- %s\n", d.FlowEval)
 	for _, w := range d.Warnings() {
 		fmt.Fprintf(&b, "- %s\n", w)

@@ -291,9 +291,9 @@ var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDeci
 
 <h2 id="{{.Role}}">{{.Role}}</h2>
 <div class="table"><table>
-<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th></tr>
+<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th></tr>
 {{- range .Runs}}
-<tr{{with .S.Class}} class="{{.}}"{{end}}><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}} <span class="muted">(no page)</span>{{end}}</td><td>{{.H.Started.Format "2006-01-02 15:04"}}</td><td>{{.H.Harness}}</td><td>{{.H.Model}}</td><td>{{.H.Effort}}</td><td>{{.H.Slot}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{.Cases}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Valid}}/{{.Trials}}</td><td>{{.Passes}}</td><td>{{.Infra}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{printf "$%.4f" .JudgeUSD}}</td><td>{{oneDecimal .WallMin}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{oneDecimal .WallMax}}</td><td>{{printf "%.7s" .H.FlowEvalSHA}}</td></tr>
+<tr{{with .S.Class}} class="{{.}}"{{end}}><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}} <span class="muted">(no page)</span>{{end}}</td><td>{{.H.Started.Format "2006-01-02 15:04"}}</td><td>{{.H.Harness}}</td><td>{{.H.Model}}</td><td>{{or .S.Served "–"}}</td><td>{{.H.Effort}}</td><td>{{.H.Slot}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{.Cases}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Valid}}/{{.Trials}}</td><td>{{.Passes}}</td><td>{{.Infra}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{printf "$%.4f" .JudgeUSD}}</td><td>{{oneDecimal .WallMin}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{oneDecimal .WallMax}}</td><td>{{printf "%.7s" .H.FlowEvalSHA}}</td></tr>
 {{- end}}
 </table></div>
 {{- end}}

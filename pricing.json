@@ -44,5 +44,12 @@
     "cache_read": 0.15,
     "cache_write": 1.25,
     "source": "https://dev.meta.ai/docs/pricing-rate-limits"
+  },
+  "muse-wonder-1.0": {
+    "input": 4.00,
+    "output": 20.00,
+    "cache_read": 0.20,
+    "cache_write": 4.00,
+    "source": "https://dev.meta.ai/docs/pricing-rate-limits"
   }
 }

@@ -6,6 +6,7 @@ package run
 import (
 	"archive/tar"
 	"bufio"
+	"cmp"
 	"context"
 	json "encoding/json/v2"
 	"errors"
@@ -678,6 +679,7 @@ type summary struct {
 	HasScore bool
 	How      string // how the role score is computed
 	Infra    []Line
+	Served   string // the model id(s) its trials were served, per Served
 	Class    string // the run's outcome colour, set by paint
 }
 
@@ -720,7 +722,7 @@ func outcome(valid, passes int) string {
 func summarize(h Header, cs []cases.Case, lines []Line) summary {
 	byCase := map[string][]metrics.Trial{}
 	judgeCost := map[string]float64{}
-	var s summary
+	s := summary{Served: Served(lines)}
 	for _, l := range lines {
 		byCase[l.Case] = append(byCase[l.Case], l.Trial)
 		if l.Judge != nil {
@@ -790,7 +792,8 @@ func Load(runsDir, id string) (Header, []Line, error) {
 func report(id string, h Header, s summary) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Run %s\n\n", id)
-	fmt.Fprintf(&b, "- role `%s`, harness `%s`, model `%s`, effort `%s`, k %d\n", h.Role, h.Harness, h.Model, h.Effort, h.K)
+	fmt.Fprintf(&b, "- role `%s`, harness `%s`, model `%s`, effort `%s`, k %d, served %s\n",
+		h.Role, h.Harness, h.Model, h.Effort, h.K, cmp.Or(s.Served, "–"))
 	fmt.Fprintf(&b, "- prompt pin `%s`, case set `%s`, flow-eval `%s`, started %s\n",
 		h.PromptPin, h.CaseSetHash, h.FlowEvalSHA, h.Started.Format(time.RFC3339))
 	if s.HasScore {
@@ -810,6 +813,22 @@ func report(id string, h Header, s summary) string {
 		}
 	}
 	return b.String()
+}
+
+// Served is the distinct model ids lines were served — each line's comma-separated served_model,
+// infra-error lines included, since a model that answered was served — sorted and joined with ", ";
+// "" when no line names one.
+func Served(lines []Line) string {
+	var ids []string
+	for _, l := range lines {
+		for id := range strings.SplitSeq(l.ServedModel, ",") {
+			if id != "" && !slices.Contains(ids, id) {
+				ids = append(ids, id)
+			}
+		}
+	}
+	slices.Sort(ids)
+	return strings.Join(ids, ", ")
 }
 
 func yesNo(v bool) string {
