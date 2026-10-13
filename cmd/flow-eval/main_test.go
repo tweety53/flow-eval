@@ -379,8 +379,8 @@ func TestCompareAndBaselineExitCodes(t *testing.T) {
 	if want := "warning: prompt pin pin2 vs pin — DIFFER"; exit != 0 || !strings.Contains(stderr, want) {
 		t.Errorf("compare repinned: exit %d, stderr %q; want 0 and %q", exit, stderr, want)
 	}
-	if b, err := os.ReadFile(filepath.Join(baselines, "review.json")); err != nil || !strings.Contains(string(b), `"runId":"base"`) {
-		t.Errorf("baselines/review.json = %s, %v", b, err)
+	if b, err := os.ReadFile(filepath.Join(baselines, "review-primary.json")); err != nil || !strings.Contains(string(b), `"runId":"base"`) {
+		t.Errorf("baselines/review-primary.json = %s, %v", b, err)
 	}
 	// Recording the baseline repaints the index: a run scoring above it is blue.
 	if b, err := os.ReadFile(filepath.Join(runs, "index.html")); err != nil || !strings.Contains(string(b), `<tr class="row-better"><td>better `) {
@@ -402,8 +402,8 @@ func TestBaselineSetWarnsOnAFailedRepaint(t *testing.T) {
 	if exit != 0 || !strings.Contains(stderr, "warning: baseline recorded, repaint failed: run page base") {
 		t.Errorf("baseline set: exit %d, stderr %q; want 0 and a repaint warning", exit, stderr)
 	}
-	if b, err := os.ReadFile(filepath.Join(baselines, "review.json")); err != nil || !strings.Contains(string(b), `"runId":"base"`) {
-		t.Errorf("baselines/review.json = %s, %v", b, err)
+	if b, err := os.ReadFile(filepath.Join(baselines, "review-primary.json")); err != nil || !strings.Contains(string(b), `"runId":"base"`) {
+		t.Errorf("baselines/review-primary.json = %s, %v", b, err)
 	}
 }
 

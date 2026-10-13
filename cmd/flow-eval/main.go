@@ -137,7 +137,7 @@ func runCmd(args []string) int {
 	root := fs.String("root", "cases", "cases directory")
 	repos := fs.String("repos", "..", "directory holding each case's source checkout as <repos>/<source.repo>")
 	runsDir := fs.String("runs", "runs", "directory the run records are written to")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>.json, read to paint the index")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json, read to paint the index")
 	promptsDir := fs.String("prompts", "prompts", "vendored prompts directory")
 	pricingPath := fs.String("pricing", "pricing.json", "model prices")
 	judgePath := fs.String("judge", "judge.json", "judge pin")
@@ -284,10 +284,10 @@ func parseWithID(fs *flag.FlagSet, args []string) (id string, code int, ok bool)
 // compared: another role or slot, another case set, another k, or missing trials (design.md §7).
 func compareCmd(args []string) int {
 	fs := flag.NewFlagSet("compare", flag.ContinueOnError)
-	baseID := fs.String("baseline", "", "baseline run id; the role's baselines/<role>.json when empty")
+	baseID := fs.String("baseline", "", "baseline run id; the run's baselines/<role>[-<slot>].json when empty")
 	margin := fs.Float64("margin", 5, "non-inferiority margin in score points")
 	runsDir := fs.String("runs", "runs", "directory holding the run records")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>.json")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: flow-eval compare <candidate-run-id> [--baseline <run-id>] [--margin 5]")
 		fs.PrintDefaults()
@@ -306,7 +306,7 @@ func compareCmd(args []string) int {
 		return 2
 	}
 	if *baseID == "" {
-		if *baseID, err = run.BaselineID(*baselines, cand.Header.Role); err != nil {
+		if *baseID, err = run.BaselineID(*baselines, cand.Header.Role, cand.Header.Slot); err != nil {
 			fmt.Fprintf(os.Stderr, "flow-eval compare: %v\n", err)
 			return 2
 		}
@@ -333,7 +333,7 @@ func compareCmd(args []string) int {
 	return d.Exit
 }
 
-// baselineCmd exits 0 when baselines/<role>.json now names the run, 2 on a usage error or a run
+// baselineCmd exits 0 when baselines/<role>[-<slot>].json now names the run, 2 on a usage error or a run
 // that cannot be read. It then repaints the runs index and pages by the new baseline; a repaint
 // failure is a warning on stderr and leaves the exit at 0, since the baseline is recorded.
 func baselineCmd(args []string) int {
@@ -343,7 +343,7 @@ func baselineCmd(args []string) int {
 	}
 	fs := flag.NewFlagSet("baseline set", flag.ContinueOnError)
 	runsDir := fs.String("runs", "runs", "directory holding the run records")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>.json")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: flow-eval baseline set <run-id> [--runs runs] [--baselines baselines]")
 		fs.PrintDefaults()
@@ -352,12 +352,12 @@ func baselineCmd(args []string) int {
 	if !ok {
 		return code
 	}
-	role, err := run.SetBaseline(*runsDir, *baselines, id, time.Now())
+	key, err := run.SetBaseline(*runsDir, *baselines, id, time.Now())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "flow-eval baseline set: %v\n", err)
 		return 2
 	}
-	fmt.Printf("%s baseline: %s\n", role, id)
+	fmt.Printf("%s baseline: %s\n", key, id)
 	if err := errors.Join(run.Repaint(*runsDir, *baselines)); err != nil {
 		fmt.Fprintf(os.Stderr, "flow-eval baseline set: warning: baseline recorded, repaint failed: %v\n", err)
 	}

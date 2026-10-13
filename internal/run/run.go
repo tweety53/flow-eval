@@ -90,7 +90,7 @@ type Config struct {
 	Cases                     []cases.Case
 	// ReposDir holds each impl or review case's source checkout as <ReposDir>/<source.repo>.
 	ReposDir, PromptsDir, RunsDir string
-	BaselinesDir                  string // holds baselines/<role>.json, read to paint rows beating the baseline
+	BaselinesDir                  string // holds baselines/<role>[-<slot>].json, read to paint rows beating the baseline
 	RunnerImage, ProxyImage       string
 	Credentials                   []string // environment variable names passed into each trial
 	Mounts                        []string // the harness's own volume --mount values, into each trial
@@ -859,4 +859,12 @@ func oneDecimal(v *float64) string {
 		return "–"
 	}
 	return fmt.Sprintf("%.1f", *v)
+}
+
+// whole renders v rounded to a whole number, or – for nil.
+func whole(v *float64) string {
+	if v == nil {
+		return "–"
+	}
+	return fmt.Sprintf("%.0f", *v)
 }

@@ -28,8 +28,17 @@ type indexRun struct {
 	Cost, JudgeUSD float64
 	// WallMin, WallAvg and WallMax are its valid trials' wall-clock in seconds; nil with none.
 	WallMin, WallAvg, WallMax *float64
-	HasPage                   bool // runs from before the HTML page have none
-	lines                     []Line
+	// In* are its valid trials' prompt tokens — uncached input, cache reads and cache writes — and
+	// Out* their output tokens; nil with no valid trial.
+	InMin, InAvg, InMax    *float64
+	OutMin, OutAvg, OutMax *float64
+	HasPage                bool // runs from before the HTML page have none
+	// Baseline is the key of the baseline this run is (review-primary), "" when it is none.
+	Baseline string
+	// VsBase compares this run with its role and slot's baseline: score difference and cost, wall
+	// and token ratios; "" with no baseline, "not comparable" when Comparable refuses the pair.
+	VsBase string
+	lines  []Line
 }
 
 // indexRole is one role's runs, newest first.
@@ -41,30 +50,41 @@ type indexRole struct {
 // _indexRoles is the order the index lists roles in.
 var _indexRoles = []string{"impl", "review", "visual"}
 
-// Baseline is baselines/<role>.json: the run a role's candidates are compared against.
+// Baseline is baselines/<key>.json: the run a role's candidates are compared against. The key is the
+// role, or role-slot for a run of a slot (review-primary), so each review slot has its own baseline.
 type Baseline struct {
 	RunID string    `json:"runId"`
 	SetAt time.Time `json:"setAt"`
 }
 
-// BaselineID returns the run id baselinesDir records for role.
-func BaselineID(baselinesDir, role string) (string, error) {
-	data, err := os.ReadFile(filepath.Join(baselinesDir, role+".json"))
+// BaselineKey names the baseline a run of role and slot is compared against.
+func BaselineKey(role, slot string) string {
+	if slot == "" {
+		return role
+	}
+	return role + "-" + slot
+}
+
+// BaselineID returns the run id baselinesDir records for role and slot.
+func BaselineID(baselinesDir, role, slot string) (string, error) {
+	key := BaselineKey(role, slot)
+	data, err := os.ReadFile(filepath.Join(baselinesDir, key+".json"))
 	if err != nil {
-		return "", fmt.Errorf("baseline for %s: %w", role, err)
+		return "", fmt.Errorf("baseline for %s: %w", key, err)
 	}
 	var b Baseline
 	if err := json.Unmarshal(data, &b); err != nil {
-		return "", fmt.Errorf("baseline for %s: %w", role, err)
+		return "", fmt.Errorf("baseline for %s: %w", key, err)
 	}
 	if b.RunID == "" {
-		return "", fmt.Errorf("baseline for %s: no runId", role)
+		return "", fmt.Errorf("baseline for %s: no runId", key)
 	}
 	return b.RunID, nil
 }
 
-// SetBaseline records the run id, loaded from runsDir, as its role's baseline in baselinesDir, and
-// returns the role. Repainting runsDir's index and pages by the new baseline is Repaint.
+// SetBaseline records the run id, loaded from runsDir, as the baseline of its role and slot in
+// baselinesDir, and returns that baseline's key. Repainting runsDir's index and pages by the new
+// baseline is Repaint.
 func SetBaseline(runsDir, baselinesDir, id string, now time.Time) (string, error) {
 	h, _, err := Load(runsDir, id)
 	if err != nil {
@@ -77,10 +97,11 @@ func SetBaseline(runsDir, baselinesDir, id string, now time.Time) (string, error
 	if err := os.MkdirAll(baselinesDir, 0o755); err != nil {
 		return "", err
 	}
-	if err := os.WriteFile(filepath.Join(baselinesDir, h.Role+".json"), append(data, '\n'), 0o644); err != nil {
+	key := BaselineKey(h.Role, h.Slot)
+	if err := os.WriteFile(filepath.Join(baselinesDir, key+".json"), append(data, '\n'), 0o644); err != nil {
 		return "", err
 	}
-	return h.Role, nil
+	return key, nil
 }
 
 // Comparable returns nil when the candidate run candID can be compared with the baseline run baseID
@@ -161,17 +182,28 @@ func Repaint(runsDir, baselinesDir string) (pages, err error) {
 		byRole[h.Role] = append(byRole[h.Role], r)
 	}
 	for role, runs := range byRole {
-		bi := -1
-		if baseID, err := BaselineID(baselinesDir, role); err == nil {
-			bi = slices.IndexFunc(runs, func(r indexRun) bool { return r.ID == baseID })
-		}
+		baseAt := map[string]int{} // slot → the index of its baseline run in runs, -1 with none
 		for i := range runs {
 			r := &runs[i]
+			bi, ok := baseAt[r.H.Slot]
+			if !ok {
+				bi = -1
+				if baseID, err := BaselineID(baselinesDir, role, r.H.Slot); err == nil {
+					bi = slices.IndexFunc(runs, func(r indexRun) bool { return r.ID == baseID })
+				}
+				baseAt[r.H.Slot] = bi
+			}
 			var base *summary
-			if bi >= 0 && i != bi {
+			switch {
+			case bi == i:
+				r.Baseline = BaselineKey(role, r.H.Slot)
+			case bi >= 0:
 				b := &runs[bi]
-				if Comparable(r.ID, r.H, r.lines, b.ID, b.H, b.lines) == nil {
+				if Comparable(r.ID, r.H, r.lines, b.ID, b.H, b.lines) != nil {
+					r.VsBase = "not comparable"
+				} else {
 					base = &b.S // painting sets classes only, never the scores compared
+					r.VsBase = vsBase(*r, *b)
 				}
 			}
 			r.S.paint(base)
@@ -253,25 +285,50 @@ func newIndexRun(id string, h Header, lines []Line) indexRun {
 		r.JudgeUSD += row.JudgeCost
 	}
 	r.Infra = len(r.S.Infra)
-	var walls []float64
+	var walls, ins, outs []float64
 	for _, l := range lines {
 		if !l.InfraError {
 			walls = append(walls, float64(l.WallMS)/1000)
+			ins = append(ins, float64(l.Input+l.CacheRead+l.CacheWrite+l.CacheWrite1h))
+			outs = append(outs, float64(l.Output))
 		}
 	}
-	if len(walls) > 0 {
-		lo, hi := slices.Min(walls), slices.Max(walls)
-		var sum float64
-		for _, w := range walls {
-			sum += w
-		}
-		avg := sum / float64(len(walls))
-		r.WallMin, r.WallAvg, r.WallMax = &lo, &avg, &hi
-	}
+	r.WallMin, r.WallAvg, r.WallMax = spread(walls)
+	r.InMin, r.InAvg, r.InMax = spread(ins)
+	r.OutMin, r.OutAvg, r.OutMax = spread(outs)
 	return r
 }
 
-var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDecimal": oneDecimal}).Parse(`<!doctype html>
+// vsBase states r against its baseline b: the role-score difference, then r's cost, mean wall-clock
+// and mean tokens in and out as multiples of b's.
+func vsBase(r, b indexRun) string {
+	ratio := func(x, y *float64) string {
+		if x == nil || y == nil || *y == 0 {
+			return "–"
+		}
+		return fmt.Sprintf("×%.2f", *x / *y)
+	}
+	score := "–"
+	if r.S.HasScore && b.S.HasScore {
+		score = fmt.Sprintf("%+.1f", r.S.Score-b.S.Score)
+	}
+	return fmt.Sprintf("score %s · cost %s · wall %s · in %s · out %s", score,
+		ratio(&r.Cost, &b.Cost), ratio(r.WallAvg, b.WallAvg), ratio(r.InAvg, b.InAvg), ratio(r.OutAvg, b.OutAvg))
+}
+
+// spread returns the min, mean and max of vs; all nil when vs is empty.
+func spread(vs []float64) (lo, avg, hi *float64) {
+	if len(vs) == 0 {
+		return nil, nil, nil
+	}
+	var sum float64
+	for _, v := range vs {
+		sum += v
+	}
+	return new(slices.Min(vs)), new(sum / float64(len(vs))), new(slices.Max(vs))
+}
+
+var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDecimal": oneDecimal, "whole": whole}).Parse(`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -282,18 +339,28 @@ var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDeci
 <body>
 <h1>flow-eval runs</h1>
 {{- if .Roles}}
-<nav><p>{{range $i, $r := .Roles}}{{if $i}} · {{end}}<a href="#{{$r.Role}}">{{$r.Role}}</a> ({{len $r.Runs}}){{end}}</p></nav>
+<nav><p><a href="#baselines">baselines</a> · {{range $i, $r := .Roles}}{{if $i}} · {{end}}<a href="#{{$r.Role}}">{{$r.Role}}</a> ({{len $r.Runs}}){{end}}</p></nav>
 ` + _legend + `
 {{- else}}
 <p class="muted">No run recorded yet.</p>
+{{- end}}
+{{- if .Roles}}
+
+<h2 id="baselines">baselines</h2>
+<div class="table"><table>
+<tr><th>baseline</th><th>run</th><th>model</th><th>served</th><th>effort</th><th>judge</th><th>k</th><th>role score</th><th>passes</th><th>cost</th><th>wall avg s</th><th>tokens in avg</th><th>tokens out avg</th></tr>
+{{- range .Roles}}{{range .Runs}}{{if .Baseline}}
+<tr><td>{{.Baseline}}</td><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}}{{end}}</td><td>{{.H.Model}}</td><td>{{or .S.Served "–"}}</td><td>{{.H.Effort}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Passes}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{whole .InAvg}}</td><td>{{whole .OutAvg}}</td></tr>
+{{- end}}{{end}}{{end}}
+</table></div>
 {{- end}}
 {{- range .Roles}}
 
 <h2 id="{{.Role}}">{{.Role}}</h2>
 <div class="table"><table>
-<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th></tr>
+<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>vs baseline</th><th>flow-eval</th></tr>
 {{- range .Runs}}
-<tr{{with .S.Class}} class="{{.}}"{{end}}><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}} <span class="muted">(no page)</span>{{end}}</td><td>{{.H.Started.Format "2006-01-02 15:04"}}</td><td>{{.H.Harness}}</td><td>{{.H.Model}}</td><td>{{or .S.Served "–"}}</td><td>{{.H.Effort}}</td><td>{{.H.Slot}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{.Cases}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Valid}}/{{.Trials}}</td><td>{{.Passes}}</td><td>{{.Infra}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{printf "$%.4f" .JudgeUSD}}</td><td>{{oneDecimal .WallMin}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{oneDecimal .WallMax}}</td><td>{{printf "%.7s" .H.FlowEvalSHA}}</td></tr>
+<tr{{with .S.Class}} class="{{.}}"{{end}}><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}} <span class="muted">(no page)</span>{{end}}</td><td>{{.H.Started.Format "2006-01-02 15:04"}}</td><td>{{.H.Harness}}</td><td>{{.H.Model}}</td><td>{{or .S.Served "–"}}</td><td>{{.H.Effort}}</td><td>{{.H.Slot}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{.Cases}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Valid}}/{{.Trials}}</td><td>{{.Passes}}</td><td>{{.Infra}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{printf "$%.4f" .JudgeUSD}}</td><td>{{oneDecimal .WallMin}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{oneDecimal .WallMax}}</td><td>{{whole .InMin}}</td><td>{{whole .InAvg}}</td><td>{{whole .InMax}}</td><td>{{whole .OutMin}}</td><td>{{whole .OutAvg}}</td><td>{{whole .OutMax}}</td><td>{{if .Baseline}}baseline{{else}}{{or .VsBase "–"}}{{end}}</td><td>{{printf "%.7s" .H.FlowEvalSHA}}</td></tr>
 {{- end}}
 </table></div>
 {{- end}}

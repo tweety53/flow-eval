@@ -1156,7 +1156,7 @@ func TestNoBlueOverABaselineCompareRefuses(t *testing.T) {
 				"cand.jsonl": `{"role":"review",` + tc.header + `,"started":"2026-10-10T09:00:00Z"}` + "\n" + tc.trials,
 				"cand.html":  "old page",
 			})
-			writeFiles(t, baselines, map[string]string{"review.json": `{"runId":"base"}`})
+			writeFiles(t, baselines, map[string]string{"review-s.json": `{"runId":"base"}`})
 			if err := errors.Join(Repaint(dir, baselines)); err != nil {
 				t.Fatal(err)
 			}
@@ -1224,15 +1224,67 @@ func TestIndexWritesPastAPageItCannotReplace(t *testing.T) {
 	}
 }
 
+// Each review slot is compared against its own baseline: a slot's run is painted over that slot's
+// baseline, never over another slot's.
+func TestEachReviewSlotHasItsOwnBaseline(t *testing.T) {
+	run := func(slot, started string, score int) string {
+		return fmt.Sprintf(`{"role":"review","slot":%q,"k":1,"case_set_hash":"a","case_hashes":{"a":"x"},"started":%q}`, slot, started) +
+			"\n" + fmt.Sprintf(`{"case":"a","trial":1,"score":%d,"passed":%t}`, score, score == 100) + "\n"
+	}
+	dir, baselines := t.TempDir(), t.TempDir()
+	writeFiles(t, dir, map[string]string{
+		"p-base.jsonl": run("primary", "2026-10-10T08:00:00Z", 0),
+		"q-base.jsonl": run("principles", "2026-10-10T08:00:00Z", 0),
+		"q-cand.jsonl": run("principles", "2026-10-10T09:00:00Z", 100),
+		"q-cand.html":  "old page",
+	})
+	writeFiles(t, baselines, map[string]string{
+		"review-primary.json":    `{"runId":"p-base"}`,
+		"review-principles.json": `{"runId":"q-base"}`,
+	})
+	if err := errors.Join(Repaint(dir, baselines)); err != nil {
+		t.Fatal(err)
+	}
+	page, err := os.ReadFile(filepath.Join(dir, "q-cand.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !regexp.MustCompile(`<tr[^>]*row-better`).Match(page) {
+		t.Error("a principles run beating the principles baseline is not painted blue")
+	}
+	index, err := os.ReadFile(filepath.Join(dir, "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		`<h2 id="baselines">baselines</h2>`,
+		`<tr><td>review-primary</td><td>p-base`, `<tr><td>review-principles</td><td>q-base`,
+		`<td>baseline</td>`, `<td>score &#43;100.0 · cost – · wall – · in – · out –</td>`,
+	} {
+		if !strings.Contains(string(index), want) {
+			t.Errorf("index.html lacks %q", want)
+		}
+	}
+	if id, err := BaselineID(baselines, "review", "principles"); err != nil || id != "q-base" {
+		t.Errorf("BaselineID(review, principles) = %q, %v; want q-base", id, err)
+	}
+	if key, err := SetBaseline(dir, baselines, "q-cand", time.Now()); err != nil || key != "review-principles" {
+		t.Errorf("SetBaseline = %q, %v; want review-principles", key, err)
+	}
+	if id, _ := BaselineID(baselines, "review", "primary"); id != "p-base" {
+		t.Errorf("setting the principles baseline changed the primary one to %q", id)
+	}
+}
+
 func TestBaselineIDNamesWhatIsWrong(t *testing.T) {
 	for _, tc := range []struct{ name, body, want string }{
-		{"invalid", "not json", "baseline for review: jsontext"},
-		{"no runId", "{}", "baseline for review: no runId"},
+		{"invalid", "not json", "baseline for review-primary: jsontext"},
+		{"no runId", "{}", "baseline for review-primary: no runId"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
-			writeFiles(t, dir, map[string]string{"review.json": tc.body})
-			_, err := BaselineID(dir, "review")
+			writeFiles(t, dir, map[string]string{"review-primary.json": tc.body})
+			_, err := BaselineID(dir, "review", "primary")
 			if err == nil || !strings.HasPrefix(err.Error(), tc.want) || strings.Contains(err.Error(), "%!") {
 				t.Errorf("BaselineID = %v, want an error starting %q", err, tc.want)
 			}
@@ -1262,10 +1314,10 @@ func TestRunPageReplacedAtomically(t *testing.T) {
 
 func TestIndexShowsTrialWallRange(t *testing.T) {
 	lines := []Line{
-		{Case: "c", TrialNum: 1, Trial: metrics.Trial{WallMS: 3000}},
-		{Case: "c", TrialNum: 2, Trial: metrics.Trial{WallMS: 1000}},
-		{Case: "c", TrialNum: 3, Trial: metrics.Trial{WallMS: 2000}},
-		{Case: "c", TrialNum: 4, Trial: metrics.Trial{WallMS: 9000, InfraError: true}},
+		{Case: "c", TrialNum: 1, Trial: metrics.Trial{WallMS: 3000, Input: 10, CacheRead: 280, CacheWrite: 5, CacheWrite1h: 5, Output: 30}},
+		{Case: "c", TrialNum: 2, Trial: metrics.Trial{WallMS: 1000, Input: 100, Output: 10}},
+		{Case: "c", TrialNum: 3, Trial: metrics.Trial{WallMS: 2000, Input: 200, Output: 20}},
+		{Case: "c", TrialNum: 4, Trial: metrics.Trial{WallMS: 9000, Input: 9999, Output: 9999, InfraError: true}},
 	}
 	r := newIndexRun("r", Header{Role: "impl", K: 4}, lines)
 	if got := []string{oneDecimal(r.WallMin), oneDecimal(r.WallAvg), oneDecimal(r.WallMax)}; !slices.Equal(got, []string{"1.0", "2.0", "3.0"}) {
@@ -1278,15 +1330,17 @@ func TestIndexShowsTrialWallRange(t *testing.T) {
 	}{Roles: []indexRole{{Role: "impl", Runs: []indexRun{r}}}}); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(b.String(), "<th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>flow-eval</th>") {
-		t.Errorf("index header lacks the wall columns where the rows put them:\n%s", b.String())
+	if !strings.Contains(b.String(), "<th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th>"+
+		"<th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>vs baseline</th><th>flow-eval</th>") {
+		t.Errorf("index header lacks the wall and token columns where the rows put them:\n%s", b.String())
 	}
-	if !strings.Contains(b.String(), "<td>1.0</td><td>2.0</td><td>3.0</td>") {
-		t.Errorf("index row lacks the wall range:\n%s", b.String())
+	// Tokens in count the whole prompt: uncached input, cache reads and both cache writes.
+	if !strings.Contains(b.String(), "<td>1.0</td><td>2.0</td><td>3.0</td><td>100</td><td>200</td><td>300</td><td>10</td><td>20</td><td>30</td>") {
+		t.Errorf("index row lacks the wall and token ranges (infra error left out):\n%s", b.String())
 	}
 	none := newIndexRun("n", Header{Role: "impl", K: 1}, lines[3:])
-	if got := oneDecimal(none.WallAvg); got != "–" {
-		t.Errorf("wall avg with no valid trial = %q, want –", got)
+	if got := oneDecimal(none.WallAvg) + whole(none.InAvg) + whole(none.OutMax); got != "–––" {
+		t.Errorf("wall avg, tokens in avg and out max with no valid trial = %q, want – each", got)
 	}
 }
 

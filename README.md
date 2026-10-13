@@ -69,7 +69,7 @@ a judge model missing from it fails the trial (design.md §6).
 ### `compare`
 
 ```bash
-flow-eval compare <candidate-run-id>                              # against baselines/<role>.json
+flow-eval compare <candidate-run-id>                              # against baselines/<role>[-<slot>].json
 flow-eval compare <candidate-run-id> --baseline <run-id> --margin 5
 ```
 
@@ -83,7 +83,8 @@ shas, judges, prompt pins or served models are still compared, with a `DIFFER` w
 flow-eval baseline set <run-id>
 ```
 
-Writes `baselines/<role>.json` and repaints the index and run pages. Commit it with the run's
+Writes `baselines/<role>.json` — `baselines/review-<slot>.json` for a review run, one per slot — and
+repaints the index and run pages. Commit it with the run's
 `.jsonl` and `.md`.
 
 ### `case add` and `case validate`
@@ -109,8 +110,12 @@ records it in `prompts/PIN`. Then rebuild the runner image, re-run each role and
 
 ## Reading results
 
-- **`runs/index.html`** — start here: every run by role, newest first, with its score, passes,
-  infra errors, cost and wall-clock, each linking to its page.
+- **`runs/index.html`** — start here: the baselines first, one per role and review slot, then every
+  run by role, newest first, with its score, passes, infra errors, cost, wall-clock and tokens in
+  (the whole prompt: uncached input, cache reads and writes) and out, as min/avg/max over its valid
+  trials, each linking to its page. `vs baseline` gives a run's role-score difference from its
+  baseline and its cost, mean wall-clock and mean tokens as multiples of the baseline's; `compare`
+  gives the verdict.
 - **Colours** (valid trials only): green — every trial passed; yellow — some did; red — none did;
   uncoloured — no valid trial; blue — beats the role's baseline in a run `compare` would accept.
 - **`runs/<id>.html`** — one self-contained page per run: header, role score, the case table,
