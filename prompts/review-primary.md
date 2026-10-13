@@ -31,6 +31,19 @@ git show/diff only.
 generic review may not: tests exercise real behavior rather than mocks, and a changed
 schema or public interface carries its migration and backward-compatibility story.
 
+**Shared state the diff reuses — a required step, done before anything else:**
+1. List every pre-existing field, flag or variable that the diff's new code reads or
+   writes.
+2. For each, grep its file for every line that writes it. Most of these lines are
+   unchanged and outside the hunks; read each one in full anyway.
+3. For each writer ask: now that this state also covers the new case, does this line
+   still set it only when that is true for every case it covers? A writer the diff left
+   untouched that clears, sets or overwrites the state for its own case alone is a
+   correctness defect this diff introduced. Report it at that line.
+
+Record the result in the Shared-state check section of your output. Skipping it is an
+incomplete review.
+
 ## Do Not
 
 - Do not duplicate the Principles, Failure-modes or Mutation slots' angles — a
@@ -43,6 +56,11 @@ schema or public interface carries its migration and backward-compatibility stor
   not actually read.
 
 ## Output Format
+
+### Shared-state check
+
+Each state the required step listed, with every line that writes it as `path:line` and
+its verdict: still correct, or the issue below it became.
 
 ### Issues
 

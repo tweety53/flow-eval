@@ -31,8 +31,9 @@ completion, before you stop.
 tool's own selector — `--tests '<class>'` for Gradle, `-run '<name>'` for `go test`, `-t
 '<name>'` for vitest — once for RED, once for GREEN, and again only after a source edit. Never
 run the module or repository suite mid-task: the full `## test` list runs once per worktree at
-the last bundle, and again in `flow.verify`. Pipe a test run's output through `tail` so a green
-run costs lines of context, not a build log.
+the last bundle, and again in `flow.verify`. A plan step that asks for the module or repository
+suite is run as this task's targeted tests instead. Pipe a test run's output through `tail` so a
+green run costs lines of context, not a build log.
 
 **DRIFT CHECK:** Before you commit, read your own diff once for what it leaves behind. For
 every behaviour, name, path, flag or exit code the diff changes, grep for the comments, file
