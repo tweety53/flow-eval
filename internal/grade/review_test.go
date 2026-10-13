@@ -22,7 +22,10 @@ type fakeJudge struct {
 
 var (
 	_tag       = regexp.MustCompile(`tag:\w+`)
-	_callUsage = harness.Usage{Input: 100, Output: 7, CacheRead: 3, CacheWrite1h: 5}
+	_callUsage = harness.Usage{
+		Input: 100, Output: 7, CacheRead: 3, CacheWrite1h: 5,
+		Calls: []harness.Call{{Input: 100, Output: 7, CacheRead: 3, CacheWrite1h: 5}},
+	}
 )
 
 func (j *fakeJudge) Same(_ context.Context, labelled, reported string) (bool, harness.Usage, error) {
@@ -84,6 +87,26 @@ func TestCandidatePairsWithinWindow(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := []string{"- a.go:85 at -15", "- a.go:115 at +15"}
+	if !slices.Equal(j.sameAsked, want) {
+		t.Errorf("Same was asked about %q, want %q", j.sameAsked, want)
+	}
+}
+
+// A reviewer names a file from the trial's /work root, relative to it, or by a shorter tail; each is
+// the labelled file, while another file with the same name or a longer one ending the same is not.
+func TestCandidatePairsByFileTail(t *testing.T) {
+	labels := ReviewLabels{MustFind: []Label{{ID: "L1", File: "src/x/a.go", Line: 10, Summary: "tag:L1"}}}
+	report := "#### Important\n" +
+		"- /work/src/x/a.go:10 from the root\n" +
+		"- src/x/a.go:11 relative\n" +
+		"- a.go:12 by name\n" +
+		"- other/a.go:10 another a.go\n" +
+		"- xa.go:10 another name\n"
+	j := &fakeJudge{}
+	if _, err := GradeReview(t.Context(), report, "diff", labels, j); err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"- /work/src/x/a.go:10 from the root", "- src/x/a.go:11 relative", "- a.go:12 by name"}
 	if !slices.Equal(j.sameAsked, want) {
 		t.Errorf("Same was asked about %q, want %q", j.sameAsked, want)
 	}
@@ -166,6 +189,10 @@ func TestJudgeCostSeparate(t *testing.T) {
 		if u.Input != calls*_callUsage.Input || u.Output != calls*_callUsage.Output || u.CacheRead != calls*_callUsage.CacheRead ||
 			u.CacheWrite1h != calls*_callUsage.CacheWrite1h {
 			t.Errorf("JudgeUsage = %+v, want %d calls of %+v", u, calls, _callUsage)
+		}
+		// A judge model with a long-prompt price tier is priced per call, so every call is kept.
+		if int64(len(u.Calls)) != calls {
+			t.Errorf("JudgeUsage has %d calls, want %d", len(u.Calls), calls)
 		}
 	})
 	t.Run("the CLI judge reports its own transcript's usage and runs with no tools", func(t *testing.T) {

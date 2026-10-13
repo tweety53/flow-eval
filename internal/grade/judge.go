@@ -139,6 +139,7 @@ func addUsage(total *harness.Usage, u harness.Usage) {
 	total.CacheWrite1h += u.CacheWrite1h
 	total.Reasoning += u.Reasoning
 	total.Turns += u.Turns
+	total.Calls = append(total.Calls, u.Calls...) // a long-prompt price tier is applied per call
 	for _, m := range u.ServedModels {
 		if !slices.Contains(total.ServedModels, m) {
 			total.ServedModels = append(total.ServedModels, m)
