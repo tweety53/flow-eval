@@ -144,54 +144,6 @@ a { color: inherit; }
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Summary
-The diff adds the workout-mode setting. It adds `chooseSessionView`, which sends a PUT with the confirmed unit and the chosen mode inside the existing `sendMutex`. It extends `load()` so that one GET fills two fields, with each field&#39;s load result accepted or rejected separately. It also adds a `sessionView` field to the request and response types, and a new Settings row.
-
-- **Error return:** applies to the cases where the load or the PUT fails.
-- **Concurrent re-entry:** applies to writes queued behind each other, a load racing a write, and two clients editing the same account.
-- **Partial write:** applies because one PUT now carries two fields.
-- **Timeout:** does not apply. No new boundary call was added; the PUT uses the existing `requests.apiCall` and ktor client.
-
-Within the app, the mutex ordering is correct. Reading `unitWrite.confirmed` inside the lock means a unit choice still queued behind the mode write is never sent through it, and the test covers that. Refusing to send when no unit is confirmed is also correct. Two gaps remain.
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-
-**1. `SettingsState.kt` `chooseSessionView` (`api.updatePreferences(displayUnit = unit, sessionView = view)`): concurrent re-entry across clients. A mode tap can silently undo a unit change made elsewhere.**
-- **Scenario:**
-  1. Device A opens Settings, and the load confirms KG.
-  2. Device B changes the unit to LBS.
-  3. On device A, the user taps Quick. The PUT sends `displayUnit=KG`, so the server&#39;s LBS goes back to KG with no warning.
-- **What changed:** before this diff, the only writer of `displayUnit` was an explicit unit choice. Now an unrelated mode tap also writes it, from a value read when the screen opened. That is a lost update. Newly created workouts get stamped with the wrong unit. It can be recovered, but nobody notices it happened.
-- **Fix sketch:** make `displayUnit` optional on the backend PUT (the cleanest fix). Otherwise send a version or ETag precondition, or at least re-GET inside the mutex before a mode-only PUT. At minimum, record the dependency in the KDoc and the ticket.
-- **Reproducer:** none — needs two clients against a real backend. The fake has no second writer.
-
-**2. `SettingsState.kt` `load()` failure branch together with the `chooseUnit` success path: error return. A failed load ends up showing an unconfirmed &#34;Focus&#34; as if the server stored it, and the retry option disappears.**
-- **Scenario:**
-  1. The first `load()` fails. `loadFailed` becomes true, and `hasLoaded` becomes true, so the rows draw.
-  2. `viewWrite.value` is the built-in `FOCUS`, with `confirmed == null`.
-  3. The user picks a unit, and that write succeeds. `unitWrite.onSuccess` returns true, so `loadFailed` becomes false and the retry/re-sync option goes away.
-  4. The Workout mode row now shows Focus with nothing behind it. If the server holds QUICK, the user sees the wrong mode, and nothing marks it as unknown or prompts a reload.
-- **Why it&#39;s this diff:** the KDoc says the first frame is &#34;never a default Focus&#34;, but that only holds while loading. A cleared `loadFailed` used to mean &#34;every field shown is confirmed&#34;. With two fields it no longer does.
-- **Fix sketch:** clear `loadFailed` only when every field has a confirmed value: `unitWrite.confirmed != null &amp;&amp; viewWrite.confirmed != null`. Alternatively, render the mode row as unknown or disabled while `viewWrite.confirmed == null`.
-- **Reproducer:** none — no test exists for this path. It could be written as: `api.preferencesResult = failure`, then `load()`, then `api.preferencesResult = success(KG, QUICK)`, then `chooseUnit(LBS)`. Then assert `state.loadFailed` is false and `state.sessionView == FOCUS`, while the server&#39;s mode is QUICK.
-
-#### Minor (Nice to Have)
-
-**3. `SettingsState.kt` `sendMutex.withLock { … }` in `chooseSessionView`: timeout.** The lock is held across the network call with no timeout of its own. Mode taps now queue behind unit writes, so one hung PUT freezes both controls in the &#34;saving&#34; state. This was already true for unit writes and is only widened by this diff. Bounding the critical section with `withTimeout` would fix it.
-- **Reproducer:** none — needs a hanging server. The existing pattern is unchanged.
-
-**4. `SettingsState.kt` `NOTHING_CONFIRMED` branch of `chooseSessionView`: error return.** The control is left on the optimistic QUICK, which the server never stored. Only the toast says the write failed. This matches how `chooseUnit` behaves, so it is consistent, but the failure is under-reported.
-- **Reproducer:** none — the existing test `a workout mode write after a failed load…` passes, but it doesn&#39;t check `state.sessionView`.
-
-### Assessment
-**Ready for the human gate?** With fixes
-
-**Reasoning:** There is no torn write, double effect, or unbounded new wait. However, writing two fields in one PUT creates a cross-client lost update on the weight unit (issue 1). And the shared `loadFailed` flag can now hide an unconfirmed field (issue 2). Both cause wrong state that can be recovered but goes unnoticed, so they should be fixed or explicitly accepted before merging.</pre></details>
 <p class="muted">transcript: 20261013T121524Z-review-claude-code-opus-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
@@ -255,76 +207,6 @@ None.
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Summary
-This diff changes four behaviours:
-- `updatePreferences` now takes an optional `sessionView`.
-- `WorkoutPreferences` gains a `sessionView` field that defaults to FOCUS when the key is missing.
-- `SettingsState.load` now tracks the unit and the workout mode separately.
-- A new `chooseSessionView` write runs inside `sendMutex` and sends the last confirmed unit along with the mode.
-
-**Timeout lens:** clean. The network calls go through the existing ktor client, which has `HttpTimeout` (request and socket) installed at `GymieApiClient.kt:255`.
-
-**Partial write lens:** each operation is a single PUT, so this lens has little to work on.
-
-**Concurrent re-entry lens, same device:** clean. `sendMutex` serialises writes from this device, and reading `unitWrite.confirmed` inside the lock correctly keeps a queued unit choice out of the mode PUT.
-
-**Remaining problems:** a lost update across devices, a forward-compatibility failure in the load path, and two smaller bookkeeping issues.
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-
-**1. `SettingsState.kt` `chooseSessionView` (the `unitWrite.confirmed` read). Lens: concurrent re-entry, across processes.**
-- **Problem:** the backend requires `displayUnit` on every PUT, so a mode change also rewrites the unit. The value sent is whatever this device last confirmed, which may be from a load done long ago.
-- **Scenario:**
-  1. Device A opens Settings and loads KG.
-  2. Device B changes the unit to LBS.
-  3. Device A taps Quick, and the PUT sends `{displayUnit: KG, sessionView: QUICK}`.
-  4. Device B&#39;s LBS is silently reverted.
-
-  The user changed only the mode, but the stored unit was overwritten. It can be recovered, but the user is not told. The KDoc says the write keeps a queued choice from reaching the server; that holds on this device only, not across devices.
-- **Fix sketch, in order of preference:**
-  1. Have the backend accept a PUT without `displayUnit` (true partial update), and send only `sessionView`.
-  2. Otherwise, use a version or ETag with If-Match.
-  3. As a last resort, do a fresh GET inside the mutex just before the PUT. This narrows the race window but does not close it.
-- **Reproducer:** none — this needs two clients and a real server. `FakeWorkoutApi` has no &#34;external&#34; writer to model device B.
-
-**2. `WorkoutModels.kt:691` `enum class SessionView { FOCUS, QUICK }` together with the client `Json { ignoreUnknownKeys = true }` (no `coerceInputValues`). Lens: error return.**
-- **Problem:** if the server ever returns a mode this client doesn&#39;t know (say, a third mode added for newer apps), decoding `WorkoutPreferences` throws.
-- **Scenario:** the whole `load()` fails, so this unrelated field takes down the weight unit as well. `loadFailed` becomes true and `unitWrite.confirmed` stays null. After that, every `chooseSessionView` refuses with no PUT sent, and the unit has no confirmed value. Settings is broken on older clients until they upgrade.
-- **Fix sketch:**
-  - Set `coerceInputValues = true` on the client `Json` (the field already defaults to FOCUS), or
-  - add an `UNKNOWN` entry with `@JsonNames` or a lenient serializer.
-- **Reproducer:** `Json { ignoreUnknownKeys = true; isLenient = true }.decodeFromString&lt;WorkoutPreferences&gt;(&#34;&#34;&#34;{&#34;displayUnit&#34;:&#34;KG&#34;,&#34;sessionView&#34;:&#34;DENSE&#34;}&#34;&#34;&#34;)` throws a `SerializationException`. Run it as a commonTest snippet.
-
-#### Minor (Nice to Have)
-
-**3. `SettingsState.kt` `load()` success branch. Lens: error return / state recovery.**
-- **Problem:** `loadFailed = false` now requires that *neither* field had a write succeed since the load began.
-- **Scenario:** a load fails and sets `loadFailed`. A retry load then succeeds while a unit write also succeeds mid-flight. The view&#39;s own `adoptLoad` still runs, but `loadFailed` stays true, so the error and retry state stay on screen even though the view is now confirmed.
-- **Recovery:** only another load clears it. This is wrong but recoverable.
-- **Fix:** clear `loadFailed` when every field has a confirmed value, rather than when no write succeeded.
-- **Reproducer:** none — it needs a gated fake with a failed load, then a gated retry load and a concurrent `chooseUnit`. No such test exists yet.
-
-**4. `SettingsState.kt` `chooseSessionView`, the `error(&#34;Could not save your workout mode.&#34;)` path. Lens: error return.**
-- **Problem:** after a failed load, the client-side refusal sets `loadFailed = true` and shows &#34;Could not save your workout mode.&#34;
-- **Scenario:** the user cannot tell that a failed load caused this, not the server or the network, and nothing is logged. It is acceptable as a failure path, but the message should point at the actual cause, for example &#34;Settings didn&#39;t load — retry first.&#34;
-- **Reproducer:** none — the behaviour is as designed; only the wording is at issue.
-
-**5. `chooseUnit` response handling (not changed by this diff, but this diff makes it relevant). Lens: concurrent re-entry.**
-- **Problem:** the PUT answer from a unit write now carries the server&#39;s `sessionView`, and that value is discarded.
-- **Why it matters:** this is a free chance to refresh `viewWrite.confirmed`. Using it would shrink the stale-unit window in #1 for the reverse direction.
-- **Reproducer:** none — it&#39;s a missed opportunity, not a failure.
-
-### Assessment
-**Ready for the human gate?** With fixes
-
-**Reasoning:** there is no unbounded wait, no torn state, and no same-device race. However, sending a full-object PUT for what is meant to be a mode-only change creates a lost update across devices (#1). And a strict enum on a newly added server field can break the entire Settings load for older clients (#2). Both are cheap to fix:
-- For #1, ask the backend for a partial PUT, or at least re-read the preferences before writing.
-- For #2, use `coerceInputValues` or an unknown-tolerant enum.</pre></details>
 <p class="muted">transcript: 20261013T121524Z-review-claude-code-opus-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
@@ -388,52 +270,6 @@ None.
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Summary
-Changed behaviours: `updatePreferences` now carries an optional `sessionView`; `SettingsState.load` adopts both fields; the new `chooseSessionView` does an optimistic write, serialised behind the same `sendMutex` as `chooseUnit`; and Settings has a new Workout mode row.
-
-How each lens applied:
-- **Timeout:** bounded. `GymieApiClient` installs `HttpTimeout` with `requestTimeoutMillis` (`GymieApiClient.kt:255`), so a hung PUT can&#39;t hold `sendMutex` forever.
-- **Partial write:** one PUT per action, so there&#39;s nothing to tear.
-- **Concurrent re-entry:** handled well.
-  - The unit is read inside the mutex from `unitWrite.confirmed`, so a unit choice queued behind the mode write can&#39;t leak out through it.
-  - A unit PUT leaves `sessionView` off the wire, so it can&#39;t overwrite the stored mode.
-  - Overlapping loads are fenced per field.
-- **Error return:** mostly right. Sending nothing when no unit is confirmed is the correct call. There is one gap, below.
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-**`SettingsState.kt:295` (chooseUnit success path, interacting with the new `viewWrite`) — error return**
-- **Scenario:**
-  1. `load()` fails, so `viewWrite.confirmed == null` and the control shows the hard-coded `FOCUS`.
-  2. The server actually stores `QUICK`.
-  3. The user retries by choosing a unit. The PUT succeeds and `unitWrite.onSuccess` clears `loadFailed`, which hides the retry/failure state.
-  4. The PUT response contains `sessionView: QUICK`, but `chooseUnit` throws it away.
-- **Result:** Settings now looks healthy but shows Workout mode = Focus, a value the server never confirmed. Before this diff, clearing `loadFailed` after a unit write was safe because the unit was the only field. Now one field&#39;s success clears the shared failure flag while the other field is still unconfirmed. It recovers on the next successful load or a mode tap, so it&#39;s wrong but recoverable.
-- **Fix sketch:** in `chooseUnit`&#39;s `onSuccess`, also call `viewWrite.adoptLoad(it.sessionView)` when `viewWrite.confirmed == null` and no view write succeeded in the meantime. The response is server truth. Or only clear `loadFailed` once both fields have a confirmed value.
-- **Reproducer:** none — there&#39;s no existing test for it; it needs a new test in `SettingsStateTest`:
-  1. `preferencesResult = failure`, then `load()`.
-  2. Set `preferencesResult = success(WorkoutPreferences(KG, QUICK))`, then `chooseUnit(LBS)`.
-  3. Assert `!state.loadFailed &amp;&amp; state.sessionView == FOCUS`. That assertion passes against this diff, which is the bug.
-
-#### Minor (Nice to Have)
-**`SettingsState.kt:270` (load success gating) — concurrent re-entry**
-- **Scenario:** a load succeeds and is still the newest load, but a mode write succeeded while it was in flight. The new rule, `current &amp;&amp; noWriteSucceeded`, now leaves `loadFailed` alone.
-- **Result:** if `loadFailed` was already true (an earlier failure) and the view write&#39;s token was stale, so it didn&#39;t clear the flag, the retry banner stays up even though the latest load succeeded. It&#39;s harmless and a re-tap fixes it, but it&#39;s a needless widening of the old unit-only gate.
-- **Reproducer:** none — needs a hand-built interleaving with gated fakes; no existing command shows it.
-
-**`SettingsState.kt:277` — error return (reporting)**
-- **Scenario:** the load-failure fallback message changed from `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` to an inline string.
-- **Result:** it works, but the copy is no longer in the shared constants. This is a reporting nit only.
-- **Reproducer:** none — copy-only.
-
-### Assessment
-**Ready for the human gate?** With fixes
-
-**Reasoning:** Sends are serialised, every network wait has a timeout, a failed load can never send a guessed unit, and a unit PUT never overwrites the stored mode. The one real gap is the shared `loadFailed` flag: a unit write&#39;s success can clear it while the workout mode still shows an unconfirmed default and throws away the server&#39;s answer for it. It&#39;s recoverable, but it&#39;s a small fix and worth making before merge.</pre></details>
 <p class="muted">transcript: 20261013T121524Z-review-claude-code-opus-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
 </section>
 </body>

@@ -144,63 +144,6 @@ a { color: inherit; }
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Shared-state check
-
-- **`loadFailed`** (`ui/SettingsState.kt`). Lines that write it:
-  - `:270` load success clears it only when no write of either field succeeded during the load. **Still correct**, and conservative.
-  - `:275` load failure sets it under the same check. **Still correct.**
-  - `:295` `chooseUnit` success clears it whenever the unit write is current. **Now wrong** — this is Important #1 below.
-  - `:310` `chooseUnit` NOTHING_CONFIRMED sets it. **Still correct.**
-  - `:339` `chooseSessionView` success clears it. **Still correct**: this write can only be sent once the unit is confirmed, so both fields are confirmed when it succeeds.
-  - `:351` `chooseSessionView` NOTHING_CONFIRMED sets it. **Still correct.**
-- **`sendMutex`**: no fields are written. Both write functions now go through it in order, and the mode write reads `unitWrite.confirmed` while holding the lock. **Correct**, and the queued-unit test covers it.
-- **`isSaving`** (`:234`) now also covers `viewWrite`. Nothing outside `SettingsState` reads it, so the wider meaning has no effect elsewhere. **Correct.**
-- **`unitWrite.confirmed`**: written only at `OptimisticWrite.onSuccess` and `adoptLoad`, as before. The new code only reads it. **Correct.**
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-
-**1. A unit write clears the retry flag while the workout mode still shows a value the server never confirmed** — `ui/SettingsState.kt:295`
-- **What&#39;s wrong:** before this diff, `loadFailed` described one field only. Now `viewWrite` can raise it too, at `:351`, and leave the mode control showing a value the server never confirmed. `chooseUnit`&#39;s success at `:295` still clears the flag based on the unit field alone. It also ignores the `sessionView` that comes back in its own response.
-- **Failure sequence:**
-  1. `load()` fails.
-  2. The user taps Quick. No PUT is sent; the view stays QUICK (NOTHING_CONFIRMED) and `loadFailed` is set to true.
-  3. The user then picks LBS, and that write succeeds.
-  4. `loadFailed` becomes false, so the retry path disappears. The mode control still shows QUICK, but the server holds FOCUS, and `viewWrite.confirmed` stays null.
-- **Fix:** on a unit write&#39;s success, adopt `it.sessionView` into `viewWrite` when nothing has been confirmed for it yet (the response is authoritative). Alternatively, clear `loadFailed` only when both `unitWrite.confirmed` and `viewWrite.confirmed` are non-null.
-- **Reproducer:** none — no test covers this order. It would be a `SettingsStateTest` case: failed `load`, then `chooseSessionView(QUICK)`, then a successful `chooseUnit(LBS)`, then assert `state.sessionView == FOCUS || state.loadFailed`. With the current code that assertion fails.
-
-#### Minor (Nice to Have)
-
-**2. The load-failure fallback message is now a literal instead of the shared constant** — `ui/SettingsState.kt:276`
-- The fallback text is now `&#34;Could not load your settings.&#34;` written inline, and the `FailureMessages` import was removed.
-- A grep finds no remaining use of `COULD_NOT_LOAD_WEIGHT_UNIT`, so the constant is probably dead now.
-- Either update the constant (and rename it) or delete it, so the copy stays in one place.
-- **Reproducer:** `grep -rn COULD_NOT_LOAD_WEIGHT_UNIT shared/src` finds no remaining use.
-
-**3. &#34;Could not save your workout mode.&#34; is repeated three times** — `ui/SettingsState.kt:335-352`
-- The same string appears three times, and at `:335` it is the message of an `error(...)` call, so it is also what the fallback shows.
-- Pull it into a single constant.
-- **Reproducer:** none — duplicated copy, no wrong behaviour.
-
-**4. The new UI test can&#39;t detect a dropped unit** — `SettingsScreenUiTest.kt` (`tappingQuickSavesItAtOnce`)
-- The mock always answers `&#34;displayUnit&#34;:&#34;KG&#34;`, and KG is also the loaded unit.
-- So the assertion that the unit was carried would still pass if the code sent a hard-coded default instead of the confirmed unit.
-- Loading the unit as LBS would make the test meaningful.
-- **Reproducer:** none — this is a gap in the test, not a runtime defect.
-
-### Recommendations
-- **Wire format:** check that the backend treats a PUT with no `sessionView` key as &#34;leave it unchanged&#34; and doesn&#39;t reset it to the default. The client relies on `encodeDefaults = false`, and the test at `SettingsStateTest` only checks the encoding, not what the server does.
-- **Older servers:** a response without `sessionView` silently reads as FOCUS. That is fine for this payload, but say so in the PR description as the backward-compatibility story.
-
-### Assessment
-**Ready for the human gate?** With fixes
-
-**Reasoning:** The new field, the wire format and the ordering under `sendMutex` are sound and well tested. The one real problem is that `chooseUnit` still clears `loadFailed` as if the unit were the only field, which can hide the retry path while the mode control shows a value the server never confirmed.</pre></details>
 <p class="muted">transcript: 20261013T121250Z-review-claude-code-opus-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial pass">
@@ -264,65 +207,6 @@ None.
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Shared-state check
-
-The diff reuses the following state:
-
-- **`loadFailed`**:
-  - `SettingsState.kt:270`: still correct. `load` clears it only when no write of either field has succeeded since the load began.
-  - `SettingsState.kt:275`: still correct. It uses the same gate.
-  - `SettingsState.kt:295`: **issue (Important #1).** A unit write that succeeds clears it even when the workout mode has never been confirmed.
-  - `SettingsState.kt:310`: still correct. It only raises the flag.
-  - `SettingsState.kt:339`: correct in practice. A mode write can only be sent once a unit is confirmed, so by then the unit is known.
-  - `SettingsState.kt:351`: in practice this is the guard at line 335 refusing to send. It is correct: nothing is confirmed, so the retry path is right.
-- **`sendMutex`**: it is only taken at 293 and 334, and both are send-only critical sections. Still correct.
-- **`unitWrite.confirmed`**: it is now read at 335 to build the mode write. Its writers are `OptimisticWrite.onSuccess:103` and `adoptLoad:135`. Both set it only from real server answers, and the read happens inside the mutex, so a queued unit choice can&#39;t leak into the mode write. Still correct.
-- **`unitWrite.succeededWriteCount` / `viewWrite.succeededWriteCount`**: written only at `:102`. The mode write sends the confirmed unit, so it doesn&#39;t change the server&#39;s unit, and skipping a bump to the unit counter is sound. Still correct.
-- **`isSaving`**: now the OR of both fields. Still correct.
-- **`UpdateWorkoutPreferencesRequest` wire shape**: the client&#39;s `Json` (`GymieApiClient.kt:245`) leaves `encodeDefaults` at its default of false. A null `sessionView` is therefore omitted from the request, as the KDoc claims. Correct.
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-
-**1. `SettingsState.kt:295` (unchanged writer) and `:297`: after a failed load, a successful unit write clears `loadFailed` but leaves the workout mode on a default the server never sent.**
-
-- **What happens:** `load` fails, so `viewWrite.confirmed` is null and the control shows FOCUS from the constructor. The user picks LBS and the PUT succeeds. Line 295 then sets `loadFailed = false`, which removes the retry.
-  - The PUT response carries the stored `sessionView` (say QUICK), but `chooseUnit` throws it away.
-  - Settings now shows &#34;Focus&#34; while the server holds Quick, and the screen has no retry left.
-- **Why it matters:** this contradicts the class&#39;s own rule that it never presents an unconfirmed value as confirmed, and it hides the only way to re-sync. Tapping &#34;Focus&#34; afterwards also does nothing visible, because it is already selected.
-- **Fix:** in `chooseUnit`&#39;s `onSuccess`, call `viewWrite.adoptLoad(it.sessionView)` when no mode write has succeeded or is in flight. The answer is true server state. Alternatively, clear `loadFailed` only when `viewWrite.confirmed != null` as well.
-- **Reproducer:** none — there is no existing test for this path. This test would fail against the diff: `preferencesResult = failure`; `load()`; `preferencesResult = success(KG, QUICK)`; `chooseUnit(LBS)`; then assert `sessionView == QUICK || loadFailed`.
-
-**2. `WorkoutModels.kt:696`: the backward-compatibility story is one-sided.**
-
-- **What happens:** against a backend that has not yet shipped `session_view`, the PUT&#39;s `sessionView` is ignored. The response has no key, so it decodes to FOCUS, and `viewWrite.onSuccess` adopts FOCUS. The user&#39;s tap on Quick then silently snaps back with no error.
-- **Why it matters:** the project requires a changed interface to carry its compatibility story. This one covers the read side (&#34;a payload without the key means FOCUS&#34;) but not deploy order.
-- **Fix:** state that the server ships first, or treat a missing key in a PUT answer as &#34;unconfirmed&#34; (for example, make the response field nullable).
-- **Reproducer:** none — this needs an old server.
-
-#### Minor (Nice to Have)
-
-- **`SettingsState.kt:276`:** the load-failure fallback is now an inline literal (&#34;Could not load your settings.&#34;) instead of a `FailureMessages` constant. &#34;Could not save your workout mode.&#34; is also repeated three times. Add constants next to `COULD_NOT_LOAD_WEIGHT_UNIT`.
-- **`SettingsState.kt:339`:** the mode write&#39;s answer also carries `displayUnit`, which is real server state, and it is dropped. This is harmless because the unit sent was the confirmed one, but adopting it into `unitWrite.confirmed` would be more consistent.
-- **`SettingsStateTest.kt` &#34;mode-write-sends-confirmed-unit&#34;:** the gate predicate depends on `lastUpdatePreferencesView == null` at hook time. That couples the test to the fake&#39;s field-assignment order. A per-call counter would be less brittle.
-- **`AppScreens.kt` `WorkoutModeSetting`:**
-  - `enabled = true` is hard-coded. Compare whether the unit row disables itself while a load is failing.
-  - The label is built with `if FOCUS &#34;Focus&#34; else &#34;Quick&#34;`, which mislabels any future enum entry. Use a `when` to make it exhaustive.
-
-### Recommendations
-- Add tests for the cross-field interactions:
-  - a unit write after a failed load (Important #1);
-  - a mode write overlapping an in-flight load.
-- Consider letting each write adopt *both* fields from the full preferences answer, so the two `OptimisticWrite`s can&#39;t drift from the server.
-
-### Assessment
-**Ready for the human gate?** With fixes
-
-**Reasoning:** The mutex-serialised use of the confirmed unit is sound, and the tests exercise real state transitions. However, the untouched `chooseUnit` writer at line 295 now clears `loadFailed` for a state that also covers a never-confirmed workout mode, so Settings can show the wrong mode with no retry left.</pre></details>
 <p class="muted">transcript: 20261013T121250Z-review-claude-code-opus-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial pass">
@@ -386,61 +270,6 @@ None.
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Shared-state check
-
-The diff&#39;s new code reads or writes these existing pieces of state: `loadFailed`, `sendMutex`, `unitWrite.confirmed`, `unitWrite.succeededWriteCount`, `loadSeq`, `hasLoaded`, `isSaving` and the fake&#39;s `preferencesResult`.
-
-- **`loadFailed`** — it now stands for &#34;something about the preferences payload, unit or mode, is unconfirmed&#34;. Its writers:
-  - `SettingsState.kt:270`: load success, now gated on no write of either field having succeeded. Still correct.
-  - `SettingsState.kt:275`: load failure, same gate. Still correct.
-  - `SettingsState.kt:295` (unchanged): `chooseUnit` success sets `loadFailed = false` when the unit write is current. Before this diff, a confirmed unit meant everything on the screen was confirmed. Now `viewWrite.confirmed` can still be null. **Defect, see I1.**
-  - `SettingsState.kt:310`: unit write with nothing confirmed. Still correct.
-  - `SettingsState.kt:339`: view write success. Still correct, because a view write can only be sent once a unit is confirmed (`:335`).
-  - `SettingsState.kt:351`: view write with nothing confirmed. Still correct.
-- **`unitWrite.confirmed` / `succeededWriteCount`** — written only inside `OptimisticWrite`: `onSuccess` at `:102-103` and `adoptLoad` at `:135`. They are read under the mutex at `:335`, so they reflect the earlier sends once those settle. Still correct. One gap: the unit&#39;s own `onSuccess` never feeds the server&#39;s `sessionView` into `viewWrite` (part of I1).
-- **`sendMutex`** — only locked at `:293` and `:332`. Still correct.
-- **`loadSeq`** — written only at `:253` (`next`). Still correct.
-- **`hasLoaded`** — written only at `:281`. Still correct.
-- **`isSaving`** — derived. Still correct.
-- **`FakeWorkoutApi.preferencesResult`** — overwritten at `FakeWorkoutApi.kt:200` by every update. The new default (`sessionView ?: storedView`) keeps the mode the fake already held. Still correct.
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-
-**I1 — `SettingsState.kt:295`: a successful unit write clears `loadFailed` even though the workout mode was never confirmed.**
-- **What happens:**
-  1. `load()` fails, so `loadFailed` is true and `viewWrite.confirmed` is null.
-  2. The user taps LBS, and that write succeeds.
-  3. Line 295 sets `loadFailed = false`.
-  4. The retry option disappears. The Workout mode row keeps showing the placeholder FOCUS, even if the server holds QUICK. Nothing on screen says this is a guess, and the PUT&#39;s response carried the real `sessionView`.
-- **Why it matters:** the class KDoc promises that nothing unconfirmed is shown as if it were confirmed. That promise now fails for the mode row.
-- **How to fix:** in `chooseUnit`&#39;s success path, also adopt `it.sessionView` into `viewWrite` while no view write is in flight. That is safe because the server answers with the stored mode. Alternatively, only clear `loadFailed` when `viewWrite.confirmed != null`. Add a test for this sequence.
-- **Reproducer:** `none — no test covers it; the sequence above can be added to SettingsStateTest (fail load, chooseUnit(LBS) succeeds, assert loadFailed or that sessionView equals the server&#39;s QUICK)`.
-
-**I2 — `SettingsState.kt:276`: the load-failure message is no longer the shared constant.**
-- **What changed:** the message is now the inline string &#34;Could not load your settings.&#34; `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` (`FailureHandling.kt:15`) is still used by `WorkoutEditorScreen.kt:387`.
-- **Why it matters:** this message change is user-visible and wasn&#39;t mentioned anywhere in the change. The other failure strings (`:347`, `:352`) are also inline literals repeated in three places.
-- **How to fix:** add a `FailureMessages` constant for the settings-load message and one for the session-view message.
-- **Reproducer:** `none — copy/consistency issue, not a runtime failure`.
-
-#### Minor (Nice to Have)
-
-- **`SettingsState.kt:335`** — when no unit is confirmed, the code calls `error(...)` inside `runCatching`. The resulting `IllegalStateException` message becomes the user-facing notification. That works, but a dedicated early return would read more clearly than using an exception for a normal outcome.
-- **`SettingsScreenUiTest.kt` (`theWorkoutModeControlKeepsOneLineAtPhoneWidth`)** — this test has no `@Feature` tag, unlike its siblings.
-- **`AppScreens.kt` `WorkoutModeSetting`** — `enabled = true` is hard-coded, but the unit rows use their own enabled and saving state. The interaction is safe because sends are serialised, so this is only a consistency point.
-- **`WorkoutModels.kt:697`** — `WorkoutPreferences.sessionView` defaults to FOCUS when the key is missing. An older server that doesn&#39;t send the key will look exactly like a stored FOCUS. That is acceptable given the comment, but the compatibility assumption belongs in the API KDoc.
-
-### Recommendations
-- Add a test where a unit write&#39;s response carries `sessionView: QUICK` after a failed load. It covers I1 directly.
-- Consider a single &#34;adopt the full server answer&#34; helper used by both write paths and by load. That would stop each field&#39;s success path from ignoring the other field&#39;s half of the same payload.
-
-### Assessment
-**Ready for the human gate?** With fixes
-**Reasoning:** The interface change is backward-compatible (the new parameter is nullable with a default, and the request omits it when null). The tests run against real state logic and a MockEngine, and the unit-snapshot-under-mutex design is sound. The one real bug is that the unchanged `chooseUnit` success path clears `loadFailed`, which still assumes the unit is the only field on the screen. After a failed load, that hides retry while the mode row still shows a guessed value.</pre></details>
 <p class="muted">transcript: 20261013T121250Z-review-claude-code-opus-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
 </section>
 </body>

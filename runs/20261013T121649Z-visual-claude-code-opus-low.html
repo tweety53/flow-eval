@@ -143,17 +143,6 @@ a { color: inherit; }
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>The capture does not match the mockup. I compared the two by eye only: the band/seam measurement didn&#39;t produce output because `python3` isn&#39;t installed for the JSON step. That left no measured numbers, and the departures below are big enough to see at full scale.
-
-Some differences are just seed data and aren&#39;t counted: the exercise name (&#34;Close Grip Lat Pulldown&#34; vs &#34;Lat Pulldown&#34;), the A1/A2 vs B1/B2 tags, and the timer (&#34;25:50&#34; vs &#34;0:00&#34;).
-
-- defect: The &#34;Next time?&#34; option buttons (↑/↓ Weight, ↑/↓ Reps, Keep the same) look wrong. The mockup draws teal outlined buttons with teal labels on the card colour. The capture draws grey-bordered buttons filled with the surface colour and dark text labels.
-- defect: The option buttons are placed differently. In the mockup they run edge to edge in the content column (x≈72–704) with about 16px between rows. In the capture they are pulled in (x≈80–696) and the gaps between rows are bigger, so the grid sits lower and is taller.
-- defect: The Evaluation note field border is the wrong colour: light teal/blue in the mockup, mid grey in the capture.
-- defect: The Save button is narrower and moved. In the mockup its right edge lines up with the field at x≈704; in the capture it ends at about x≈696 and sits lower.
-- defect: The first progress segment in the header is near-black in the mockup but teal in the capture, the same as the active segment.
-
-verdict: mismatch</pre></details>
 <p class="muted">transcript: 20261013T121649Z-visual-claude-code-opus-low/kan-870-qm-q6/1/transcript.jsonl</p>
 </section>
 <section id="trial-kan-870-qm-q6-2" class="trial pass">
@@ -217,17 +206,6 @@ verdict: mismatch</pre></details>
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>I looked at both images directly. The band and seam pairing step didn&#39;t run: `python3` isn&#39;t installed, so the script&#39;s JSON was never parsed. So I made no per-control measurements, and these defects come from reading the two images side by side. The button and field changes are big enough to show without numbers.
-
-- defect: Step-1 progress segment is blue in the capture but dark grey in the mockup (header progress bar).
-- defect: Capture shows a different exercise (&#34;B1 Lat Pulldown&#34; on one line, &#34;straight into B2&#34;, and &#34;B2&#34; on the next card) where the mockup shows &#34;A1 Close Grip Lat Pulldown&#34; on two lines and &#34;A2&#34;. This is a different seed data state, so the vertical positions down the page can&#39;t be compared.
-- defect: The &#34;Next time?&#34; buttons (↑/↓ Weight, ↑/↓ Reps, Keep the same) have a light surface fill, grey borders and dark text in the capture. The mockup draws them with a transparent fill, blue (accent) borders and blue text.
-- defect: The &#34;Next time?&#34; buttons are inset further from the container sides in the capture (about x=80–695 against the mockup&#39;s 72–703) and have larger vertical gaps between rows.
-- defect: The Evaluation note field border is dark grey in the capture but light blue in the mockup.
-- defect: The Save button is narrower in the capture and its right edge sits at about 695 instead of 703, so it no longer lines up with the note field&#39;s right edge as it does in the mockup.
-- defect: Header title starts further left in the capture (x≈105 vs 121), and the timer reads &#34;0:00&#34; instead of a running time like &#34;25:50&#34;.
-
-verdict: mismatch</pre></details>
 <p class="muted">transcript: 20261013T121649Z-visual-claude-code-opus-low/kan-870-qm-q6/2/transcript.jsonl</p>
 </section>
 <section id="trial-kan-870-qm-q6-3" class="trial pass">
@@ -291,18 +269,6 @@ verdict: mismatch</pre></details>
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>I judged this pair by eye only. The band/seam pairing script didn&#39;t run because the pipe I put after it needed `python3`, which isn&#39;t installed here (exit 127). So none of the findings below are backed by measurements. The departures are large enough to see at full scale, and they decide the verdict on their own.
-
-- defect: The four &#34;Next time?&#34; buttons (↑/↓ Weight, ↑/↓ Reps) and &#34;Keep the same&#34; are drawn differently. The mockup has outlined buttons with a teal border, teal label text and no fill. The capture has buttons filled with the surface colour, a light grey border and dark text.
-- defect: The button grid is narrower in the capture. It is inset about 80px from the left instead of the mockup&#39;s 72px, and the right edge stops around x≈695 instead of ≈703. The vertical gap between rows is also larger, so every row below it moves down.
-- defect: The &#34;Evaluation note&#34; field border is mid-grey in the capture. The mockup draws it light teal/blue.
-- defect: The &#34;Save&#34; button is narrower and sits more to the right in the capture (about x 551–695 against the mockup&#39;s 538–703). It is also taller and lower on the page.
-- defect: The first segment of the progress bar is teal in the capture. The mockup draws it dark grey, so the completed and current segments look the same.
-- defect: The header title starts further left in the capture (x≈105 against ≈121). The header and progress bar also sit about 5–8px higher.
-- defect: The exercise card is laid out differently. The capture&#39;s title fits on one line (&#34;Lat Pulldown&#34;), where the mockup&#39;s wraps to two lines (&#34;Close Grip Lat Pulldown&#34;). This is the same view in a different state (precondition 2), so the card&#39;s vertical spacing can&#39;t be compared. The title text itself is a data difference (A1/B1, A2/B2, timer 25:50 against 0:00).
-- defect: &#34;Edit note&#34; in the A2/B2 card header and the &#34;Show sets&#34; row are shifted slightly to the right in the capture.
-
-verdict: mismatch</pre></details>
 <p class="muted">transcript: 20261013T121649Z-visual-claude-code-opus-low/kan-870-qm-q6/3/transcript.jsonl</p>
 </section>
 </body>

@@ -144,49 +144,6 @@ a { color: inherit; }
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Summary
-
-The diff adds a workout-mode preference to Settings, touching the shared API, domain models, `SettingsState`, the Settings UI, and tests. No project standards files resolved (the Project standards field is empty), so the hard-invariant section is empty and I applied the universal principles only. The diff adds no suppression annotations and touches no lint or build config. I worked from the diff text and did not read files or run the reproducer greps, so line numbers are approximate and reproducers are unexecuted. The diff is mostly principles-compliant, with a few real issues.
-
-### Issues
-
-#### Critical (Must Fix)
-
-None.
-
-#### Important (Should Fix)
-
-1. **`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`, `load()` failure branch (hunk `@@ -252`, roughly line 275).** The diff replaces `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` with the inline literal `&#34;Could not load your settings.&#34;` and drops the `FailureMessages` import. This breaks Single Source of Truth for user-facing failure text, and it changes the message shown for the existing load-failure path, which is not part of the feature. Fix: keep the shared constant, or add a `COULD_NOT_LOAD_SETTINGS` entry to `FailureMessages`.
-   - Reproducer: `grep -rn &#34;COULD_NOT_LOAD_WEIGHT_UNIT\|Could not load your settings&#34; shared/src` (not executed). It should show the constant is now unused, and the literal appears only in `SettingsState.kt`.
-
-2. **`WorkoutCatalogApi.updatePreferences(displayUnit, sessionView: SessionView? = null)` in `api/WorkoutApi.kt` and `SettingsState.chooseSessionView` (roughly lines 322–330).** One PUT carries two independent preference fields, and &#34;null means unchanged&#34; is a flag-argument pattern. Because the backend requires `displayUnit` on every PUT, `viewWrite` must read `unitWrite.confirmed` under `sendMutex`. The mode write therefore depends on the unit write&#39;s internal state (Low coupling, Separation of Concerns). This tradeoff is knowingly taken: the KDoc and the inline comment say so, and the backend contract forces it. It is still costly to undo, and the cleaner fix is a backend change that accepts partial PUTs or a dedicated session-view endpoint.
-   - Reproducer: none — design-level coupling, not reproducible by a command.
-
-#### Minor (Nice to Have)
-
-3. **`WorkoutModels.kt`, `WorkoutPreferences.sessionView = SessionView.FOCUS` (hunk `@@ -686`).** A response payload missing the key silently decodes as Focus. The comment documents this deliberately, so it is a defensible choice. Under Robustness, though, the absence is not observable.
-   - Reproducer: none — requires decoding `{&#34;displayUnit&#34;:&#34;LBS&#34;}` with the shared serializer.
-
-4. **The FOCUS default is hard-coded in three places:** `WorkoutModels.kt` (the field default), `SettingsState.kt` (`OptimisticWrite(SessionView.FOCUS)`, roughly line 211), and `FakeWorkoutApi.kt` (`?: SessionView.FOCUS`, roughly line 192). The client&#39;s pre-load default is a legitimate duplicate, but the comment &#34;matching the server&#39;s default&#34; makes it a knowledge copy that can drift. Violates Single Source of Truth.
-   - Reproducer: `grep -rn &#34;SessionView.FOCUS&#34; shared/src` (not executed).
-
-5. **`AppScreens.kt`, `WorkoutModeSetting` label (roughly line 400): `label = { if (it == SessionView.FOCUS) &#34;Focus&#34; else &#34;Quick&#34; }`.** Adding a third `SessionView` value would silently label it &#34;Quick&#34;. Principle: fail fast on programmer error. An exhaustive `when` would fix it.
-   - Reproducer: none — requires adding an enum value.
-
-6. **`SettingsState.kt`, `chooseSessionView` (roughly lines 322–345).** The literal `&#34;Could not save your workout mode.&#34;` appears three times. DRY: hoist it to one constant.
-   - Reproducer: `grep -rn &#34;Could not save your workout mode&#34; shared/src` (not executed).
-
-7. **`FakeWorkoutApi.kt`, `updatePreferences` (roughly lines 190–200).** The fake re-implements the server&#39;s merge rule (`sessionView ?: storedView ?: FOCUS`). Testing principles favour asserting observable behaviour; a fake that mirrors the implementation can pass while sharing its bug. Also, `SettingsStateTest.kt`&#39;s `beforeUpdatePreferences` gate keys off the fake&#39;s recorded `lastUpdatePreferencesView`, which is a test-only control path.
-   - Reproducer: none — test-design observation.
-
-8. **`SettingsScreenUiTest.kt`:** the test `sessionViewIsGoneFromSettings` is removed and the `@Feature` ID `navigation-ui.settings.shows-exactly-the-two-unit-rows` is renamed to `shows-the-three-rows`. The Testing principles cue (&#34;test deleted in the same diff that changed the behavior it covered&#34;) applies on its face. The behaviour change is intended and the replacement covers it, so this is defensible. The renamed ID could orphan any traceability that references the old one.
-   - Reproducer: `grep -rn &#34;shows-exactly-the-two-unit-rows&#34; .` (not executed). A hit outside the test file means a reference is orphaned.
-
-### Assessment
-
-**Principles-compliant?** With fixes
-
-**Reasoning:** No critical violations, and no hard invariants apply because no standards resolved. The main structural cost is the shared PUT that couples the mode write to the unit&#39;s confirmed state. The author documented that tradeoff and it is forced by the backend contract, so I accept it for now. The real fixes are restoring the shared failure-message constant (Important 1) and removing the duplicated literals and FOCUS defaults (Minor 4 and 6). Everything else is defensible or minor.</pre></details>
 <p class="muted">transcript: 20261013T114007Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
@@ -250,35 +207,6 @@ None.
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>**Summary:** The diff adds a workout-mode preference across the API interface, its implementation, the domain models, the Settings screen, `SettingsState`, and tests. No project standards files resolved (the Project standards field is empty), so I applied the universal principles from `engineering-principles.md` only. No hard invariants apply: the diff adds no suppressions and touches no lint or build config. Two findings are worth fixing: a doc comment states a wire-format fact the client does not implement, and a user-facing message bypasses the shared `FailureMessages` catalog.
-
-### Issues
-
-#### Critical (Must Fix)
-None.
-
-#### Important (Should Fix)
-
-**1. Robustness, &#34;be strict about what you emit&#34; (also Least Astonishment).** `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:700` documents that a null `sessionView` is &#34;left off the wire (`encodeDefaults = false`)&#34;. The client&#39;s `Json` builder at `shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:245-248` sets only `ignoreUnknownKeys` and `isLenient`. kotlinx&#39;s default is `encodeDefaults = true`, so every unit-only PUT probably sends `&#34;sessionView&#34;:null`. The comment is wrong, and the test that relies on it (`SettingsStateTest.a unit write leaves the workout mode off the wire`) would likely fail.
-- Fix: either set `encodeDefaults = false` on the client `Json`, which also affects every other request body, or drop the claim and make the wire contract explicit. The first option is the cleaner one if no other body depends on defaults being encoded.
-- Reproducer: `./gradlew :shared:jvmTest --tests &#39;com.gymie.shared.ui.SettingsStateTest&#39;` (not run; the expected failure is the assertion on `&#34;sessionView&#34;` in the unit-write JSON).
-
-**2. Single Source of Truth for user-facing copy.** `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276` replaces `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` (defined at `shared/src/commonMain/kotlin/com/gymie/shared/ui/components/FailureHandling.kt:15`) with the literal `&#34;Could not load your settings.&#34;`. The import is removed, so this message now lives outside the catalog. It also changes the copy for the existing unit-load failure path without the diff saying so.
-- Fix: add a catalog constant for the new text, or keep the existing constant for the unit load path.
-- Reproducer: none — this is a structural finding; the evidence is the removed import and the literal in the diff.
-
-#### Minor (Nice to Have)
-
-**3. DRY, knowledge duplication of the default mode.** `FOCUS` is the default in three client places: `WorkoutModels.kt` (`WorkoutPreferences.sessionView = SessionView.FOCUS`), `SettingsState.kt` (`OptimisticWrite(SessionView.FOCUS)`, noted as &#34;matching the server&#39;s default&#34;), and `FakeWorkoutApi.kt` (`?: SessionView.FOCUS`). Deriving the `SettingsState` seed from the model&#39;s default would leave one source. The duplication is knowing, but the fix is cheap.
-- Reproducer: none — structural finding.
-
-**4. DRY, repeated literal.** `&#34;Could not save your workout mode.&#34;` appears at `SettingsState.kt:335`, `:347`, and `:352`. A named constant would keep these in sync.
-- Reproducer: none — structural finding.
-
-### Assessment
-**Principles-compliant?** With fixes
-
-**Reasoning:** No hard invariants are violated, and the design is largely sound. The mode write depends on the confirmed unit at `SettingsState.kt:335` because the backend PUT requires `displayUnit`. That is a Low-coupling cost, but it is documented in the KDoc, and a partial-update (PATCH) contract on the server would be the right long-term fix, so I&#39;m treating it as an accepted tradeoff rather than a finding. The wire-format claim in finding 1 is the one that needs fixing before merge, because the documentation and the test both assume behavior the code does not provide. Findings 2–4 are cleanup.</pre></details>
 <p class="muted">transcript: 20261013T114007Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
@@ -342,54 +270,6 @@ None.
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
-<details><summary>output.md</summary><pre>### Summary
-
-The diff adds a workout-mode (&#34;session view&#34;) preference to Settings: a `SessionView` enum, an optional `sessionView` parameter on `updatePreferences`, a `SettingsState` write path, and a Settings row. The project standards field is empty, so no standards file resolved. I applied the universal principle list only, and the hard-invariant section is empty. The diff adds no suppression annotations and touches no lint or build config. The most relevant principles are SSOT/DRY, Least Astonishment, Low coupling, and CQS. The diff is mostly sound. It has two knowledge-duplication problems and a regression in shared message handling.
-
-Deliberate tradeoffs, not raised as findings:
-- **Coupling:** `chooseSessionView` reads `unitWrite.confirmed` and shares `sendMutex`. This exists because the backend requires `displayUnit` on every PUT. The KDoc explains it, and the alternative is a backend contract change.
-- **CQS:** `updatePreferences` both writes and returns the stored state. That is pre-existing, and the KDoc states it (&#34;answering what is now in force&#34;).
-
-### Issues
-
-#### Critical (Must Fix)
-
-None.
-
-#### Important (Should Fix)
-
-**1. SettingsState.kt, `load()` failure branch (~l.270–280).**
-- **Principle:** Single Source of Truth. The `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` constant is removed from the import, and the unit-load failure now uses an inline literal `&#34;Could not load your settings.&#34;`. This replaces a shared message with a new string and silently changes the user-visible text for the unit path, which the diff does not mention.
-- **Fix:** Restore `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` for the unit path. If the settings load needs a generic message, add a named constant to `FailureMessages` rather than inlining a string.
-- **Reproducer:** `grep -rn &#34;COULD_NOT_LOAD_WEIGHT_UNIT&#34; shared/src` — the constant still exists and is no longer used by `SettingsState.kt`, showing the bypass.
-
-**2. The `SessionView.FOCUS` default is restated in several places (SSOT / DRY).**
-- WorkoutModels.kt:697 (`WorkoutPreferences.sessionView = SessionView.FOCUS`, commented &#34;The server&#39;s own default&#34;).
-- SettingsState.kt, `private val viewWrite = OptimisticWrite(SessionView.FOCUS)` and the `sessionView` getter.
-- FakeWorkoutApi.kt, `sessionView ?: storedView ?: SessionView.FOCUS`.
-- SettingsScreenUiTest.kt, the MockEngine `?: &#34;FOCUS&#34;`.
-- Having a client-side default before the first load is defensible. Restating it at each site means a server-default change needs several edits. The fix is one named source, e.g. a `SessionView.DEFAULT` in the companion or a top-level constant that the data class default and `SettingsState` both reference.
-- **Reproducer:** `grep -rn &#34;SessionView.FOCUS\|\&#34;FOCUS\&#34;&#34; shared/src` — shows the default in four separate files.
-
-#### Minor (Nice to Have)
-
-**3. SettingsState.kt, `chooseSessionView` (~l.330–356).** The string `&#34;Could not save your workout mode.&#34;` appears three times (the `error(...)` and two `notifications.failure` fallbacks). That is DRY knowledge duplication. Extract one constant.
-- **Reproducer:** `grep -c &#34;Could not save your workout mode&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt` prints `3`.
-
-**4. SettingsState.kt, `load()` (~l.262–275).** The stale-load guard logic (`unitWritesBeforeThisLoad`, `viewWritesBeforeThisLoad`, `noUnitWriteSucceeded…`, `noViewWriteSucceeded…`, `noWriteSucceeded`) is now hand-duplicated per field. Adding a third field means copying it again. A helper on `OptimisticWrite` (for example, `succeededSince(snapshot)`) would keep that knowledge in one place.
-- **Reproducer:** none — structural; the duplication is visible in the diff hunk for `load()`.
-
-**5. AppScreens.kt, `WorkoutModeSetting`, `label = { if (it == SessionView.FOCUS) &#34;Focus&#34; else &#34;Quick&#34; }` (~l.418).** This is an open/closed concern. A third `SessionView` value would be labelled &#34;Quick&#34; without a compile error. An exhaustive `when` (or a label property on the enum) would fail at compile time.
-- **Reproducer:** none — a hypothetical enum addition; the `if/else` in the diff is the evidence.
-
-**6. SettingsStateTest.kt, `a unit write leaves the workout mode off the wire`.** The test builds its own `Json` (`Json.encodeToString(...)`) rather than the client&#39;s configured instance. If the client&#39;s `encodeDefaults` setting changes, this test can still pass. The test also mixes a serialization assertion with a state assertion, so it can fail for two reasons.
-- **Reproducer:** none — the test&#39;s own `Json` default is visible at the first `assertFalse` line.
-
-### Assessment
-
-**Principles-compliant?** With fixes
-
-**Reasoning:** No Critical findings and no hard-invariant violations, since no standards file resolved. The two Important items are real: a shared failure-message constant is bypassed, changing user-visible text, and the `FOCUS` default is restated across production and test code. Both are cheap to fix. The Minor items are tidy-ups. The tradeoffs in coupling and CQS were taken knowingly and are documented in the diff.</pre></details>
 <p class="muted">transcript: 20261013T114007Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
 </section>
 </body>
