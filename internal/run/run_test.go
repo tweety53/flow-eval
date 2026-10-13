@@ -1263,7 +1263,7 @@ func TestEachReviewSlotHasItsOwnBaseline(t *testing.T) {
 	for _, want := range []string{
 		`<h2 id="baselines">baselines</h2>`,
 		`<tr><td>review-primary</td><td>p-base`, `<tr><td>review-principles</td><td>q-base`,
-		`<td>baseline</td>`, `<td>score &#43;100.0 · cost – · wall – · in – · out –</td>`,
+		`<td colspan="5" class="muted">baseline</td>`, `<td class="gain">&#43;100.0</td><td>–</td><td>–</td><td>–</td><td>–</td>`,
 	} {
 		if !strings.Contains(string(index), want) {
 			t.Errorf("index.html lacks %q", want)
@@ -1277,6 +1277,18 @@ func TestEachReviewSlotHasItsOwnBaseline(t *testing.T) {
 	}
 	if id, _ := BaselineID(baselines, "review", "primary"); id != "p-base" {
 		t.Errorf("setting the principles baseline changed the primary one to %q", id)
+	}
+}
+
+// A run against its baseline reads as a signed difference per measure: score in points, the rest as
+// a percentage change, each a gain or a loss by which way is better, and "same" when unchanged.
+func TestVsBaseCells(t *testing.T) {
+	f := func(v float64) *float64 { return &v }
+	base := indexRun{S: summary{Score: 60, HasScore: true}, Cost: 2, WallAvg: f(100), InAvg: f(1000), OutAvg: f(50)}
+	cand := indexRun{S: summary{Score: 40, HasScore: true}, Cost: 0.1, WallAvg: f(100.2), InAvg: f(2710), OutAvg: f(25)}
+	want := []delta{{"−20.0", "loss"}, {"−95%", "gain"}, {"same", ""}, {"+171%", "loss"}, {"−50%", "gain"}}
+	if got := vsBase(cand, base); !slices.Equal(got, want) {
+		t.Errorf("vsBase = %v, want %v", got, want)
 	}
 }
 
@@ -1335,7 +1347,7 @@ func TestIndexShowsTrialWallRange(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !strings.Contains(b.String(), "<th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th>"+
-		"<th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>vs baseline</th><th>flow-eval</th>") {
+		"<th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>score vs baseline</th><th>cost vs baseline</th><th>wall vs baseline</th><th>tokens in vs baseline</th><th>tokens out vs baseline</th><th>flow-eval</th>") {
 		t.Errorf("index header lacks the wall and token columns where the rows put them:\n%s", b.String())
 	}
 	// Tokens in count the whole prompt: uncached input, cache reads and both cache writes.

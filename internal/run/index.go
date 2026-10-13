@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"html/template"
 	"maps"
+	"math"
 	"os"
 	"path/filepath"
 	"slices"
@@ -35,11 +36,16 @@ type indexRun struct {
 	HasPage                bool // runs from before the HTML page have none
 	// Baseline is the key of the baseline this run is (review-primary), "" when it is none.
 	Baseline string
-	// VsBase compares this run with its role and slot's baseline: score difference and cost, wall
-	// and token ratios; "" with no baseline, "not comparable" when Comparable refuses the pair.
-	VsBase string
-	lines  []Line
+	// VsBase compares this run with its role and slot's baseline, one cell per measure; nil with no
+	// baseline or when NotComparable.
+	VsBase        []delta
+	NotComparable bool // Comparable refuses this run and its baseline
+	lines         []Line
 }
+
+// delta is one measure of a run against its baseline: its text, and gain or loss when the run is
+// better or worse on it.
+type delta struct{ Text, Class string }
 
 // indexRole is one index section's runs, newest first: a role's, or one slot's of a role whose runs
 // carry a slot (review-primary), keyed like its baseline.
@@ -204,7 +210,7 @@ func Repaint(runsDir, baselinesDir string) (pages, err error) {
 			case bi >= 0:
 				b := &runs[bi]
 				if Comparable(r.ID, r.H, r.lines, b.ID, b.H, b.lines) != nil {
-					r.VsBase = "not comparable"
+					r.NotComparable = true
 				} else {
 					base = &b.S // painting sets classes only, never the scores compared
 					r.VsBase = vsBase(*r, *b)
@@ -312,21 +318,34 @@ func newIndexRun(id string, h Header, lines []Line) indexRun {
 	return r
 }
 
-// vsBase states r against its baseline b: the role-score difference, then r's cost, mean wall-clock
-// and mean tokens in and out as multiples of b's.
-func vsBase(r, b indexRun) string {
-	ratio := func(x, y *float64) string {
-		if x == nil || y == nil || *y == 0 {
-			return "–"
-		}
-		return fmt.Sprintf("×%.2f", *x / *y)
-	}
-	score := "–"
+// vsBase states r against its baseline b: the role-score difference in points, then r's cost, mean
+// wall-clock and mean tokens in and out as a percentage change on b's. A higher score is a gain; for
+// the others, lower is.
+func vsBase(r, b indexRun) []delta {
+	score := delta{Text: "–"}
 	if r.S.HasScore && b.S.HasScore {
-		score = fmt.Sprintf("%+.1f", r.S.Score-b.S.Score)
+		score = signed(r.S.Score-b.S.Score, "%+.1f", 0.05, false)
 	}
-	return fmt.Sprintf("score %s · cost %s · wall %s · in %s · out %s", score,
-		ratio(&r.Cost, &b.Cost), ratio(r.WallAvg, b.WallAvg), ratio(r.InAvg, b.InAvg), ratio(r.OutAvg, b.OutAvg))
+	pct := func(x, y *float64) delta {
+		if x == nil || y == nil || *y == 0 {
+			return delta{Text: "–"}
+		}
+		return signed((*x / *y - 1)*100, "%+.0f%%", 0.5, true)
+	}
+	return []delta{score, pct(&r.Cost, &b.Cost), pct(r.WallAvg, b.WallAvg), pct(r.InAvg, b.InAvg), pct(r.OutAvg, b.OutAvg)}
+}
+
+// signed renders d by format, or "same" within ±eps of zero; a positive d is a gain, or a loss when
+// lowerIsBetter.
+func signed(d float64, format string, eps float64, lowerIsBetter bool) delta {
+	if math.Abs(d) < eps {
+		return delta{Text: "same"}
+	}
+	text := strings.Replace(fmt.Sprintf(format, d), "-", "−", 1) // a true minus sign
+	if d > 0 != lowerIsBetter {
+		return delta{Text: text, Class: "gain"}
+	}
+	return delta{Text: text, Class: "loss"}
 }
 
 // spread returns the min, mean and max of vs; all nil when vs is empty.
@@ -371,9 +390,9 @@ var _index = template.Must(template.New("index").Funcs(template.FuncMap{"oneDeci
 
 <h2 id="{{.Key}}">{{.Key}}</h2>
 <div class="table"><table>
-<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>vs baseline</th><th>flow-eval</th></tr>
+<tr><th>run</th><th>started</th><th>harness</th><th>model</th><th>served</th><th>effort</th><th>slot</th><th>judge</th><th>k</th><th>cases</th><th>role score</th><th>valid/trials</th><th>passes</th><th>infra errors</th><th>cost</th><th>judge cost</th><th>wall min s</th><th>wall avg s</th><th>wall max s</th><th>tokens in min</th><th>tokens in avg</th><th>tokens in max</th><th>tokens out min</th><th>tokens out avg</th><th>tokens out max</th><th>score vs baseline</th><th>cost vs baseline</th><th>wall vs baseline</th><th>tokens in vs baseline</th><th>tokens out vs baseline</th><th>flow-eval</th></tr>
 {{- range .Runs}}
-<tr{{with .S.Class}} class="{{.}}"{{end}}><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}} <span class="muted">(no page)</span>{{end}}</td><td>{{.H.Started.Format "2006-01-02 15:04"}}</td><td>{{.H.Harness}}</td><td>{{.H.Model}}</td><td>{{or .S.Served "–"}}</td><td>{{.H.Effort}}</td><td>{{.H.Slot}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{.Cases}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Valid}}/{{.Trials}}</td><td>{{.Passes}}</td><td>{{.Infra}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{printf "$%.4f" .JudgeUSD}}</td><td>{{oneDecimal .WallMin}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{oneDecimal .WallMax}}</td><td>{{whole .InMin}}</td><td>{{whole .InAvg}}</td><td>{{whole .InMax}}</td><td>{{whole .OutMin}}</td><td>{{whole .OutAvg}}</td><td>{{whole .OutMax}}</td><td>{{if .Baseline}}baseline{{else}}{{or .VsBase "–"}}{{end}}</td><td>{{printf "%.7s" .H.FlowEvalSHA}}</td></tr>
+<tr{{with .S.Class}} class="{{.}}"{{end}}><td>{{if .HasPage}}<a href="./{{.ID}}.html">{{.ID}}</a>{{else}}{{.ID}} <span class="muted">(no page)</span>{{end}}</td><td>{{.H.Started.Format "2006-01-02 15:04"}}</td><td>{{.H.Harness}}</td><td>{{.H.Model}}</td><td>{{or .S.Served "–"}}</td><td>{{.H.Effort}}</td><td>{{.H.Slot}}</td><td>{{.H.Judge}}</td><td>{{.H.K}}</td><td>{{.Cases}}</td><td>{{if .S.HasScore}}{{printf "%.1f" .S.Score}}{{else}}–{{end}}</td><td>{{.Valid}}/{{.Trials}}</td><td>{{.Passes}}</td><td>{{.Infra}}</td><td>{{printf "$%.4f" .Cost}}</td><td>{{printf "$%.4f" .JudgeUSD}}</td><td>{{oneDecimal .WallMin}}</td><td>{{oneDecimal .WallAvg}}</td><td>{{oneDecimal .WallMax}}</td><td>{{whole .InMin}}</td><td>{{whole .InAvg}}</td><td>{{whole .InMax}}</td><td>{{whole .OutMin}}</td><td>{{whole .OutAvg}}</td><td>{{whole .OutMax}}</td>{{if .Baseline}}<td colspan="5" class="muted">baseline</td>{{else if .NotComparable}}<td colspan="5" class="muted">not comparable</td>{{else if .VsBase}}{{range .VsBase}}<td{{with .Class}} class="{{.}}"{{end}}>{{.Text}}</td>{{end}}{{else}}<td colspan="5" class="muted">no baseline</td>{{end}}<td>{{printf "%.7s" .H.FlowEvalSHA}}</td></tr>
 {{- end}}
 </table></div>
 {{- end}}
