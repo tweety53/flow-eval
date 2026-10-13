@@ -42,4 +42,4 @@ KAN
 
 ## default landing route
 
-pull request
+merge and push
