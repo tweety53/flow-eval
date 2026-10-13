@@ -106,6 +106,7 @@ type museRecord struct {
 	PayloadType string `json:"payload_type"`
 	Payload     struct {
 		Text   string `json:"text"`    // run.terminal.*: the final message
+		Reason string `json:"reason"`  // run.terminal.failed: why the run failed
 		CallID string `json:"call_id"` // tool.result
 		// CorrelationFacts is on every tool.result but a denied call's.
 		CorrelationFacts *struct {
@@ -133,7 +134,8 @@ type museRecord struct {
 // Parse implements Harness. Tool calls and the final text come from muse's stdout records; one Call
 // per model_completed event, across the main session's log and every subagent's; Turns counts the
 // main session's (the first record's stream). A transcript without a run.terminal record (muse died
-// mid-run) is an error. muse reports no cost and no context compaction.
+// mid-run) is an error. muse reports no cost and no context compaction. A run.terminal.failed whose
+// reason is an API error (a 429 once the subscription quota is exhausted) is an Outage.
 //
 // A call muse denies is a permission denial, not a tool error: its tool.result carries no
 // correlation_facts, only "tool denied: …", so its tool name comes from the session log's
@@ -171,6 +173,10 @@ func (Muse) Parse(r io.Reader) (Usage, error) {
 		case strings.HasPrefix(rec.PayloadType, "run.terminal."):
 			sawTerminal = true
 			u.FinalText = p.Text
+			if rec.PayloadType == "run.terminal.failed" && strings.HasPrefix(p.Reason, "API error") {
+				u.APIErrors++
+				u.Outage = p.Reason
+			}
 		case rec.PayloadType == "tool.result" && p.CorrelationFacts == nil:
 			u.PermissionDenials++
 			results = append(results, result{callID: p.CallID})

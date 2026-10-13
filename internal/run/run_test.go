@@ -765,6 +765,22 @@ func TestHarnessSideFailureAfterOutputIsInfra(t *testing.T) {
 	})
 }
 
+// outageHarness is an agent whose run the API ended before its answer.
+type outageHarness struct{ scriptHarness }
+
+func (h outageHarness) Parse(r io.Reader) (harness.Usage, error) {
+	u, err := h.scriptHarness.Parse(r)
+	u.FinalText, u.Outage = "", "API error 429: quota exhausted"
+	return u, err
+}
+
+// A run the API ended before the agent's answer is an infra error, never a fail charged to it.
+func TestAPIOutageIsInfra(t *testing.T) {
+	cfg := visualConfig(t, 1)
+	cfg.Harness = outageHarness{scriptHarness{script: "echo partial"}}
+	assertInfra(t, cfg, &hostDocker{root: t.TempDir()}, "agent API outage: API error 429: quota exhausted")
+}
+
 func assertInfra(t *testing.T, cfg Config, d *hostDocker, reason string) {
 	t.Helper()
 	id, err := Run(t.Context(), cfg, d)

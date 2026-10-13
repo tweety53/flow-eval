@@ -530,6 +530,9 @@ func runTrial(ctx context.Context, cfg Config, docker Docker, p prepared, sandbo
 		u = harness.Usage{}
 	case err != nil:
 		return fail(fmt.Errorf("parse transcript: %w", err))
+	case u.Outage != "":
+		// The API, not the agent, ended the run before its answer: an outage, never scored.
+		return infra(fmt.Errorf("agent API outage: %s", u.Outage))
 	}
 	if err := os.WriteFile(filepath.Join(art, "output.md"), []byte(u.FinalText), 0o644); err != nil {
 		return infra(err)

@@ -49,6 +49,9 @@ type Usage struct {
 	ServedModels    []string // model ids that answered, sorted; empty when the CLI does not say
 	ReportedCostUSD *float64 // the CLI's own cost figure, nil when it reports none
 	FinalText       string   // the agent's final message
+	// Outage is the API error that ended the run before its final message — a provider outage or an
+	// exhausted quota, not the agent's doing; "" when the run ended on its own.
+	Outage string
 	// Calls is each model call's tokens, one per API message, in order; nil when the CLI does not
 	// report them per call (codex). A long-prompt price tier is applied per call.
 	Calls []Call

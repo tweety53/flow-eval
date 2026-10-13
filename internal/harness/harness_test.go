@@ -3,6 +3,7 @@ package harness
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"maps"
 	"os"
 	"os/exec"
@@ -366,6 +367,32 @@ func TestMuseParse(t *testing.T) {
 	}
 	if _, err := (Muse{}).Parse(strings.NewReader(`{"payload_type":"tool.result"}`)); err == nil {
 		t.Error("Parse of a transcript with no run.terminal record succeeded, want an error")
+	}
+}
+
+// A run muse ends on an API error — the 429 of an exhausted subscription quota — is an outage; one
+// that fails for any other reason is not.
+func TestMuseParseReportsAnAPIOutage(t *testing.T) {
+	const quota = "API error 429 [request_id=r1]: Subscription quota exhausted. (rate_limit_error)"
+	tests := []struct {
+		name, payloadType, reason, wantOutage string
+		wantAPIErrors                         int
+	}{
+		{"quota exhausted", "run.terminal.failed", quota, quota, 1},
+		{"failed for another reason", "run.terminal.failed", "tool budget exceeded", "", 0},
+		{"completed", "run.terminal.completed", "", "", 0},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rec := fmt.Sprintf(`{"payload_type":%q,"payload":{"text":"","reason":%q}}`, tt.payloadType, tt.reason)
+			got, err := (Muse{}).Parse(strings.NewReader(rec))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got.Outage != tt.wantOutage || got.APIErrors != tt.wantAPIErrors {
+				t.Errorf("Outage %q, APIErrors %d; want %q, %d", got.Outage, got.APIErrors, tt.wantOutage, tt.wantAPIErrors)
+			}
+		})
 	}
 }
 
