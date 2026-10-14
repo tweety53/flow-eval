@@ -87,6 +87,22 @@ Writes `baselines/<role>.json` — `baselines/review-<slot>.json` for a review r
 repaints the index and run pages. Commit it with the run's
 `.jsonl` and `.md`.
 
+### `regrade`
+
+```bash
+flow-eval regrade <run-id>…
+```
+
+Grades every graded trial of each stored review run again, against the case labels and
+`judge.json` as they stand now — after a label is corrected, say. The trial's own metrics, cost and
+wall-clock are kept; its review grade, score, pass and judge usage are replaced, and the header
+takes the cases' current hashes and judge pin and records the regrading flow-eval sha as
+`regraded`. Each trial's report is read from `runs/<id>/<case>/<trial>/output.md`, or, when that
+gitignored file is gone, from the copy the committed run page carries, which the re-rendered page
+keeps; a copy the page cut at its size cap is refused, and the run is left as it was.
+Rewrites the run's `.jsonl`, `.md` and `.html` and the index; needs the judge's credential, as `run`
+does. Commit the rewritten files.
+
 ### `case add` and `case validate`
 
 ```bash
@@ -107,6 +123,7 @@ flow-eval prompts sync --agents ../agents --sha <agents commit>
 
 Vendors the role prompts and `rules/*.mdc` at that commit, less what `prompts/strip.txt` lists, and
 records it in `prompts/PIN`. Then rebuild the runner image, re-run each role and set new baselines.
+Tuning a prompt with flow-eval is [`docs/prompt-tuning.md`](docs/prompt-tuning.md).
 
 ## Reading results
 
@@ -124,7 +141,11 @@ records it in `prompts/PIN`. Then rebuild the runner image, re-run each role and
   names what an alias such as `sonnet` resolved to; `–` when the harness names none (codex).
 - **Case table:** `valid/k` (infra errors are excluded and listed apart), `passes` and `pass^k`,
   `score` and `stddev`, and the candidate's cost, wall-clock and tokens. `judge cost` is never
-  charged to the candidate. A review trial passes when its recall is 1.
+  charged to the candidate. A review trial passes when its recall is 1; its score is F1 × 100 plus 5
+  per net extra, at most 15. An extra is a finding of any severity that matches no label and that
+  the judge rates a plausible defect in the diff; net extras are extras less the unlabelled findings
+  it rates implausible, floored at 0. A finding that names a must-find defect away from its label is
+  neither (decision `review-extras-net`).
 - Every field of `runs/<id>.jsonl` is defined in design.md §6; the run id, the page and the colours
   in §8. Scoring is §7, and the visual score is decision `visual-score-balanced-accuracy`.
 

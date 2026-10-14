@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261013T163922Z-visual-muse-code-muse-spark-1.3-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261013T163922Z-visual-muse-code-muse-spark-1.3-low</h1>
+<dl class="header">
+<dt>role</dt><dd>visual</dd>
+<dt>harness</dt><dd>muse-code</dd>
+<dt>model</dt><dd>muse-spark-1.3</dd>
+<dt>served</dt><dd>muse-spark-1.3</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>2441dced49b875569f50b89391b75e2b71c7595d</dd>
+<dt>case set</dt><dd>d3ed92f7592902ba0ab84c1346ab1e8ff597f2a68e3a63f03d22438a04de3455</dd>
+<dt>flow-eval</dt><dd>aed7d0ffcec43faaee302c8bfc9957bb0e43ef0b</dd>
+<dt>started</dt><dd>2026-10-13T16:39:22Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-870-qm-q6">kan-870-qm-q6</a> · <a href="#trial-kan-870-qm-q6-1">trial 1</a> · <a href="#trial-kan-870-qm-q6-2">trial 2</a> · <a href="#trial-kan-870-qm-q6-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">100.0</span> <span class="muted">balanced accuracy: mean of each labelled verdict&#39;s mean case score, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-870-qm-q6" class="row-ok"><td>kan-870-qm-q6</td><td>3/3</td><td>3</td><td>yes</td><td>100.0</td><td>0.0</td><td>$0.3360</td><td>$1.0081</td><td>146.1</td><td>3353545</td><td>$0.1359</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-870-qm-q6-1" class="trial pass">
+<h3>kan-870-qm-q6 · trial 1 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.859794690233998</dd></div>
+<div><dt>cache_read</dt><dd>773234</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.31295684999999995</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>126090</dd></div>
+<div><dt>output</dt><dd>9261</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>54965</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>4687</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:19,&#34;read_file&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>21</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>20</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>123293</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>3210</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>13368</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.054017</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>12</dd></div>
+<div><dt>output</dt><dd>20</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.05401700000000001</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>6</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>- defect: top progress bar, first segment — dark grey (`#444141` run in mockup) vs blue (`#0088b0` run in capture, same as the second segment); the bar&#39;s vertical position also differs between the images (mockup ink at ~y120, capture ink at ~y115 in the `0,95,776,40` strip scan)
+- defect: &#34;Next time?&#34; buttons (↑Weight, ↓Weight, ↑Reps, ↓Reps) — blue borders and blue label text in the mockup vs grey borders and dark label text in the capture
+- defect: &#34;Keep the same&#34; button — blue label text and blue border in the mockup vs dark label text and grey border in the capture
+- defect: &#34;Evaluation note&#34; text field — light-blue border in the mockup vs grey border in the capture
+- defect: structural band pairing — 0 paired bands (1 `missing`, 3 `extra`), so the layout differs wholesale rather than pairing band-for-band
+
+Transcribed text runs (data, not departures — each is a plausible display value at the frame&#39;s precision): header timer &#34;25:50&#34; vs &#34;0:00&#34;; exercise title &#34;A1 Close Grip Lat Pulldown&#34; vs &#34;B1 Lat Pulldown&#34;; prescription &#34;straight into A2&#34; vs &#34;straight into B2&#34;; footer card &#34;A2 Leg Extension&#34; vs &#34;B2 Leg…&#34;. Set rows (&#34;Set 1 · 40 kg × 11 reps&#34; etc.), &#34;Last time: ↑ Reps&#34;, &#34;Show sets&#34;, &#34;Next time?&#34;, &#34;Evaluation note&#34;, and &#34;Save&#34; read the same in both.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261013T163922Z-visual-muse-code-muse-spark-1.3-low/kan-870-qm-q6/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-870-qm-q6-2" class="trial pass">
+<h3>kan-870-qm-q6 · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9057907021721401</dd></div>
+<div><dt>cache_read</dt><dd>885174</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.29436084999999995</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>92065</dd></div>
+<div><dt>output</dt><dd>10942</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>52259</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>6728</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:21,&#34;read_file&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>23</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>23</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:0.5}</dd></div>
+<div><dt>wall_ms</dt><dd>154578</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9955340528470413</dd></div>
+<div><dt>cache_read</dt><dd>2675</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>13601</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0548855</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>12</dd></div>
+<div><dt>output</dt><dd>19</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.054885500000000004</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>6</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Measured evidence collected. Band pairing segmented the frame as a single band (paired 0, missing 1 / extra 3), so it could not pair structure; I verified structure by element listing instead — both images contain, top to bottom: header row (back, title, timer, menu), 5-segment progress bar, exercise card (badge, title, prescription, hairline, last-time row, hairline, three set rows each with check-circle and Edit), &#34;Next time?&#34; with 5 outlined buttons, &#34;Evaluation note&#34; field, filled Save button, next exercise card. Order and kinds match everywhere; the vertical shift below the title is a wrapped-label height delta (frame: two-line &#34;Close Grip Lat Pulldown&#34;, capture: one-line &#34;Lat Pulldown&#34;), confirmed by transcription — a named cause, not a departure. All capture text runs are valid display values at frame precision (timer &#34;0:00&#34;, &#34;Lat Pulldown&#34;, &#34;straight into B2&#34;, set lines); name/timer differences are seed data, not defects.
+
+Departures (all script-measured, eyeball-confirmed against the crops):
+
+- defect: top progress bar first segment is dark gray (#444141 measured) in the mockup but teal (#0088b0 measured) in the capture
+- defect: the four &#34;Next time?&#34; option buttons (Weight/Reps up/down) have teal borders (#0088b0 measured) and teal labels in the mockup but gray borders (#d7d3d3 measured) and black labels in the capture
+- defect: the full-width &#34;Keep the same&#34; button has a teal border and teal label in the mockup but a gray border and black label in the capture
+- defect: the &#34;Evaluation note&#34; text field has a teal outline (#0088b0 measured) in the mockup but a gray outline (#d7d3d3 measured) in the capture
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261013T163922Z-visual-muse-code-muse-spark-1.3-low/kan-870-qm-q6/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-870-qm-q6-3" class="trial pass">
+<h3>kan-870-qm-q6 · trial 3 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9235698695937731</dd></div>
+<div><dt>cache_read</dt><dd>1331676</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.40083014999999994</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>110203</dd></div>
+<div><dt>output</dt><dd>14900</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>66651</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>8542</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:26,&#34;read_file&#34;:3}</dd></div>
+<div><dt>tool_calls_total</dt><dd>29</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>28</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>160342</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>1605</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>6679</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0269985</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>11</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0269985</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Measured evidence for the verdict:
+
+- Note-field border, same 632×96 box in both: `border.colour` mockup `#99e0ff` vs capture `#bab6b6`, distance 90.5 (limit 12).
+- &#34;Keep the same&#34; label ink: mockup `#0088b0` (blue) vs capture `#201e1d` (near-black); button-text runs scans show blue `#0088b0` runs inside mockup buttons and none in the capture.
+- Progress bar first segment on the centre scan line: mockup `#444141` (dark) vs capture `#0088b0` (blue), same positions/lengths for segments 2–5.
+- Text transcription (data, not defects): timer `25:50` vs `0:00`; title `A1 Close Grip Lat Pulldown · straight into A2` vs `B1 Lat Pulldown · straight into B2`; all set rows `Set N · 40 kg × 11 reps` valid display values in both. The two-line vs one-line title shifts rows below it, which is why the full-page band pairing collapses (0 paired) rather than a wholesale layout difference.
+
+- defect: &#34;Next time?&#34; buttons (up/down Weight, up/down Reps, Keep the same) use blue borders and blue labels in the mockup but grey borders and dark labels in the capture (label ink #0088b0 vs #201e1d)
+- defect: Evaluation note field border is light blue in the mockup but grey in the capture (#99e0ff vs #bab6b6, distance 90.5)
+- defect: first progress segment under the header is dark in the mockup but blue in the capture (#444141 vs #0088b0)
+verdict: mismatch
+</pre></details>
+<p class="muted">transcript: 20261013T163922Z-visual-muse-code-muse-spark-1.3-low/kan-870-qm-q6/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

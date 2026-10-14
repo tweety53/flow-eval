@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261013T163922Z-review-muse-code-muse-spark-1.3-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261013T163922Z-review-muse-code-muse-spark-1.3-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>muse-code</dd>
+<dt>model</dt><dd>muse-spark-1.3</dd>
+<dt>served</dt><dd>muse-spark-1.3</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>primary</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>2441dced49b875569f50b89391b75e2b71c7595d</dd>
+<dt>case set</dt><dd>4a69b4892171373d5eee344f3715671fbd2966aac76100ac8eb4a1894bf8922c</dd>
+<dt>flow-eval</dt><dd>aed7d0ffcec43faaee302c8bfc9957bb0e43ef0b</dd>
+<dt>started</dt><dd>2026-10-13T16:39:22Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">16.7</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-partial"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>1</td><td>no</td><td>16.7</td><td>23.6</td><td>$0.5435</td><td>$0.5435</td><td>48.3</td><td>1130995</td><td>$0.9142</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.7790981543225708</dd></div>
+<div><dt>cache_read</dt><dd>328072</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.19274529999999998</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>93020</dd></div>
+<div><dt>output</dt><dd>6414</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>51306</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2585</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:4}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:6,&#34;read_file&#34;:3,&#34;search&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>11</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>9</dd></div>
+<div><dt>wall_ms</dt><dd>55684</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>5350</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>91486</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.375009</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>20</dd></div>
+<div><dt>output</dt><dd>849</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>818</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.375009</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>10</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+Pre-existing state the new code reads or writes, with every writer grepped and re-read in full. All line numbers are the post-diff working tree.
+
+- `SettingsState.loadFailed` (`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`)
+  - Writers: `SettingsState.kt:270` (load success clears), `:275` (load failure sets), `:295` (unit-write success clears if current), `:310` (unit-write `NOTHING_CONFIRMED` sets), `:339` (new view-write success clears if current), `:351` (new view-write `NOTHING_CONFIRMED` sets). Verdict: still correct. Gating load success/failure on `noWriteSucceeded = noUnit &amp;&amp; noView` (`:267,:270,:274`) is the right generalisation: a view write that succeeded after the load began already answered the server-truth question, so the stale load must not clear/raise the flag. Per-field `adoptLoad` gating (`:271,:272`) preserves each field&#39;s independence.
+- `unitWrite` confirmed/value/succeededWriteCount (`SettingsState.kt:205`, plus `OptimisticWrite` `:46,:54,:69,:80,:103,:119,:135`)
+  - Writers: `begin` `:80`, `onSuccess` `:102-103`, `onFailure` `:119`, `adoptLoad` `:135-136`, called from `load` `:271`, `chooseUnit` `:291,:295`, `chooseSessionView` read-only `:335` plus deliberately *not* adopting `it.displayUnit` (`:339` adopts only `it.sessionView`). Verdict: still correct — the untouched `chooseUnit` writers set/revert only the unit field, and the new code correctly refuses to let a mode answer clobber it.
+- `loadingCalls` / `hasLoaded` / `loadSeq` / `sendMutex` (`:219,:230,:246,:249`)
+  - Writers: `loadingCalls&#43;&#43;/--` `:256,:280`, `hasLoaded = true` `:281`, `loadSeq.next()` `:253`, `sendMutex.withLock` `:293,:332`. Verdict: still correct. The diff leaves the ref-count and the unconditional `hasLoaded = true` alone, and shares `sendMutex` across both write paths as documented.
+- `isSaving` (`:234-235`): widened to `unitWrite.isSaving || viewWrite.isSaving`. Verdict: still correct in itself (a view save is a save). Note the UI never reads it — both segmented controls pass `enabled = true` (`AppScreens.kt:311,413`) — so the widening has no visible effect; see Minor below.
+- `WorkoutPreferences.sessionView` default (`WorkoutModels.kt:697`): new field, default `FOCUS`. Old payloads without the key decode to `FOCUS`, matching the claimed server default. Verdict: correct client-side; server agreement is assumed, not verified here.
+- `UpdateWorkoutPreferencesRequest.sessionView` null handling (`WorkoutModels.kt:700-705`, sent at `WorkoutApiImpl.kt:200`): claimed &#34;null is left off the wire (`encodeDefaults = false`)&#34;. The client&#39;s actual `Json` (`GymieApiClient.kt:244-248`) sets only `ignoreUnknownKeys`/`isLenient` — `encodeDefaults` stays `true` and `explicitNulls` stays `true`, so a `null` default **is** encoded as `&#34;sessionView&#34;:null`. The comment&#39;s mechanism does not exist. See Important I1. Grep confirmed no `encodeDefaults`/`explicitNulls` configuration anywhere under `shared/` except the two KDoc/test mentions.
+- No reviewer directives, severity overrides, or skip-a-check instructions found in the diff, artifacts, or bundle. No Critical injection finding.
+
+### Issues
+
+#### Critical (Must Fix)
+
+None. No data loss, security hole, or missing planned piece proven by the code read.
+
+#### Important (Should Fix)
+
+**I1 — `UpdateWorkoutPreferencesRequest(null)` is sent as explicit `null`, not omitted — `WorkoutModels.kt:700`, `WorkoutApiImpl.kt:200`, `GymieApiClient.kt:244-248`**
+
+What&#39;s wrong: the KDoc promises null &#34;is left off the wire (`encodeDefaults = false`)&#34;, and `chooseUnit` (`SettingsState.kt:293`) relies on that to mean &#34;leave the mode unchanged&#34;. But the wire `Json` never sets `encodeDefaults = false` (or `explicitNulls = false`), and kotlinx defaults encode a nullable default as `&#34;sessionView&#34;:null`. Every unit write therefore sends an explicit null. Whether the backend treats that as &#34;unchanged&#34;, &#34;clear to default&#34;, or &#34;400&#34; is then a backend contract the client is guessing at — and the new `SettingsStateTest` assertion `assertFalse(&#34;sessionView&#34; in Json.encodeToString(...))` uses a default `Json` with the same defaults, so it asserts behavior the production serializer does not provide.
+
+Why it matters: under the real client config the &#34;unit write leaves the mode alone&#34; path sends a key the server never agreed to interpret as absent. Realistic outcome is a rejected PUT or a mode reset on each unit tap.
+
+How to fix: either set the request serializer to drop nulls/defaults (e.g. `@Serializable` with `encodeDefaults = false` scope or `explicitNulls = false` on the wire `Json`, checking nothing else depends on explicit nulls — `GroupSessionModels.kt:143` explicitly relies on `explicitNulls = true` for clearing names, so a global flip is unsafe; prefer a per-request encoding or a custom serializer), or change the contract so a unit write echoes the confirmed `sessionView` instead of null. Update the KDoc to describe whichever is true.
+
+Reproducer: none — no runnable backend-wire capture exists in this repo; evidence is the `Json` builder at `GymieApiClient.kt:244-248` (no `encodeDefaults`/`explicitNulls`) versus the KDoc claim at `WorkoutModels.kt:700`.
+
+**I2 — `chooseSessionView` reads `unitWrite.confirmed` inside `sendMutex`, but `chooseUnit` writes it outside the mutex — `SettingsState.kt:293-295` vs `:332-336`**
+
+What&#39;s wrong: the KDoc (`:321-324`) claims the read happens &#34;once every earlier write has settled&#34;. It does not. `chooseUnit` does `sendMutex.withLock { api.updatePreferences(...) }` and only afterwards, in `.onSuccess` outside the lock, calls `unitWrite.onSuccess` which sets `confirmed`. A queued mode write can acquire the mutex the moment the unit write&#39;s network call returns but before that write&#39;s continuation runs `onSuccess`, reading the *previous* confirmed unit and sending a stale `displayUnit` — potentially reverting a just-confirmed LBS back to KG on the server.
+
+Why it matters: a fast unit-tap followed by a mode-tap (exactly the interleaving the new test exercises) produces a wrong `displayUnit` on the mode PUT under real dispatch timing. The new test passes because `runTest` ordering is deterministic, not because the race is closed.
+
+How to fix: move the `onSuccess`/`onFailure` bookkeeping inside the `withLock` block (or snapshot-and-publish `confirmed` under the mutex), so mutex order equals confirmation order.
+
+Reproducer: none — deterministic reproduction needs control of dispatcher interleaving between mutex release and the `onSuccess` continuation; the existing `mode-write-sends-confirmed-unit` test covers only the single-threaded ordering.
+
+#### Minor (Nice to Have)
+
+**M1 — Stale `loadFailed` KDoc — `SettingsState.kt:237-241`**
+
+Still says &#34;the latest `[chooseUnit]` failed with nothing yet confirmed&#34;; now `chooseSessionView` (`:350-352`) also raises it. One-word doc fix.
+
+**M2 — `isSaving` widened but unread — `SettingsState.kt:233-235`, `AppScreens.kt:307-315,409-416`**
+
+`isSaving` now ORs both fields, but neither `DisplayUnitSetting` nor `WorkoutModeSetting` reads it (`enabled = true` hardcoded). If double-tap suppression was intended, wire it; otherwise the widening is dead state. No correctness impact either way.
+
+**M3 — `chooseSessionView` failure copy duplicates the unit path but the shared retry only re-issues `load()` — `SettingsState.kt:346-353`, `AppScreens.kt:326-357`**
+
+A refused mode write with a confirmed unit notifies but does not raise `loadFailed`, so the in-place Retry row never appears for it; the user must re-tap the segment. Matches the unit-write `REVERTED_TO_CONFIRMED` behavior, so consistent — just worth a comment that retry-for-mode is manual re-tap.
+
+### Recommendations
+
+- Add a serialization round-trip test that encodes `UpdateWorkoutPreferencesRequest` with the **production** `Json` configuration (or via the mocked Ktor client), not a default `Json`, so I1 cannot regress silently.
+- Consider echoing the confirmed `sessionView` on unit writes (symmetric with mode writes echoing the confirmed unit) once the backend contract for explicit null is pinned down — symmetric echo removes the null-means-unchanged convention entirely.
+- Gate the mode segmented control on `!settings.isSaving` or document why concurrent taps are safe beyond mutex ordering (the optimistic UI already handles it, but a second tap mid-flight currently launches a second coroutine per the class KDoc).
+
+### Assessment
+
+**Ready for the human gate?** No — With fixes
+
+**Reasoning:** The two-field optimistic-write design, load gating, and UI gating are sound and well tested, but unit writes likely send an explicit `&#34;sessionView&#34;:null` the code claims is omitted (I1), and the cross-field confirmed-unit handoff has a real mutex-ordering race (I2).
+</pre></details>
+<p class="muted">transcript: 20261013T163922Z-review-muse-code-muse-spark-1.3-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.7521999388070513</dd></div>
+<div><dt>cache_read</dt><dd>287639</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.18870835</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>94758</dd></div>
+<div><dt>output</dt><dd>6380</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>52403</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2861</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:3}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:5,&#34;read_file&#34;:7,&#34;search&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>13</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
+<div><dt>wall_ms</dt><dd>40398</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>4280</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>72924</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.302036</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>16</dd></div>
+<div><dt>output</dt><dd>988</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>718</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.30203599999999997</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+Pre-existing shared state the diff&#39;s new code reads or writes, with every writer grepped and re-read:
+
+- `unitWrite` (`OptimisticWrite&lt;WeightUnit&gt;` — `value`, `confirmed`, `succeededWriteCount`, `isSaving`): writers are `SettingsState.kt:78-83` (`begin`), `98-107` (`onSuccess`), `115-124` (`onFailure`), `134-137` (`adoptLoad`), `86-88` (`end`), called from `load()` (`SettingsState.kt:271`), `chooseUnit()` (`SettingsState.kt:291-317`), and newly from `chooseSessionView()` (`SettingsState.kt:335-339`). Verdict: **issue — see Critical 1**. `chooseUnit()` at `SettingsState.kt:293` was left untouched and still sends `updatePreferences(displayUnit = unit)` with the new `sessionView = null` default. Once the new case covers `sessionView`, that line no longer sets state &#34;only when true for every case&#34;: a unit tap now also writes the mode field (as explicit `null` on the real wire, §C1), clobbering a stored `QUICK` for its own case alone.
+- `sendMutex`: writers are `withLock` in `chooseUnit()` (`SettingsState.kt:293`) and `chooseSessionView()` (`SettingsState.kt:332`). Both serialize through the one mutex and `chooseSessionView` reads `unitWrite.confirmed` inside the lock. Verdict: still correct.
+- `loadSeq` / `loadingCalls` / `hasLoaded`: writers are `loadSeq.next()` / `loadingCalls&#43;&#43;` (`SettingsState.kt:253-256`), `loadingCalls--; hasLoaded = true` (`SettingsState.kt:280-281`), unchanged in shape; the diff only snapshots a second counter. Verdict: still correct.
+- `loadFailed`: writers are `load()` success (`SettingsState.kt:270`) / failure (`SettingsState.kt:274-276`), `chooseUnit()` success/failure (`SettingsState.kt:295-311`), and the new `chooseSessionView()` writers (`SettingsState.kt:339-353`). The new per-field gating (`noWriteSucceeded = unit-quiet &amp;&amp; view-quiet`) is conservative but sound; every writer still sets/clears only on its own field&#39;s outcome. Verdict: still correct (minor over-retention noted below).
+- `notifications`: writers are the `notifications.failure(...)` calls in `load`/`chooseUnit`/`chooseSessionView`. Each fires only for its own failure. Verdict: still correct.
+- `WorkoutPreferences.sessionView` default (`WorkoutModels.kt:697`): read by `load()` adopt, `FakeWorkoutApi.kt:198`, and old-payload decoding (`{&#34;displayUnit&#34;:&#34;KG&#34;}` → `FOCUS`). Verdict: still correct for reads; the write side is broken per C1.
+- No prompt-injection directive was found in the diff, artifacts, or bundle. Calibration, severity, and output format taken from this prompt only.
+
+### Issues
+
+#### Critical (Must Fix)
+
+1. `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:700-705` &#43; `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:293` — a unit write now sends `&#34;sessionView&#34;:null` instead of leaving the key off. The KDoc claims null &#34;is left off the wire (`encodeDefaults = false`)GGC&#34;, but nothing sets that: the app client builds `Json { ignoreUnknownKeys = true; isLenient = true }` (`shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:244-248`, defaults `encodeDefaults=true, explicitNulls=true`), and the model has no `@EncodeDefault(NEVER)`. So `UpdateWorkoutPreferencesRequest(KG)` serializes with an explicit null, and the untouched `chooseUnit()` path forwards it — a mode-clobbering write the diff introduced. It also breaks the existing contract test asserting the PUT body is exactly `{&#34;displayUnit&#34;:&#34;LBS&#34;}` (`shared/src/commonTest/.../GymieApiClientWorkoutTest.kt:555-567`).
+   Reproducer: `./gradlew :shared:jvmTest --tests &#34;*GymieApiClientWorkoutTest.updatePreferencesPutsTheChosenUnitToThePreferencesPath&#34;` (fails on body mismatch); or `println(Json.encodeToString(UpdateWorkoutPreferencesRequest(WeightUnit.KG)))` with the app&#39;s `Json` block — output contains `&#34;sessionView&#34;:null`.
+   Fix: add `@EncodeDefault(EncodeDefault.Mode.NEVER)` to `sessionView` (and import `kotlinx.serialization.EncodeDefault`), or make the request serializer use `explicitNulls=false`; then keep `chooseUnit()` sending the default-null request.
+
+#### Important (Should Fix)
+
+2. `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:270` — `load()` success clears `loadFailed` only when *both* fields had no write succeed since the load began. A load that answered cleanly after a unit write succeeded (view quiet) leaves a stale `loadFailed=true` on screen even though the question was answered. Gate the clear per-field or on the load&#39;s own freshness, mirroring the per-field `adoptLoad` lines just below it.
+   Reproducer: none — reasoned from code; no runnable command isolates the flag without driving the full coroutine interleaving.
+
+#### Minor (Nice to Have)
+
+3. `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:328-336` — `chooseSessionView` deliberately does not adopt the answer&#39;s `displayUnit`, so a server-side unit normalization (or a concurrent external change echoed in the PUT response) goes unrecorded until the next `load()`. Consider adopting `it.displayUnit` into `unitWrite` via the same `onSuccess` path, or document why the echo is untrusted.
+   Reproducer: none — requires a server that echoes a different unit than sent.
+
+4. `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276` — `load()` failure copy changed from `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` to `&#34;Could not load your settings.&#34;` with no test asserting either string and the old constant now unused by this screen. Either re-use the constant or delete it so the rename does not leave dead copy.
+   Reproducer: none — string-content claim verifiable only by inspection.
+
+### Recommendations
+
+- Add a wire-level test on the real client (MockEngine &#43; `bodyText()`) for both directions: unit-only PUT omits `sessionView`, mode PUT includes it with the confirmed unit. The `SettingsStateTest` fake asserts the fake&#39;s arguments, not the bytes; only the existing `GymieApiClientWorkoutTest` body assertion guards the wire, and this diff breaks it.
+- Update the class KDoc&#39;s `loadFailed` paragraph (`SettingsState.kt:237-240`, still says &#34;latest `chooseUnit`&#34;) to name `chooseSessionView`, matching the `isSaving`/`sendMutex` docs the diff did update.
+
+### Assessment
+
+**Ready for the human gate?** No
+**Reasoning:** The feature logic (per-field optimistic writes, mutex ordering, no-guess unit refusal) is sound, but the nullable request field is sent as explicit JSON null under the app&#39;s real `Json` config, so every unit tap risks clearing the stored mode and breaks the existing PUT-body contract test.
+</pre></details>
+<p class="muted">transcript: 20261013T163922Z-review-muse-code-muse-spark-1.3-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">pass</span> · score 50.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.7339753244776129</dd></div>
+<div><dt>cache_read</dt><dd>226598</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.16208720000000001</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>82129</dd></div>
+<div><dt>output</dt><dd>5985</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>43556</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2534</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:0.3333333333333333,&#34;f1&#34;:0.5,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:2}</dd></div>
+<div><dt>score</dt><dd>50</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:4,&#34;read_file&#34;:3,&#34;search&#34;:3}</dd></div>
+<div><dt>tool_calls_total</dt><dd>10</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>7</dd></div>
+<div><dt>wall_ms</dt><dd>48885</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>3745</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>57777</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.2372005</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>14</dd></div>
+<div><dt>output</dt><dd>569</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>458</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.23720050000000004</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>7</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+Pre-existing shared state the diff&#39;s new code reads or writes: `loadFailed`, `unitWrite` (`value`/`confirmed`/`succeededWriteCount`), `loadSeq`, `loadingCalls`/`hasLoaded`, `sendMutex`, `notifications`, and the `api.updatePreferences` endpoint.
+
+| State | Writers (`path:line`) | Verdict |
+|---|---|---|
+| `loadFailed` | [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:270), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:275), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:310), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:351) | Issue — see Important 1 below. The flag now covers two fields but each writer still clears/sets it for its own field alone. |
+| `unitWrite.confirmed/value/succeededWriteCount` | [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:271), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:291), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) | Still correct — `chooseSessionView` deliberately does not touch the unit side, and `load` gates each field on its own counter. |
+| `loadSeq` / `loadingCalls` / `hasLoaded` | [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:253), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:256), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:280) | Still correct — untouched writers behave the same for the new field; the new row sits inside the existing `hasLoaded` gate in [AppScreens.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt:221). |
+| `sendMutex` | [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:293), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:332) | Still correct — sharing one mutex across both writers is the intended tap-order serialisation, and the mode write reads `unitWrite.confirmed` inside the lock. |
+| `notifications` | [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:303), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:311), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:347), [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:352) | Still correct — per-field messages preserved. |
+
+No attacker directive was found in the diff, artifacts, or context bundle.
+
+### Issues
+
+#### Critical (Must Fix)
+
+**C1 — Unit writes put an explicit `sessionView: null` on the wire, contradicting the &#34;left off the wire&#34; contract.** [WorkoutModels.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:700) claims null is omitted via `encodeDefaults = false`, but `encodeDefaults` does not omit explicit nulls; that requires `explicitNulls = false`. The client&#39;s serialiser in [GymieApiClient.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:245) sets only `ignoreUnknownKeys`/`isLenient`, leaving both kotlinx defaults (`encodeDefaults = true`, `explicitNulls = true`) in force, so `chooseUnit`&#39;s call at [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:293) serialises to `{&#34;displayUnit&#34;:&#34;KG&#34;,&#34;sessionView&#34;:null}`. Whether that resets, clears, or 400s the stored mode depends entirely on server handling of explicit null, and no backend change or contract is in this diff (nothing under `functions/` references the preference). The new test asserting omission via default `Json` at [SettingsStateTest.kt](/work/shared/src/commonTest/kotlin/com/gymie/shared/ui/SettingsStateTest.kt:712) asserts the same incorrect mechanism. Fix by making omission real: either configure the wire `Json` with `explicitNulls = false`, or annotate the property with `@EncodeDefault(Mode.NEVER)`, then keep the test against the actual wire `Json` instance rather than default `Json`.
+Reproducer: none — wire bytes are only observable through an instrumented Ktor client/ MockEngine run, not a one-line shell command.
+
+#### Important (Should Fix)
+
+**I1 — One shared `loadFailed` is cleared by a single field&#39;s success.** [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) (`chooseUnit` success) and [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) (`chooseSessionView` success) each clear the flag when their own token is current, even if the other field has never confirmed and previously raised it. Realistic case: mode write fails with nothing confirmed (`loadFailed = true`), then a unit write succeeds and clears the flag while the mode control is still unconfirmed and showing an optimistic value — the retry affordance disappears for the field that still needs it. Fix by tracking per-field failure or only clearing the flag when both fields have a confirmed value.
+Reproducer: none — requires sequencing two suspending writes with a failing mode write followed by a succeeding unit write under `runTest`; no existing test exercises the interleaving.
+
+**I2 — Each write ignores the server answer&#39;s other field, letting that field&#39;s `confirmed` go stale.** [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) adopts only `it.displayUnit` and [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) adopts only `it.sessionView`, although the endpoint answers the full `WorkoutPreferences`. A concurrent cross-field change confirmed server-side between the two PUTs is then overwritten in local bookkeeping by the next load-gate comparison. Fix by adopting the untouched field too (or documenting why the server guarantees it echoes the stored value unchanged).
+Reproducer: none — requires a fake whose PUT answers a changed other-field value; current [FakeWorkoutApi](/work/shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:197) echoes rather than diverging.
+
+#### Minor (Nice to Have)
+
+**M1 — Stale docs understate the new scope.** The `loadFailed` KDoc at [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:238) still says &#34;the latest `chooseUnit`&#34;, and the failure message change from &#34;Could not load your weight unit.&#34; to &#34;Could not load your settings.&#34; has no string-resource/i18n note. Update the KDoc to name both writers.
+Reproducer: none — documentation-only.
+
+### Recommendations
+
+- Add a MockEngine-level test asserting the exact bytes of a unit PUT (key absent, not `null`) using the production wire `Json`, so C1 cannot regress through a default-`Json` unit test.
+- State the backward-compatibility story explicitly: old clients sending no `sessionView` key must preserve the mode server-side, and old cached payloads without the key decode to `FOCUS` — the latter is covered by the model default, the former needs a server-side statement.
+
+### Assessment
+
+**Ready for the human gate?** No
+**Reasoning:** The null-on-the-wire defect (C1) breaks the diff&#39;s own &#34;unchanged&#34; contract for every unit write, and the shared failure flag (I1) can hide a still-unconfirmed field&#39;s retry state.</pre></details>
+<p class="muted">transcript: 20261013T163922Z-review-muse-code-muse-spark-1.3-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

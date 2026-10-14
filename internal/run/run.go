@@ -119,6 +119,9 @@ type Header struct {
 	// Judge is the judge pin a review or visual run is graded with; an impl run, and every run from
 	// before the field, records none.
 	Judge grade.Pin `json:"judge,omitzero"`
+	// Regraded is the flow-eval sha whose labels and grader last re-graded the run's trials (Regrade);
+	// FlowEvalSHA stays the sha that ran them. A run never re-graded records none.
+	Regraded string `json:"regraded,omitempty"`
 }
 
 // Line is one trial line of runs/<id>.jsonl.
@@ -179,12 +182,13 @@ func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 		}
 	}
 	started := now().UTC()
-	id := fmt.Sprintf("%s-%s-%s-%s-%s", started.Format("20060102T150405Z"), cfg.Role, cfg.Harness.Name(),
-		cfg.Model, cfg.Effort)
 	h, err := header(cfg, started)
 	if err != nil {
 		return "", err
 	}
+	// A review run's id names its slot, so one launch per slot in the same second never collides.
+	id := fmt.Sprintf("%s-%s-%s-%s-%s", started.Format("20060102T150405Z"), BaselineKey(h.Role, h.Slot),
+		cfg.Harness.Name(), cfg.Model, cfg.Effort)
 	tmp, err := os.MkdirTemp("", "flow-eval-run-")
 	if err != nil {
 		return "", err
@@ -198,7 +202,7 @@ func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 	if err := os.MkdirAll(cfg.RunsDir, 0o755); err != nil {
 		return "", err
 	}
-	// O_EXCL: a second run with the same id (same second, role, harness, model and effort) is refused
+	// O_EXCL: a second run with the same id (same second, role, review slot, harness, model and effort) is refused
 	// before any container starts, never overwriting the first run's record or sharing its sandboxes.
 	out, err := os.OpenFile(filepath.Join(cfg.RunsDir, id+".jsonl"), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 	if err != nil {
@@ -284,7 +288,7 @@ func header(cfg Config, started time.Time) (Header, error) {
 	}
 	h := Header{
 		Role: cfg.Role, Harness: cfg.Harness.Name(), Model: cfg.Model, Effort: cfg.Effort, K: cfg.K,
-		PromptPin: strings.TrimSpace(string(pin)), CaseHashes: map[string]string{},
+		PromptPin:   strings.TrimSpace(string(pin)),
 		FlowEvalSHA: cfg.FlowEvalSHA, Started: started,
 	}
 	if cfg.Role == "review" {
@@ -293,15 +297,35 @@ func header(cfg Config, started time.Time) (Header, error) {
 	if cfg.Role != "impl" { // impl calls no judge
 		h.Judge = cfg.JudgePin
 	}
-	if h.CaseSetHash, err = cases.SetHash(cfg.Cases); err != nil {
+	if h.CaseSetHash, h.CaseHashes, err = caseHashes(cfg.Cases); err != nil {
 		return Header{}, err
 	}
-	for _, c := range cfg.Cases {
-		if h.CaseHashes[c.ID], err = cases.SetHash([]cases.Case{c}); err != nil {
-			return Header{}, err
+	return h, nil
+}
+
+// caseHashes returns the set hash of cs and each case's own, as a run header records them.
+func caseHashes(cs []cases.Case) (string, map[string]string, error) {
+	set, err := cases.SetHash(cs)
+	if err != nil {
+		return "", nil, err
+	}
+	each := map[string]string{}
+	for _, c := range cs {
+		if each[c.ID], err = cases.SetHash([]cases.Case{c}); err != nil {
+			return "", nil, err
 		}
 	}
-	return h, nil
+	return set, each, nil
+}
+
+// judgeMetrics prices the judge's usage on a trial at the judge pin's model; nil when the judge was
+// never called.
+func judgeMetrics(cfg Config, u harness.Usage) (*metrics.Trial, error) {
+	if u.Tokens() == 0 {
+		return nil, nil
+	}
+	jt, err := metrics.FromUsage(u, cfg.JudgePin.Model, cfg.Pricing, 0)
+	return &jt, err
 }
 
 // prepare snapshots each impl and review case's repository, warms each repository's Gradle cache
@@ -480,7 +504,7 @@ func runTrial(ctx context.Context, cfg Config, docker Docker, p prepared, sandbo
 	}
 	defer func() {
 		if err := sb.Stop(ctx); err != nil {
-			l.Error = strings.TrimSpace(l.Error + "; stop sandbox: " + err.Error())
+			l.Error = strings.TrimSpace(l.Error + _stopSandbox + err.Error())
 		}
 	}()
 	if p.snapshot != "" {
@@ -554,11 +578,9 @@ func runTrial(ctx context.Context, cfg Config, docker Docker, p prepared, sandbo
 	gctx, gcancel := context.WithTimeoutCause(ctx, timeout, fmt.Errorf("grading exceeded its %s budget", timeout))
 	defer gcancel()
 	judge, err := gradeTrial(gctx, cfg, sb, p.c, u.FinalText, art, &l)
-	if judge.Tokens() > 0 {
-		jt, jerr := metrics.FromUsage(judge, cfg.JudgePin.Model, cfg.Pricing, 0)
-		l.Judge = &jt
-		err = errors.Join(err, jerr)
-	}
+	var jerr error
+	l.Judge, jerr = judgeMetrics(cfg, judge)
+	err = errors.Join(err, jerr)
 	if _, ok := errors.AsType[infraFault](err); ok {
 		return infra(fmt.Errorf("grade: %w", err))
 	}
@@ -567,6 +589,9 @@ func runTrial(ctx context.Context, cfg Config, docker Docker, p prepared, sandbo
 	}
 	return l
 }
+
+// _stopSandbox opens the note runTrial appends to a trial's Error when its sandbox would not stop.
+const _stopSandbox = "; stop sandbox: "
 
 // infraFault marks a grading-step failure that is the harness's own, not the agent's: an infra error
 // even after the agent's output.
@@ -609,7 +634,8 @@ func gradeTrial(ctx context.Context, cfg Config, sb Sandbox, c cases.Case, repor
 			return g.JudgeUsage, err
 		}
 		t.Review = &g.Metrics
-		t.Score = g.Metrics.F1 * 100
+		net := max(g.Metrics.Extras-g.Metrics.Implausible, 0)
+		t.Score = g.Metrics.F1*100 + _extraBonus*float64(min(net, _maxExtras))
 		t.Passed = g.Metrics.Recall == 1 // every must-find found
 		return g.JudgeUsage, nil
 	default:
@@ -638,6 +664,15 @@ func slotLabels(c cases.Case, slot string) (grade.ReviewLabels, error) {
 	labels.MustFind = slices.DeleteFunc(labels.MustFind, func(l grade.Label) bool { return l.Slot != slot })
 	return labels, nil
 }
+
+// A review trial's score is F1 × 100 plus _extraBonus per net extra — extras less implausible
+// findings, floored at 0 — counting at most _maxExtras of them, so padding a report gains nothing
+// unless the judge rates the padding plausible, and is bounded even then (decision
+// review-extras-net).
+const (
+	_extraBonus = 5
+	_maxExtras  = 3
+)
 
 func score(pass bool) float64 {
 	if pass {

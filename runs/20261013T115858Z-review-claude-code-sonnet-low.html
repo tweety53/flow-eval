@@ -64,7 +64,7 @@ a { color: inherit; }
 <dt>slot</dt><dd>primary</dd>
 <dt>judge</dt><dd>claude-code sonnet low</dd>
 <dt>prompt pin</dt><dd>2e053aaa95ce00195dac3b208e1769dcc45862da</dd>
-<dt>case set</dt><dd>0d21dc9b189bde272a3eeb276a866c8403318f30df8e3c209c3f346d1216913d</dd>
+<dt>case set</dt><dd>4a69b4892171373d5eee344f3715671fbd2966aac76100ac8eb4a1894bf8922c</dd>
 <dt>flow-eval</dt><dd>3ec26bad71d9d5092cdd2feca4655c9b9c126143</dd>
 <dt>started</dt><dd>2026-10-13T11:58:58Z</dd>
 </dl>
@@ -75,13 +75,13 @@ a { color: inherit; }
 </ul></nav>
 
 <h2>Role score</h2>
-<p><span class="score">0.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+<p><span class="score">5.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
 
 <h2>Cases</h2>
 <p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
 <div class="table"><table>
 <tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
-<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-fail"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>0</td><td>no</td><td>0.0</td><td>0.0</td><td>–</td><td>$0.4020</td><td>30.1</td><td>342868</td><td>$0.2002</td></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-fail"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>0</td><td>no</td><td>5.0</td><td>4.1</td><td>–</td><td>$0.4020</td><td>30.1</td><td>342868</td><td>$0.7468</td></tr>
 </table></div>
 
 <h2>Trials</h2>
@@ -105,7 +105,7 @@ a { color: inherit; }
 <div><dt>permission_denials</dt><dd>0</dd></div>
 <div><dt>reasoning</dt><dd>1592</dd></div>
 <div><dt>reported_cost_usd</dt><dd>0.137914</dd></div>
-<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:0,&#34;implausible&#34;:3}</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
@@ -116,10 +116,92 @@ a { color: inherit; }
 <div><dt>turns</dt><dd>3</dd></div>
 <div><dt>wall_ms</dt><dd>28587</dd></div>
 </dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>3210</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>53736</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.220699</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>12</dd></div>
+<div><dt>output</dt><dd>541</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>399</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.22069899999999998</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>6</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+I read these from the diff and from `SettingsState.kt`. I did not run the build or the tests.
+
+- **`loadFailed`** (`SettingsState.kt:242`)
+  - Writers: `load` at :270 (clears), :275 (sets); `chooseUnit` at :295 (clears), :310 (sets); `chooseSessionView` at :339 (clears), :351 (sets).
+  - Verdict: still correct. A mode write can only be sent with a confirmed unit, so its success clears `loadFailed` truthfully. `load` now clears it only if neither field was overtaken, which is conservative. A view write that completes during a load clears the flag itself.
+- **`unitWrite.confirmed`**
+  - Writers: `onSuccess` (`SettingsState.kt:~97`) and `adoptLoad` (`SettingsState.kt:~134`), both unchanged.
+  - Verdict: still correct. The mode write only reads it, inside `sendMutex`, and does not adopt the response&#39;s `displayUnit`, so it cannot clobber the unit field.
+- **`sendMutex`**
+  - Verdict: still correct. Both write paths take it, so a mode write reads the unit only after every earlier write has settled.
+- **`isSaving`**
+  - Verdict: still correct. It is the OR of both fields.
+- **`viewWrite`**
+  - Verdict: it is new state and uses the same `begin`/`onSuccess`/`onFailure`/`end` bookkeeping as `unitWrite`.
+- **`WorkoutPreferences.sessionView` default**
+  - Verdict: still correct. The fake and the real client both fall back to FOCUS.
+- **Wire format**
+  - Writers: grep found no `encodeDefaults` setting in client code. The null `sessionView` is therefore left off the wire, which is what the doc comment and the unit-write test assume.
+  - Verdict: still correct.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+None.
+
+#### Minor (Nice to Have)
+1. **`SettingsState.kt:~342`**
+   - The comment says &#34;let the retry path re-sync&#34; after a refused mode write with no confirmed unit. Nothing in this diff adds or exercises that path. The user sees a &#34;Could not save your workout mode.&#34; toast with the control left on the optimistic value, because `NOTHING_CONFIRMED` does not revert it.
+   - **Fix:** confirm that a retry path exists, or reword the comment.
+   - **Reproducer:** none — it is a comment-accuracy and UX-completeness point.
+2. **`SettingsState.kt:~275`**
+   - The load-failure fallback changed from `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` to the literal &#34;Could not load your settings.&#34;. The constant is still used in `WorkoutEditorScreen.kt:387`.
+   - The new string is a hard-coded literal in a file that otherwise uses the shared `FailureMessages` constants. It should be a constant too.
+   - **Reproducer:** none — style only.
+3. **`AppScreens.kt` `WorkoutModeSetting`**
+   - The label mapping `if (it == FOCUS) &#34;Focus&#34; else &#34;Quick&#34;` silently treats any future enum entry as &#34;Quick&#34;.
+   - **Fix:** use an exhaustive `when`.
+   - **Reproducer:** none.
+
+### Recommendations
+- The tests exercise the real `SettingsState` with a fake API, plus a MockEngine UI test that records the actual PUT body. That fits the project&#39;s real-behavior bar.
+- The mutex-ordering test (`a workout mode write sends the confirmed unit…`) relies on `lastUpdatePreferencesView == null` inside the hook to gate only the first LBS call. This works, but it is order-sensitive, so a comment saying so would help.
+- Adding a nullable, defaulted `sessionView` to the request and response keeps old payloads and old callers compatible. Say in the PR description whether the backend&#39;s PUT already accepts the key (KAN-865).
+
+### Assessment
+**Ready for the human gate?** Yes
+**Reasoning:** The new state follows the existing optimistic-write pattern. The shared `loadFailed` and `confirmed` writers all remain correct, and the diff avoids overwriting a stored unit after a failed load. The remaining findings are minor polish.</pre></details>
 <p class="muted">transcript: 20261013T115858Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
-<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 0.0</h3>
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 5.0</h3>
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9999198246833075</dd></div>
@@ -138,8 +220,8 @@ a { color: inherit; }
 <div><dt>permission_denials</dt><dd>0</dd></div>
 <div><dt>reasoning</dt><dd>1075</dd></div>
 <div><dt>reported_cost_usd</dt><dd>0.13307400000000003</dd></div>
-<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
-<div><dt>score</dt><dd>0</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:2,&#34;implausible&#34;:1}</dd></div>
+<div><dt>score</dt><dd>5</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
 <div><dt>timed_out</dt><dd>false</dd></div>
@@ -153,21 +235,21 @@ a { color: inherit; }
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
-<div><dt>cache_read</dt><dd>535</dd></div>
+<div><dt>cache_read</dt><dd>3745</dd></div>
 <div><dt>cache_write</dt><dd>0</dd></div>
-<div><dt>cache_write_1h</dt><dd>15884</dd></div>
+<div><dt>cache_write_1h</dt><dd>56250</dd></div>
 <div><dt>compactions</dt><dd>0</dd></div>
-<div><dt>cost_usd</dt><dd>0.0677935</dd></div>
+<div><dt>cost_usd</dt><dd>0.2256425</dd></div>
 <div><dt>egress_denied</dt><dd>0</dd></div>
 <div><dt>first_edit_tool_call</dt><dd>0</dd></div>
 <div><dt>infra_error</dt><dd>false</dd></div>
-<div><dt>input</dt><dd>2</dd></div>
-<div><dt>output</dt><dd>420</dd></div>
+<div><dt>input</dt><dd>14</dd></div>
+<div><dt>output</dt><dd>24</dd></div>
 <div><dt>passed</dt><dd>false</dd></div>
 <div><dt>peak_context_tokens</dt><dd>0</dd></div>
 <div><dt>permission_denials</dt><dd>0</dd></div>
-<div><dt>reasoning</dt><dd>416</dd></div>
-<div><dt>reported_cost_usd</dt><dd>0.06779349999999999</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.22564250000000002</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
@@ -175,14 +257,61 @@ a { color: inherit; }
 <div><dt>tool_calls</dt><dd>{}</dd></div>
 <div><dt>tool_calls_total</dt><dd>0</dd></div>
 <div><dt>tool_errors</dt><dd>0</dd></div>
-<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>7</dd></div>
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+I read `SettingsState.kt` in full for the writers below. I did not run any tests.
+
+- **`loadFailed`** is written at `SettingsState.kt:262-276` (`load`), in `chooseUnit` (`loadFailed = false` on success, `= true` on `NOTHING_CONFIRMED`), and in the new `chooseSessionView`.
+  - **`load`:** now sets it only when no unit write and no view write succeeded since the load began. That is still correct.
+  - **`chooseSessionView`:** it sets `loadFailed = true` when nothing is confirmed. That is correct.
+  - **`chooseUnit`, on success:** it still clears `loadFailed` on the strength of the unit alone. This is now wrong, see Important #1.
+- **`viewWrite.confirmed` and `viewWrite.value`** are written only by `adoptLoad` (in `load`), `onSuccess` and `onFailure` (in `chooseSessionView`) and `begin`. `chooseUnit` never writes them, even though its PUT response carries the server&#39;s `sessionView`. This is Important #1.
+- **`unitWrite.confirmed`** is now also read by `chooseSessionView`, inside the mutex. The writers are `adoptLoad` and `onSuccess`, and both still set it only to server-confirmed values. That is still correct.
+- **`sendMutex`** now serialises both write kinds. `chooseSessionView` reads `confirmed` inside the lock, so a queued unit choice cannot leak through it. That is still correct.
+- **`hasLoaded`** is written only in `load`&#39;s `finally`. That is unchanged and correct.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+
+1. **`SettingsState.kt` `chooseUnit` (~line 295): a unit write clears `loadFailed` without confirming the workout mode.**
+   - **What goes wrong:** after a failed `load`, both `unitWrite.confirmed` and `viewWrite.confirmed` are null. A successful `chooseUnit` then sets `loadFailed = false`. The PUT response carries the stored `sessionView`, but `chooseUnit` discards it. The mode control keeps showing the never-confirmed default Focus, and the retry affordance is gone.
+   - **Failure scenario:** the load fails offline and the stored mode is QUICK. The user taps a unit, and the control shows Focus with no sign that it is a guess.
+   - **Fix:** either have `chooseUnit` adopt `it.sessionView` into `viewWrite` as confirmed, or clear `loadFailed` only when both fields are confirmed.
+   - **Reproducer:** a unit test like the one below. It fails on the final assertion, which expects the mode to be known or the load still marked failed.
+     ```kotlin
+     api.preferencesResult = Result.failure(RuntimeException())
+     state.load()
+     api.preferencesResult = Result.success(WorkoutPreferences(KG, QUICK))
+     state.chooseUnit(LBS)
+     // loadFailed is false, sessionView is FOCUS
+     assertTrue(state.sessionView == QUICK || state.loadFailed)
+     ```
+
+#### Minor (Nice to Have)
+
+2. **`SettingsState.kt` `load` failure copy:** it changed from `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` to an inline string. `FailureMessages` is the project&#39;s existing home for such strings, and the constant is still used in `WorkoutEditorScreen.kt:387`. Add a `COULD_NOT_LOAD_SETTINGS` constant instead of a literal. No test pins the new copy.
+3. **`SettingsState.kt` `chooseSessionView`:** the &#34;Could not save your workout mode.&#34; string appears twice. It is a candidate for a single local value or constant.
+4. **`SettingsStateTest.kt`:** there is no test for a concurrent `load` overtaken by a view write, which is the new `viewWritesBeforeThisLoad` path. The `load` change also lets a view write advance `noWriteSucceeded` and suppress a unit adoption&#39;s `loadFailed` clearing, and that is untested too. Reproducer for both: none, because this is a coverage gap rather than a failing command.
+
+### Recommendations
+- Model &#34;the preferences payload&#34; as one confirmed object, or have both write paths adopt the full PUT response. That removes the asymmetry behind Important #1.
+- The `FakeWorkoutApi` default response derives `sessionView` from `preferencesResult`. This mirrors the server well, and the tests do exercise real request serialization through `MockEngine` in the UI test, which is good.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** The write serialisation is sound. `displayUnit` is read inside the mutex, and a failed load sends no PUT, so a stored LBS is never overwritten with KG. However, `chooseUnit` clears `loadFailed` and leaves the workout mode unconfirmed, so after a failed load the control can show an unconfirmed Focus with no retry offered.</pre></details>
 <p class="muted">transcript: 20261013T115858Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
-<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">fail</span> · score 0.0</h3>
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">fail</span> · score 10.0</h3>
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9999291847393114</dd></div>
@@ -201,8 +330,8 @@ a { color: inherit; }
 <div><dt>permission_denials</dt><dd>0</dd></div>
 <div><dt>reasoning</dt><dd>1309</dd></div>
 <div><dt>reported_cost_usd</dt><dd>0.15737639999999997</dd></div>
-<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
-<div><dt>score</dt><dd>0</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:3,&#34;implausible&#34;:1}</dd></div>
+<div><dt>score</dt><dd>10</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
 <div><dt>timed_out</dt><dd>false</dd></div>
@@ -216,21 +345,21 @@ a { color: inherit; }
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
-<div><dt>cache_read</dt><dd>1070</dd></div>
+<div><dt>cache_read</dt><dd>4815</dd></div>
 <div><dt>cache_write</dt><dd>0</dd></div>
-<div><dt>cache_write_1h</dt><dd>31437</dd></div>
+<div><dt>cache_write_1h</dt><dd>74217</dd></div>
 <div><dt>compactions</dt><dd>0</dd></div>
-<div><dt>cost_usd</dt><dd>0.132423</dd></div>
+<div><dt>cost_usd</dt><dd>0.3005055</dd></div>
 <div><dt>egress_denied</dt><dd>0</dd></div>
 <div><dt>first_edit_tool_call</dt><dd>0</dd></div>
 <div><dt>infra_error</dt><dd>false</dd></div>
-<div><dt>input</dt><dd>4</dd></div>
-<div><dt>output</dt><dd>656</dd></div>
+<div><dt>input</dt><dd>18</dd></div>
+<div><dt>output</dt><dd>312</dd></div>
 <div><dt>passed</dt><dd>false</dd></div>
 <div><dt>peak_context_tokens</dt><dd>0</dd></div>
 <div><dt>permission_denials</dt><dd>0</dd></div>
-<div><dt>reasoning</dt><dd>648</dd></div>
-<div><dt>reported_cost_usd</dt><dd>0.132423</dd></div>
+<div><dt>reasoning</dt><dd>281</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.3005055</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
@@ -238,10 +367,55 @@ a { color: inherit; }
 <div><dt>tool_calls</dt><dd>{}</dd></div>
 <div><dt>tool_calls_total</dt><dd>0</dd></div>
 <div><dt>tool_errors</dt><dd>0</dd></div>
-<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>turns</dt><dd>9</dd></div>
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+The diff reuses these pre-existing fields. I read every line that writes each one.
+
+- **`loadFailed`** (`SettingsState.kt`). Writers: `:270` (load success), `:275` (load failure), `:295` (`chooseUnit` success), `:310` (`chooseUnit` NOTHING_CONFIRMED), `:339` (new `chooseSessionView` success), `:351` (new NOTHING_CONFIRMED).
+  - `:295` is still correct. A unit PUT success proves the server answered, so clearing is right.
+  - `:270`/`:275` are still correct. They are now gated on both write counts, which is right.
+  - `:351` raises `loadFailed` for a refusal that never reached the network. See issue 2.
+- **`unitWrite.confirmed`**. Writers: `OptimisticWrite.onSuccess` and `adoptLoad`. The new code reads it at `:331` as the PUT&#39;s mandatory `displayUnit`. It is only set from server answers, so this is correct.
+- **`sendMutex`**. It is shared by both writes, and the new read of `unitWrite.confirmed` happens inside the lock. Correct.
+- **`hasLoaded`**. It is set in `load`&#39;s `finally` and is untouched by the diff. After a failed load it is still true, so the Settings screen draws the new row. See issue 1.
+- **`viewWrite.confirmed`/`value`**. The only writers are `chooseSessionView` and `load`. The server&#39;s answer to a `chooseUnit` PUT carries `sessionView`, and `chooseUnit` (`:295`) ignores it. See issue 1.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+
+1. **`SettingsState.kt:~262-275` and `AppScreens.kt` (`WorkoutModeSetting`): after a failed load the row shows a default &#34;Focus&#34; that is not the stored mode.**
+   - `viewWrite` starts at `FOCUS` with `confirmed == null`. A failed `load` still sets `hasLoaded = true`, so the new row draws and shows Focus selected. The row&#39;s own KDoc promises &#34;never a default Focus&#34;.
+   - The server may hold QUICK. If a later `chooseUnit` succeeds, its answer includes `sessionView`, but that answer is dropped, so `viewWrite.confirmed` stays null.
+   - Fix: adopt `it.sessionView` in `chooseUnit`&#39;s success path, guarded like the unit. Alternatively, hide or disable the row while `viewWrite.confirmed == null`.
+   - Reproducer: none — no existing test covers it. To demonstrate: `api.preferencesResult = failure`; `state.load()`; assert `state.sessionView == FOCUS` while the server holds QUICK.
+
+2. **`SettingsState.kt:~329-351`: a refused mode write leaves the optimistic value displayed.**
+   - After a failed load, `unitWrite.confirmed` is null, so `chooseSessionView` throws before any PUT. `viewWrite.onFailure` returns NOTHING_CONFIRMED and leaves `value` at the tapped mode.
+   - The control shows Quick as chosen although nothing was sent. The new test asserts `loadFailed` and the notification but not `state.sessionView`.
+   - Because the refusal is local, `loadFailed = true` also tells the user the retry path is a reload, which may be the right message. Still, decide on purpose whether the optimistic value should stay, and pin it with an assertion.
+   - Reproducer: none — add `assertEquals(FOCUS, state.sessionView)` or the intended value to the failed-load test.
+
+#### Minor (Nice to Have)
+
+3. **`SettingsState.kt:~275`: the load-failure message is now an inline literal, &#34;Could not load your settings.&#34;** The `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` import was dropped. That constant is still used in `WorkoutEditorScreen.kt:387`. Add a `FailureMessages` entry rather than an inline string, matching how the other messages are handled.
+4. **`WorkoutModels.kt`:** `SessionView` is a non-forgiving enum. A future server value would fail decoding of all of `WorkoutPreferences`, including the unit. This is the same as the `WeightUnit` precedent, but consider `coerceInputValues` or an unknown fallback, since this field is more likely to grow.
+5. **Test duplication:** `workoutModeRowIsInSettings` and `settingsShowsTheThreeRows` overlap. This is harmless.
+
+### Recommendations
+- Make `chooseUnit` adopt the `sessionView` from its answer. One PUT answer then confirms both fields, which removes the stale-default window in issue 1.
+- Add a test for a failed load followed by a unit write, asserting the mode afterwards.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** The serialisation, mutex ordering and confirmed-unit handling are sound, and the tests exercise real state. A failed load leaves the Workout mode row showing a default Focus that was never confirmed, and a refused write stays shown as if saved. Both need a deliberate fix or an explicit decision.</pre></details>
 <p class="muted">transcript: 20261013T115858Z-review-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
 </section>
 </body>

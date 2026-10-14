@@ -113,7 +113,7 @@ type Trial struct {
 	PermissionDenials int     `json:"permission_denials"`
 	CacheHitRatio     float64 `json:"cache_hit_ratio"`
 
-	Score  float64 `json:"score"` // 0–100 (design.md §7)
+	Score  float64 `json:"score"` // 0–100 (design.md §7); a review trial adds a capped bonus for net extras (internal/run)
 	Passed bool    `json:"passed"`
 
 	Work   *Work   `json:"work,omitzero"`
@@ -139,6 +139,11 @@ type Review struct {
 	SeverityAgreement float64 `json:"severity_agreement"`
 	Duplicates        int     `json:"duplicates"`
 	KnownFalseHits    int     `json:"known_false_hits"`
+	// Extras counts findings, of any severity, that match no label and that the judge rated a
+	// plausible defect in the diff; Implausible counts those it rated implausible. A review trial's
+	// score nets the two (decision review-extras-net).
+	Extras      int `json:"extras"`
+	Implausible int `json:"implausible"`
 }
 
 // Visual is a visual trial's verdict scoring.

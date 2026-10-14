@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261013T165115Z-review-principles-muse-code-muse-wonder-1.0-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261013T165115Z-review-principles-muse-code-muse-wonder-1.0-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>muse-code</dd>
+<dt>model</dt><dd>muse-wonder-1.0</dd>
+<dt>served</dt><dd>muse-wonder-1.0</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>principles</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>2441dced49b875569f50b89391b75e2b71c7595d</dd>
+<dt>case set</dt><dd>4a69b4892171373d5eee344f3715671fbd2966aac76100ac8eb4a1894bf8922c</dd>
+<dt>flow-eval</dt><dd>da80df7267c60fdc5835c8e4c22afcf1b3675adf</dd>
+<dt>started</dt><dd>2026-10-13T16:51:15Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">106.7</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-better"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>3</td><td>yes</td><td>106.7</td><td>2.4</td><td>$0.5229</td><td>$1.5687</td><td>57.0</td><td>1012385</td><td>$0.4830</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">pass</span> · score 110.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.7689046536368725</dd></div>
+<div><dt>cache_read</dt><dd>289824</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.5212928</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>87107</dd></div>
+<div><dt>output</dt><dd>5745</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>48368</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2615</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:2,&#34;implausible&#34;:0}</dd></div>
+<div><dt>score</dt><dd>110</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-wonder-1.0</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:4,&#34;read_file&#34;:2,&#34;search&#34;:3}</dd></div>
+<div><dt>tool_calls_total</dt><dd>9</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
+<div><dt>wall_ms</dt><dd>54588</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>2675</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>39523</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1609195</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>10</dd></div>
+<div><dt>output</dt><dd>254</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>236</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1609195</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>5</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Derived-state check
+
+- **`SettingsState.isSaving`** ([SettingsState.kt:234](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:234)) — summarises “any write in flight” from `unitWrite.isSaving` and `viewWrite.isSaving`, each itself derived from its `savingCalls &gt; 0` ([SettingsState.kt:60](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:60)). It is a computed getter, not stored. **Verdict: derives from every fact — no issue.**
+- **`SettingsState.loadFailed`** ([SettingsState.kt:242](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:242)) — stored flag summarising “the screen should offer retry”: latest load failed, **or** `chooseUnit` failed with nothing confirmed, **or** (new) `chooseSessionView` failed with nothing confirmed. Every writer, verified by `grep -n &#34;loadFailed =&#34;` over the whole file, unchanged lines included:
+  - [SettingsState.kt:270](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:270) clears it only when the load is current **and** neither field has had a succeeding write (`noWriteSucceeded` conjoins both fields’ counts). **Verdict: derives from every fact.**
+  - [SettingsState.kt:275](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:275) sets it under the same both-fields gate. **Verdict: derives from every fact.**
+  - [SettingsState.kt:295](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) — `chooseUnit` success clears it from the unit field alone. **Verdict: partial-fact writer — see Important issue 1.**
+  - [SettingsState.kt:310](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:310) sets it on unit `NOTHING_CONFIRMED`. **Verdict: setting on one fact is correct; the flag is an OR.**
+  - [SettingsState.kt:339](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) — new `chooseSessionView` success clears it from the mode field alone. **Verdict: partial-fact writer — see Important issue 1.**
+  - [SettingsState.kt:351](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:351) sets it on mode `NOTHING_CONFIRMED`. **Verdict: correct, as above.**
+- **`OptimisticWrite.succeededWriteCount` / `confirmed` / `value`** — event count and last-confirmed server values; not computable from other stored state. No issue.
+
+### Summary
+
+The diff adds a `SessionView` preference end-to-end: API parameter, wire model, a Settings row, a second `OptimisticWrite` in `SettingsState`, and tests. Project standards resolved to the appended principles file only; it states no layer/architecture boundary, suppression policy, or lint rule, so the Hard Invariants section yields no findings, and no new suppression or lint-config weakening appears in the diff. The reuse of `OptimisticWrite` and the mirroring of `chooseUnit` by `chooseSessionView` are a defensible WET tradeoff — the class already documents that per-field network call and failure copy stay at the call site — and the CQS-pragmatic command-that-returns-state in `updatePreferences` is pre-existing shape, knowingly retained. One stored flag was not updated to match the two-field world the diff creates.
+
+### Issues
+
+#### Critical (Must Fix)
+
+None.
+
+#### Important (Should Fix)
+
+1. **Single Source of Truth — `loadFailed` is cleared by one field’s success while the other field is still unconfirmed.** [SettingsState.kt:339](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) (new writer) and [SettingsState.kt:295](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) (pre-existing writer the diff makes partial by adding a second summarised fact). The principle: “Each fact … is stored and defined in exactly one place; everything else derives from it,” and the required step’s rule that a writer deciding from part of the facts should derive instead. Concrete failure: load fails (nothing confirmed), `chooseSessionView(QUICK)` fails with `NOTHING_CONFIRMED` so `loadFailed = true` at line 351, then `chooseUnit(LBS)` succeeds and line 295 clears `loadFailed` — yet `viewWrite.confirmed` is still null and the mode control still shows an unconfirmed optimistic value, with the Retry affordance ([AppScreens.kt:326](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt:326)) now gone. The mirror image holds at line 339. Notably the load path at line 270 already does this correctly by conjoining both fields. Fix: clear `loadFailed` on a write success only when the other field also has a confirmed value (e.g. `unitWrite.confirmed != null &amp;&amp; viewWrite.confirmed != null`), or derive the flag from both fields’ confirmed state.
+   **Reproducer:** none — this is a read-only review; demonstrating it behaviourally requires adding a `SettingsStateTest` case (failed load → failed mode write → successful unit write → assert `loadFailed` stays true), which would mutate the tree this review must not touch. The partial writers are directly visible via `grep -n &#34;loadFailed =&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`.
+
+#### Minor (Nice to Have)
+
+1. **DRY / Single Source of Truth for failure copy — the diff leaves the shared registry.** [SettingsState.kt:276](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276) drops `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` for a hardcoded `&#34;Could not load your settings.&#34;` and removes the import. `FailureMessages` exists, per its own doc at [FailureHandling.kt:10](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/components/FailureHandling.kt:10), so shared wording “cannot drift between the call sites,” and it names `SettingsState.load` as a user; the workout editor still reads the same `GET /preferences` under the old constant ([WorkoutEditorScreen.kt:387](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/workout/WorkoutEditorScreen.kt:387)). The broader “settings” wording is the right call now that the load covers two fields — but it belongs in `FailureMessages` as a new constant, with its KDoc updated, not as a one-off literal (now repeated in spirit by the three `&#34;Could not save your workout mode.&#34;` literals at lines 335, 347, 352).
+   **Reproducer:** `grep -rn &#34;Could not load your settings&#34; shared/src` — returns exactly one hit, outside the registry that owns this copy.
+2. **Principle of Least Astonishment — stale doc on the flag the diff widens.** The `loadFailed` KDoc at [SettingsState.kt:237](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:237) still says only “the latest `chooseUnit` failed with nothing yet confirmed,” though `chooseSessionView` now sets it too; a reader trusting the doc will miss a writer. One-line doc fix.
+   **Reproducer:** none — documentation-only; visible by reading lines 237–243 against line 351.
+
+### Assessment
+
+**Principles-compliant?** With fixes
+
+**Reasoning:** The structure is sound — composition via a second `OptimisticWrite`, interface-first API change, wire model defaulting that matches the documented server default, and per-field load gating that correctly conjoin both fields at lines 264–272. The one structural defect is that `loadFailed`, now a summary of two fields’ confirmation state, is still cleared by either field alone, which can hide the retry path while a value on screen was never confirmed; fix that derivation and move the new failure copy into `FailureMessages`, and the diff complies.</pre></details>
+<p class="muted">transcript: 20261013T165115Z-review-principles-muse-code-muse-wonder-1.0-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">pass</span> · score 105.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.637537239324727</dd></div>
+<div><dt>cache_read</dt><dd>148944</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.4883288</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>84680</dd></div>
+<div><dt>output</dt><dd>5991</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>45155</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>2832</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:0}</dd></div>
+<div><dt>score</dt><dd>105</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-wonder-1.0</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:3,&#34;read_file&#34;:1,&#34;search&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>6</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>5</dd></div>
+<div><dt>wall_ms</dt><dd>47408</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>1605</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>21771</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0873665</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>11</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0873665</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Derived-state check
+
+- **`loadFailed`** — [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:242). Summarises three facts: (a) the newest `load()` failed, (b) a `chooseUnit` write failed with nothing confirmed (`WriteFailureOutcome.NOTHING_CONFIRMED`), (c) a `chooseSessionView` write failed with nothing confirmed. Writers: [SettingsState.kt:270](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:270) (clear on load success), [SettingsState.kt:275](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:275) (set on load failure), [SettingsState.kt:295](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) (clear on unit-write success), [SettingsState.kt:310](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:310) (set on unit-write `NOTHING_CONFIRMED`), [SettingsState.kt:339](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) (clear on view-write success), [SettingsState.kt:351](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:351) (set on view-write `NOTHING_CONFIRMED`). Verdict per writer: the setters at 275/310/351 each assert one true disjunct of an OR, which is sound. The load-success clearer at 270 was correctly reworked in this diff to require `noWriteSucceeded` across **both** fields. The write-success clearers at 295 (pre-existing) and 339 (new in this diff) each clear the shared flag from only their own field&#39;s fact — see Important issue 1.
+- **`isSaving`** — [SettingsState.kt:234](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:234). A derived getter, `unitWrite.isSaving || viewWrite.isSaving`; it summarises both fields and is not stored. Correct.
+- **`isLoading` / `loadingCalls`**, **`OptimisticWrite.savingCalls` / `succeededWriteCount` / `confirmed` / `value`** — [SettingsState.kt:218](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:218), [SettingsState.kt:57](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:57). Reference counts incremented and decremented in paired `try`/`finally` at every call site, and per-field server facts written only by that field&#39;s `onSuccess`/`adoptLoad`. Each writer covers the fact it owns; no cross-field summary. Correct.
+- **`noWriteSucceeded` / `current`** — [SettingsState.kt:266](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:266). Locals computed once from both fields&#39; `succeededWriteCount` snapshots and the load sequence; they combine every fact they summarise. Correct.
+- **`FakeWorkoutApi.lastUpdatePreferencesView`, `updatePreferencesCalls`, `updatePreferencesRequests`** — [FakeWorkoutApi.kt](/work/shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:120). Test-double call recorders, written on every `updatePreferences` invocation at [FakeWorkoutApi.kt:188](/work/shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:188); they record events rather than summarising other state. No issue.
+- **`WorkoutPreferences.sessionView`** — [WorkoutModels.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:697). A server-owned fact carried on the wire, not a local summary of other state. No issue.
+
+### Summary
+
+The diff adds an account-level `SessionView` preference end to end: a new domain enum and wire fields, a widened `WorkoutCatalogApi.updatePreferences`, a Settings &#34;Workout mode&#34; row backed by a second `OptimisticWrite` in `SettingsState`, plus unit and UI tests. Structure, Simplicity &amp; state, and Robustness &amp; ops principles all bore on it, chiefly Single Source of Truth (the shared `loadFailed` flag and the failure-message constants) and DRY/WET (the deliberately mirrored `chooseUnit`/`chooseSessionView` pair). No separate project standards files resolved in the workspace — the `skills/flow/engineering-principles.md` path named in the appendix is not present on disk — so the Hard Invariants section is empty and only the universal principle list from the appendix was applied; no new suppressions or lint-config changes appear in the diff. The diff mostly complies: the mirrored write paths reuse the existing `OptimisticWrite` abstraction rather than duplicating its bookkeeping, which is a defensible WET tradeoff documented in the class KDoc. Two findings follow, one of them introduced by this diff&#39;s new writer of a pre-existing shared flag.
+
+### Issues
+
+#### Critical (Must Fix)
+
+None.
+
+#### Important (Should Fix)
+
+1. **Shared `loadFailed` is cleared by one field&#39;s write success, ignoring the other field&#39;s unconfirmed failure** — [SettingsState.kt:339](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339). Principle: **Single Source of Truth** — &#34;a computed total persisted alongside the rows it is computed from with nothing keeping them consistent&#34;; here a stored boolean summarises three facts but a writer decides it from one. This diff correctly fixed the load-side clearer (line 270 now requires `noWriteSucceeded` for both fields) but added a symmetric single-field clearer for the new write: `if (viewWrite.onSuccess(token, it.sessionView)) loadFailed = false`. Concretely: a unit write that succeeds without any load having confirmed the view leaves `viewWrite.confirmed == null`; a subsequent `chooseSessionView` failure then sets `loadFailed = true` at line 351 via `NOTHING_CONFIRMED`; a later successful `chooseUnit` clears the flag at line 295 even though the view is still unconfirmed and its optimistic value was never accepted — the retry affordance disappears while one field remains unsynced. (Line 295 has the same shape pre-existing; line 339 is the writer this diff adds, and fixing the mechanism fixes both.) Fix: stop storing the aggregate. Track the &#34;failed with nothing confirmed&#34; condition per field (e.g. on `OptimisticWrite`, cleared by that field&#39;s own success or by `adoptLoad`) plus a per-load failure flag, and derive `loadFailed` as a getter over those, so every clearer only ever clears its own fact. Reproducer: `grep -n &#34;loadFailed = false&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt` — three clearers, two of which (295, 339) consult only their own field&#39;s `onSuccess` result while line 270 shows the both-fields form the flag actually requires.
+
+#### Minor (Nice to Have)
+
+1. **New failure copy bypasses the centralised `FailureMessages` and repeats one literal three times** — [SettingsState.kt:276](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276), [SettingsState.kt:335](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:335), [SettingsState.kt:347](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:347), [SettingsState.kt:352](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:352). Principle: **DRY** — every piece of knowledge has one authoritative representation. The codebase centralises this copy in `FailureMessages` ([FailureHandling.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/components/FailureHandling.kt:10)), and every other call site uses it; this diff removes the file&#39;s last `FailureMessages` use in favour of the literal `&#34;Could not load your settings.&#34;` and writes `&#34;Could not save your workout mode.&#34;` three times in one function — once as the `error(...)` message at 335, which then makes the `?:` fallbacks at 347/352 unreachable for that very path, since the caught exception already carries the same string. Fix: add `COULD_NOT_LOAD_SETTINGS` / `COULD_NOT_SAVE_WORKOUT_MODE` (or similar) to `FailureMessages`, reference the constant in all four places, and let the `error(...)` at 335 use it too. Reproducer: `grep -c &#34;Could not save your workout mode\.&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt` — returns 3 for a single user-facing string.
+
+### Assessment
+
+**Principles-compliant?** With fixes
+**Reasoning:** The diff&#39;s main structural choice — a second `OptimisticWrite` composed into `SettingsState` rather than a parallel state class or an inheritance split — respects composition and the existing abstraction, and the load path&#39;s staleness gating was correctly generalised to both fields. It is not fully compliant because the new `chooseSessionView` success path writes the shared, stored `loadFailed` summary from only its own field&#39;s fact, the exact Single Source of Truth failure the derived-state check exists to catch, and the new failure copy duplicates literals instead of using the project&#39;s `FailureMessages` authority. Both fixes are small and local to [SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339).</pre></details>
+<p class="muted">transcript: 20261013T165115Z-review-principles-muse-code-muse-wonder-1.0-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">pass</span> · score 105.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.7716022113889143</dd></div>
+<div><dt>cache_read</dt><dd>295188</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.5591256</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>87377</dd></div>
+<div><dt>output</dt><dd>7529</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>49764</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>3702</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:2,&#34;implausible&#34;:1}</dd></div>
+<div><dt>score</dt><dd>105</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-wonder-1.0</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:7,&#34;read_file&#34;:2,&#34;search&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>11</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
+<div><dt>wall_ms</dt><dd>69099</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>3745</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>58515</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.2347025</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>14</dd></div>
+<div><dt>output</dt><dd>24</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.23470249999999998</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>7</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Derived-state check
+
+- **`loadFailed`** ([SettingsState.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:242)) — stored `Boolean` summarising three facts: the latest `load` failed, `chooseUnit` failed with nothing confirmed, or `chooseSessionView` failed with nothing confirmed. Writers: cleared at [SettingsState.kt:270](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:270) (gated on **both** fields — derives from every fact), set at [SettingsState.kt:275](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:275), cleared at [SettingsState.kt:295](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) (unit success only), set at [SettingsState.kt:310](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:310), cleared at [SettingsState.kt:339](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) (mode success only), set at [SettingsState.kt:351](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:351). The two write-success clears each decide for all facts from one field&#39;s fact — see Critical issue 1. The set-writers are sound (one true disjunct makes an OR true); only the clears are not.
+- **`isSaving`** ([SettingsState.kt:234](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:234)) — a derived getter `unitWrite.isSaving || viewWrite.isSaving`, not stored. Derives from every fact. No issue.
+- **`isLoading`** ([SettingsState.kt:222](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:222)), **`displayUnit`** ([SettingsState.kt:208](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:208)), **`sessionView`** ([SettingsState.kt:215](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:215)) — derived getters over `loadingCalls` / the two `OptimisticWrite.value`s. No issue.
+- **`noWriteSucceeded`** ([SettingsState.kt:267](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:267)) — local, computed once from both fields&#39; `succeededWriteCount`s. Derives from every fact. No issue.
+- **`hasLoaded`** ([SettingsState.kt:230](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:230)) — a single-writer latch in `load`&#39;s `finally` ([SettingsState.kt:281](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:281)); not a summary of multiple facts. No issue.
+- **`lastUpdatePreferencesView`** in the test fake — a recorded observation of the last call, not a summary of other state. No issue.
+
+### Summary
+
+The diff adds a `SessionView` account preference end-to-end: domain model, API parameter, a second `OptimisticWrite` in `SettingsState`, a Settings row, and tests. Project standards resolved from the supplied appendix ([engineering-principles.md](skills/flow/engineering-principles.md)); no standards file in the repo was listed, and the diff touches no lint config and adds no suppression, so the Hard Invariants section yields nothing. The principles that bore on it are Single Source of Truth, DRY/WET, and Least Astonishment. It does not comply as written: one Critical derived-state violation, one Important duplication, and two Minors.
+
+### Issues
+
+#### Critical (Must Fix)
+
+1. [SettingsState.kt:295](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295) and [SettingsState.kt:339](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339) — **Single Source of Truth** (&#34;a computed total persisted alongside the rows it is computed from with nothing keeping them consistent&#34;). `loadFailed` now summarises two fields&#39; unconfirmed-failure facts, but each write&#39;s success clears it on its own field&#39;s evidence alone. This is reachable and produces wrong behavior: after a failed `load` (nothing confirmed, `hasLoaded` true, retry shown), tapping Quick runs the guard at [SettingsState.kt:335](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:335), fails `NOTHING_CONFIRMED`, and leaves `sessionView` showing the unconfirmed Quick; a subsequent successful unit tap clears `loadFailed` at line 295, the retry affordance disappears, and the screen presents a mode the server never confirmed with no way to re-sync. `load` itself (line 270) already shows the correct shape — it clears only when *both* fields are clean. Fix: derive `loadFailed` instead of storing it (e.g. `loadFailed = loadFailureLatched || unitWrite.unconfirmedFailure || viewWrite.unconfirmedFailure` with each `OptimisticWrite` owning its own flag), or gate both clears on the other field having no outstanding unconfirmed failure.
+   Reproducer: `grep -n &#34;loadFailed = false&#34; shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt` — three clears; lines 295 and 339 are each gated on a single field&#39;s `onSuccess` while line 270 is gated on both fields.
+
+#### Important (Should Fix)
+
+1. [SettingsState.kt:328](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:328) — **DRY** (&#34;the same validation rule … written in two places, so a fix has to be applied twice&#34;). `chooseSessionView` (328–359) repeats `chooseUnit`&#39;s (290–318) entire write lifecycle — `begin`, `runCatching` &#43; `sendMutex`, `onSuccess`-clears-`loadFailed`, the identical three-arm `WriteFailureOutcome` handling, `end` in `finally` — with only the send lambda and the copy strings differing. The class already extracted `OptimisticWrite` for exactly this reason (KAN-71 finding F4, per the KDoc at [SettingsState.kt:31](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:31)); the new method re-duplicates the layer above it. This is not the WET case: both paths change for the same reason (any change to retry/notification policy must now be made twice, and Critical issue 1 is a direct consequence). Fix: extract one private `performWrite(write, saveLabel, send: suspend () -&gt; WorkoutPreferences, adopt: (WorkoutPreferences) -&gt; T)` used by both, keeping the unit-carrying guard inside `chooseSessionView`&#39;s `send`.
+   Reproducer: `sed -n &#39;290,318p&#39; SettingsState.kt` beside `sed -n &#39;328,359p&#39; SettingsState.kt` (paths as above) — the `when (…onFailure(token))` blocks are line-for-line identical except the fallback strings.
+
+#### Minor (Nice to Have)
+
+1. [SettingsState.kt:276](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276) — **DRY / Single Source of Truth** for failure copy. The diff hardcodes `&#34;Could not load your settings.&#34;` and drops the `FailureMessages` import, while [FailureHandling.kt:10](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/components/FailureHandling.kt:10) exists &#34;so the wording cannot drift between the call sites&#34; and its KDoc at line 13 still claims `COULD_NOT_LOAD_WEIGHT_UNIT` is shared by `SettingsState.load` — now stale. The new wording is more accurate (the load is no longer unit-only), so the fix is to add `COULD_NOT_LOAD_SETTINGS` to `FailureMessages`, use it, and correct that KDoc. Reproducer: `grep -rn &#34;COULD_NOT_LOAD_WEIGHT_UNIT\|Could not load your settings&#34; shared/src/commonMain --include=&#34;*.kt&#34;`.
+2. [AppScreens.kt:412](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt:412) — **Principle of Least Astonishment / Open-Closed**. `label = { if (it == SessionView.FOCUS) &#34;Focus&#34; else &#34;Quick&#34; }` silently labels any future third `SessionView` entry &#34;Quick&#34;. An exhaustive `when` makes the compiler force a label decision when the enum grows. Reproducer: `grep -n &#39;if (it == SessionView.FOCUS)&#39; shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt`.
+
+Checked and deliberately not raised: the `SessionView.FOCUS` default appearing in [WorkoutModels.kt:697](/work/shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:697) and [SettingsState.kt:212](/work/shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:212) mirrors the pre-existing `WeightUnit.KG` pattern for `displayUnit` and each site needs the literal for a different mechanism (wire default vs. pre-load placeholder) — a defensible tradeoff, though naming one shared default would be cleaner. No new suppression, no lint-config change, and no layer-boundary crossing appears in the diff.
+
+### Assessment
+
+**Principles-compliant?** With fixes
+
+**Reasoning:** The structure is sound — the second field reuses `OptimisticWrite`, `isSaving` is properly derived, and `load`&#39;s staleness gating was correctly generalised to both fields. But the stored `loadFailed` was not generalised with it: its per-field clears let one field&#39;s success erase the other field&#39;s unconfirmed failure and hide the retry while an unconfirmed value stays on screen, which is a Single Source of Truth violation with observable wrong behavior, and the duplicated write lifecycle in `chooseSessionView` is the kind of duplication this class had already paid to remove once.</pre></details>
+<p class="muted">transcript: 20261013T165115Z-review-principles-muse-code-muse-wonder-1.0-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

@@ -64,7 +64,7 @@ a { color: inherit; }
 <dt>slot</dt><dd>primary</dd>
 <dt>judge</dt><dd>claude-code sonnet low</dd>
 <dt>prompt pin</dt><dd>2e053aaa95ce00195dac3b208e1769dcc45862da</dd>
-<dt>case set</dt><dd>0d21dc9b189bde272a3eeb276a866c8403318f30df8e3c209c3f346d1216913d</dd>
+<dt>case set</dt><dd>4a69b4892171373d5eee344f3715671fbd2966aac76100ac8eb4a1894bf8922c</dd>
 <dt>flow-eval</dt><dd>3ec26bad71d9d5092cdd2feca4655c9b9c126143</dd>
 <dt>started</dt><dd>2026-10-13T11:39:01Z</dd>
 </dl>
@@ -75,13 +75,13 @@ a { color: inherit; }
 </ul></nav>
 
 <h2>Role score</h2>
-<p><span class="score">33.3</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+<p><span class="score">35.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
 
 <h2>Cases</h2>
 <p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
 <div class="table"><table>
 <tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
-<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-partial"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>1</td><td>no</td><td>33.3</td><td>47.1</td><td>$0.0264</td><td>$0.0264</td><td>29.8</td><td>428197</td><td>$0.2696</td></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-partial"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>1</td><td>no</td><td>35.0</td><td>49.5</td><td>$0.0264</td><td>$0.0264</td><td>29.8</td><td>428197</td><td>$0.8250</td></tr>
 </table></div>
 
 <h2>Trials</h2>
@@ -105,7 +105,7 @@ a { color: inherit; }
 <div><dt>permission_denials</dt><dd>0</dd></div>
 <div><dt>reasoning</dt><dd>3489</dd></div>
 <div><dt>reported_cost_usd</dt><dd>0.1726512</dd></div>
-<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:2,&#34;implausible&#34;:2}</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
@@ -120,21 +120,21 @@ a { color: inherit; }
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
-<div><dt>cache_read</dt><dd>535</dd></div>
+<div><dt>cache_read</dt><dd>4280</dd></div>
 <div><dt>cache_write</dt><dd>0</dd></div>
-<div><dt>cache_write_1h</dt><dd>15624</dd></div>
+<div><dt>cache_write_1h</dt><dd>71916</dd></div>
 <div><dt>compactions</dt><dd>0</dd></div>
-<div><dt>cost_usd</dt><dd>0.0625835</dd></div>
+<div><dt>cost_usd</dt><dd>0.296184</dd></div>
 <div><dt>egress_denied</dt><dd>0</dd></div>
 <div><dt>first_edit_tool_call</dt><dd>0</dd></div>
 <div><dt>infra_error</dt><dd>false</dd></div>
-<div><dt>input</dt><dd>2</dd></div>
-<div><dt>output</dt><dd>3</dd></div>
+<div><dt>input</dt><dd>16</dd></div>
+<div><dt>output</dt><dd>806</dd></div>
 <div><dt>passed</dt><dd>false</dd></div>
 <div><dt>peak_context_tokens</dt><dd>0</dd></div>
 <div><dt>permission_denials</dt><dd>0</dd></div>
-<div><dt>reasoning</dt><dd>0</dd></div>
-<div><dt>reported_cost_usd</dt><dd>0.0625835</dd></div>
+<div><dt>reasoning</dt><dd>780</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.296184</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
@@ -142,14 +142,57 @@ a { color: inherit; }
 <div><dt>tool_calls</dt><dd>{}</dd></div>
 <div><dt>tool_calls_total</dt><dd>0</dd></div>
 <div><dt>tool_errors</dt><dd>0</dd></div>
-<div><dt>turns</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+- `loadFailed` (SettingsState.kt:242)
+  - `SettingsState.kt:270` (load success): gated on `current &amp;&amp; noWriteSucceeded`. Still correct.
+  - `SettingsState.kt:275` (load failure): gated the same way. Still correct.
+  - `SettingsState.kt:295` (`chooseUnit` success): unchanged, sets `false` only when `unitWrite.onSuccess` returns true. Still correct.
+  - `SettingsState.kt:310` (`chooseUnit` nothing confirmed): unchanged, sets `true`. Still correct.
+  - `SettingsState.kt:339` (`chooseSessionView` success): sets `false` only when `viewWrite.onSuccess` returns true. Correct.
+  - `SettingsState.kt:351` (`chooseSessionView` nothing confirmed): sets `true`. Correct.
+- `unitWrite` state, via `adoptLoad` (`SettingsState.kt:271`): gated on `noUnitWriteSucceededSinceThisLoadBegan`. Still correct. Its writers are the unchanged `chooseUnit` path, which now sends `sessionView = null` and so omits the key. That is correct only if the server treats an absent `sessionView` as &#34;unchanged&#34; (see Important #1).
+- `viewWrite` state, via `adoptLoad` (`SettingsState.kt:272`) and `onSuccess`/`onFailure` (lines 339, 351): gated the same way. Still correct.
+- `isSaving` and `hasLoaded`: no conflicting writers.
+
+### Issues
+
+#### Critical (Must Fix)
+None found in the diff.
+
+#### Important (Should Fix)
+
+1. **`UpdateWorkoutPreferencesRequest` unit writes depend on unseen server semantics.** `WorkoutModels.kt:700` and `SettingsState.kt:290` (`chooseUnit`) send a PUT without `sessionView`. The KDoc says that means &#34;unchanged&#34;. If the server treats an absent key as the default `FOCUS`, every unit change silently resets the workout mode. The diff does not show the server, and no test in this diff covers the server side.
+   - Fix: confirm the server&#39;s PUT handler leaves `session_view` untouched when the key is absent, and add a backend test for it.
+   - Reproducer: none — the server handler is not in this repository. Verify with the backend test suite.
+
+#### Minor (Nice to Have)
+
+2. **Unrelated message change.** `SettingsState.kt:276` replaces `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` with a new literal `&#34;Could not load your settings.&#34;`, and drops the import. Other screens still use the shared constant (`WorkoutEditorScreen.kt:387`), so this is a silent change to user-visible copy outside the feature. Restore the constant or split it into its own change.
+   - Reproducer: `grep -rn &#34;COULD_NOT_LOAD_WEIGHT_UNIT&#34; shared/src` shows the constant still in use elsewhere, so the literal is a divergent copy.
+
+3. **Wire-format test does not use the app&#39;s client.** `SettingsStateTest.kt` (`a unit write leaves the workout mode off the wire`) asserts with a bare `Json.encodeToString`. The production client&#39;s `Json` configuration is not in the diff, so the test proves kotlinx&#39;s default, not the app&#39;s config.
+   - Fix: assert against the real client&#39;s serializer, or against the MockEngine body in `SettingsScreenUiTest`.
+   - Reproducer: none — the app&#39;s `Json` instance is not in the diff, so the test cannot be checked against it here.
+
+4. **Test `a unit write leaves the workout mode off the wire` also checks `lastUpdatePreferencesView`.** That is a fake-level assertion and does not prove the request body omits the key. The `encodeToString` line is the only wire check, and it is the weaker one from item 3.
+
+### Recommendations
+- Keep the server contract for the optional `sessionView` field in one place. Its meaning is currently spread across the KDoc at `WorkoutApi.kt`, `WorkoutModels.kt:700`, and `SettingsState.kt`.
+- The `SettingsState` class KDoc is long. Consider moving the per-field rules into a short section per field.
+
+### Assessment
+**Ready for the human gate?** With fixes
+
+**Reasoning:** The optimistic-write and load-gating logic for `loadFailed`, `unitWrite` and `viewWrite` is consistent across every writer I checked. The blocking open question is whether the server treats an absent `sessionView` as &#34;unchanged&#34;; that must be verified in the backend before a unit change can be trusted not to reset the mode. The message regression at `SettingsState.kt:276` should be reverted in this change.</pre></details>
 <p class="muted">transcript: 20261013T113901Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial pass">
-<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">pass</span> · score 105.0</h3>
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9999474173137258</dd></div>
@@ -168,8 +211,8 @@ a { color: inherit; }
 <div><dt>permission_denials</dt><dd>0</dd></div>
 <div><dt>reasoning</dt><dd>4901</dd></div>
 <div><dt>reported_cost_usd</dt><dd>0.192218</dd></div>
-<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
-<div><dt>score</dt><dd>100</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:2,&#34;implausible&#34;:1}</dd></div>
+<div><dt>score</dt><dd>105</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
 <div><dt>timed_out</dt><dd>false</dd></div>
@@ -183,21 +226,21 @@ a { color: inherit; }
 <dl class="metrics">
 <div><dt>api_errors</dt><dd>0</dd></div>
 <div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
-<div><dt>cache_read</dt><dd>2140</dd></div>
+<div><dt>cache_read</dt><dd>4280</dd></div>
 <div><dt>cache_write</dt><dd>0</dd></div>
-<div><dt>cache_write_1h</dt><dd>49418</dd></div>
+<div><dt>cache_write_1h</dt><dd>59106</dd></div>
 <div><dt>compactions</dt><dd>0</dd></div>
-<div><dt>cost_usd</dt><dd>0.207022</dd></div>
+<div><dt>cost_usd</dt><dd>0.240234</dd></div>
 <div><dt>egress_denied</dt><dd>0</dd></div>
 <div><dt>first_edit_tool_call</dt><dd>0</dd></div>
 <div><dt>infra_error</dt><dd>false</dd></div>
-<div><dt>input</dt><dd>8</dd></div>
-<div><dt>output</dt><dd>912</dd></div>
+<div><dt>input</dt><dd>16</dd></div>
+<div><dt>output</dt><dd>335</dd></div>
 <div><dt>passed</dt><dd>false</dd></div>
 <div><dt>peak_context_tokens</dt><dd>0</dd></div>
 <div><dt>permission_denials</dt><dd>0</dd></div>
-<div><dt>reasoning</dt><dd>895</dd></div>
-<div><dt>reported_cost_usd</dt><dd>0.20702199999999998</dd></div>
+<div><dt>reasoning</dt><dd>209</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.240234</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
@@ -205,10 +248,56 @@ a { color: inherit; }
 <div><dt>tool_calls</dt><dd>{}</dd></div>
 <div><dt>tool_calls_total</dt><dd>0</dd></div>
 <div><dt>tool_errors</dt><dd>0</dd></div>
-<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
 <div><dt>wall_ms</dt><dd>0</dd></div>
 </dl>
 </details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+Pre-existing state the new code reads or writes: `unitWrite.confirmed`, `unitWrite` success counter, `loadFailed`, `loadSeq`, `sendMutex`.
+
+- `unitWrite.confirmed` / `OptimisticWrite.adoptLoad`: written at `SettingsState.kt:103` (`onSuccess`, reached from `chooseUnit` at 295) and `:135` (`adoptLoad`, reached from `load` at 271). Still correct. Unit writes send no `sessionView`, so they never clear the mode.
+- `unitWrite.succeededWriteCount`: incremented only in `onSuccess`. Still correct. The new view write increments its own counter, and `load` gates each adoption on its own counter.
+- `loadFailed`, written at:
+  - `:270` (load success, new gate: both writes): correct.
+  - `:275` (load failure, new gate: neither write succeeded): **issue**, see item 2.
+  - `:295` (`chooseUnit` success, untouched): **issue**, see item 1.
+  - `:310` (`chooseUnit` refused with nothing confirmed): correct.
+  - `:339` and `:351` (`chooseSessionView`): correct.
+- `loadSeq`, `sendMutex`: only read by the new code, and all writers are gated correctly.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+
+1. **`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295`** — the untouched `chooseUnit` success clears `loadFailed` whenever its own write is current. That flag now also covers the view. Scenario: `load()` fails, so both fields are unconfirmed and `loadFailed` is true. The user picks LBS and the PUT succeeds. `loadFailed` becomes false, the mode control shows the FOCUS default as if it were confirmed, and no retry is offered. The server may hold QUICK. Fix: clear `loadFailed` only when every field has a confirmed value (e.g. also require `viewWrite.confirmed != null`), or track the two cases separately.
+   **Reproducer:** none — no existing command exercises this. It needs a `SettingsStateTest` that sets `preferencesResult` to a failure, calls `chooseUnit(LBS)` successfully, and asserts `loadFailed == true` and that the view is unconfirmed.
+
+2. **`SettingsState.kt:273–277`** — the load-failure branch now stays silent if *any* write succeeded since the load began. A failed load after a successful unit write therefore sets no `loadFailed` and shows no notification, yet the view was never loaded. The control silently shows the FOCUS default. Fix: gate the failure on the view&#39;s own counter for the view&#39;s state, separate from the unit&#39;s.
+   **Reproducer:** none — needs a test that calls `chooseUnit` successfully while `load()` is in flight with a failing response, then asserts the failure is surfaced.
+
+3. **`SettingsState.kt:276`** (and the import removed at line 7) — `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` was replaced with the literal `&#34;Could not load your settings.&#34;`. This changes the existing unit-load failure text, which is unrelated to this feature. The three `&#34;Could not save your workout mode.&#34;` literals also duplicate text that belongs in one place. Fix: keep the existing constant for the unit path and put the new messages in `FailureMessages`.
+   **Reproducer:** `grep -rn &#34;COULD_NOT_LOAD_WEIGHT_UNIT\|Could not load your settings&#34; shared/src` — the constant is gone from this file and any test asserting the old text would now fail.
+
+4. **`shared/src/commonTest/kotlin/com/gymie/shared/ui/SettingsStateTest.kt`** (`a unit write leaves the workout mode off the wire`) — the test encodes with a fresh `kotlinx.serialization.json.Json` default instance. It does not use the production client&#39;s `Json` config, which the KDoc on `UpdateWorkoutPreferencesRequest` relies on (`encodeDefaults = false`). The assertion would still pass if the real client encoded defaults. Fix: encode through the real client&#39;s serializer or the same `Json` instance `GymieApiClient` uses.
+   **Reproducer:** none — the production `Json` configuration is not in this diff. Verifying it requires reading the client setup.
+
+#### Minor (Nice to Have)
+
+5. **Backward compatibility** — `WorkoutPreferences.sessionView` defaults to `FOCUS`, so a GET without the key decodes as Focus. That is documented. The diff does not state what happens when an older server ignores the unknown `sessionView` in the PUT body, or what the client&#39;s `ignoreUnknownKeys` setting is. Add a one-line note or test if the server is not already deployed.
+   **Reproducer:** none — server and client JSON configuration are outside this diff.
+
+### Recommendations
+- Consider one `loadFailed` per field (or a small enum) so writers stop sharing a single flag. Items 1 and 2 are the same root cause.
+- The `FakeWorkoutApi.updatePreferences` change reads `preferencesResult` before the hook. That is commented, which is good.
+
+### Assessment
+**Ready for the human gate?** With fixes
+
+**Reasoning:** The wire contract and the optimistic-write logic for the mode are sound and well tested. However, the shared `loadFailed` flag is now cleared by the untouched unit writer while the view remains unconfirmed, and a failed load can go unreported. Both can leave the mode control showing a default as if it were the stored value.</pre></details>
 <p class="muted">transcript: 20261013T113901Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
 </section>
 <section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
@@ -231,7 +320,7 @@ a { color: inherit; }
 <div><dt>permission_denials</dt><dd>0</dd></div>
 <div><dt>reasoning</dt><dd>3349</dd></div>
 <div><dt>reported_cost_usd</dt><dd>0.16315220000000002</dd></div>
-<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0}</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:1,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:3}</dd></div>
 <div><dt>score</dt><dd>0</dd></div>
 <div><dt>served_matches_requested</dt><dd>true</dd></div>
 <div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
@@ -242,6 +331,68 @@ a { color: inherit; }
 <div><dt>turns</dt><dd>3</dd></div>
 <div><dt>wall_ms</dt><dd>26373</dd></div>
 </dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>4280</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>71638</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.288592</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>16</dd></div>
+<div><dt>output</dt><dd>158</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>133</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.28859199999999996</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>8</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Shared-state check
+
+Read from the diff and the two greps. I did not open `OptimisticWrite`, `chooseUnit`, or `adoptLoad` in full, so this section is incomplete.
+
+- `unitWrite` state (`displayUnit`, `confirmed`, `succeededWriteCount`): writers are `chooseUnit` (unchanged, `SettingsState.kt`, not in the diff) and `adoptLoad` in `load()`. `chooseUnit` sends `UpdateWorkoutPreferencesRequest(displayUnit)` with `sessionView` null, which is omitted from the wire, so the server keeps the mode. Still correct, pending a read of `chooseUnit`&#39;s success path to confirm it does not touch `viewWrite`.
+- `loadFailed`: writers are `load()` (`SettingsState.kt`, the `onSuccess` and `onFailureNotCancelled` branches) and `chooseSessionView`. The `noWriteSucceeded` gate is consistent with the unit-only gate it replaced. Still correct.
+- `viewWrite` state: writers are `load()` (`adoptLoad`), `chooseSessionView` (`begin`, `onSuccess`, `onFailure`, `end`). Still correct, but this depends on `OptimisticWrite` honouring a pending write in `adoptLoad`, which I did not verify.
+- Wire serialization: `sessionView` is null by default and omitted only because kotlinx defaults to `encodeDefaults = false`. The production `Json` in `GymieApiClient.kt:245` does not override it, so this holds.
+
+### Issues
+
+#### Critical (Must Fix)
+None found.
+
+#### Important (Should Fix)
+None confirmed.
+
+#### Minor (Nice to Have)
+
+1. **`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt`, `load()` failure branch.** The diff replaces `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` with the literal `&#34;Could not load your settings.&#34;` and drops the import. The constant still exists and is used by `WorkoutEditorScreen.kt:387`. Reusing the constant or adding a sibling constant would keep the copy in one place. Reproducer: `git grep -n &#34;Could not load your settings&#34; -- shared/src` shows the literal appears only here. Also, the unit-load failure now reads differently in the Settings room than in the editor.
+2. **Code comments naming tickets.** `WorkoutModels.kt` (`KAN-865`), `AppScreens.kt` (`KAN-867`, `KAN-573`), and `SettingsState.kt` (`KAN-867`) reference task IDs in code. This conflicts with the project&#39;s no-task-reference convention. Reproducer: `git grep -n &#34;KAN-86&#34; -- shared/src`.
+3. **`SettingsStateTest.kt`, `a unit write leaves the workout mode off the wire`.** The test asserts on a default `Json` instance, not the production client&#39;s `Json` (`GymieApiClient.kt:245`). The two match today, but the test would not catch a future change to the production config. Reproducer: `none — behavior holds today; a regression test would need to serialize through GymieApiClient&#39;s Json`.
+4. **`SettingsScreenUiTest.kt`, `api(...)` MockEngine.** The fallback `?: &#34;FOCUS&#34;` for a missing `sessionView` is used only when the PUT body lacks the key. That matches the server default, so this is fine, but a comment would help a reader see why.
+
+### Recommendations
+- Read `chooseUnit` and `OptimisticWrite` in full before merging, to close the shared-state gap above. Specifically confirm that `chooseUnit`&#39;s success path does not touch `viewWrite` and that `adoptLoad` respects a pending write.
+- Add a test where a view write is in flight when a `load()` returns a stale response. The current suite covers unit-in-flight during a mode write but not the reverse.
+
+### Assessment
+**Ready for the human gate?** With fixes
+
+**Reasoning:** I found no correctness defects in the hunks I read, and the wire format and serialization hold. The review is incomplete on the shared-state writers (`chooseUnit`, `OptimisticWrite`), which I did not read in full, so the verdict depends on that check.</pre></details>
 <p class="muted">transcript: 20261013T113901Z-review-claude-code-claude-haiku-5-5-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
 </section>
 </body>

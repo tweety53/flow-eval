@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"slices"
 	"strings"
@@ -417,7 +418,7 @@ func TestMineReviewLabelsFromPanel(t *testing.T) {
 		ID: "F1", File: _patchSvc, Line: 209, Severity: "Important", Slot: "primary",
 		Summary: "An unchanged set PATCH is no longer a no-op: it writes, bumps the workout revision and re-attributes the set",
 	}
-	if labels.MustFind[0] != wantF1 {
+	if !reflect.DeepEqual(labels.MustFind[0], wantF1) {
 		t.Errorf("mustFind[0] = %+v,\nwant %+v", labels.MustFind[0], wantF1)
 	}
 

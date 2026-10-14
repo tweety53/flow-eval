@@ -41,7 +41,7 @@ review-principles: ~**Diff file:** [DIFF_PATH] **Principles:** [PRINCIPLES_PATH]
 review-principles: ~**Global constraints:** [GLOBAL_CONSTRAINTS]
 review-principles: ~Read the principles FIRST: the context bundle your prompt names carries the principles file whole, under a section headed with the Principles path above — read it there and never re-open that file.
 review-principles: ~Open the Principles path itself only when your prompt names the bundle as absent or the bundle's census lists that path as skipped.
-review-principles: ~Then read the project standards files, then the diff.
+review-principles: ~Then read the project standards files, then the diff, then do the required step below.
 #
 # review-failure-modes — skills/flow/failure-modes-reviewer-prompt.md: the diff arrives inline,
 # and a review case carries no context bundle. `## Scope` keeps only its order to grep the touched

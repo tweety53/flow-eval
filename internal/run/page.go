@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"html"
 	"html/template"
 	"io/fs"
 	"maps"
@@ -11,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"slices"
+	"strings"
 	"unicode/utf8"
 
 	"encoding/json/jsontext"
@@ -43,14 +45,32 @@ type artifact struct{ Name, Body string }
 // none of them shows none.
 var _pageArtifacts = []string{"output.md", "verify.log", "work.patch"}
 
-// _artifactCap is how much of one artifact the page carries; a longer one is cut, naming its file.
+// _artifactCap is how much of one artifact the page carries; a longer one is cut, naming its file
+// after _cutNote.
 const _artifactCap = 256 << 10
+
+const (
+	_cutNote    = "\n… cut at "
+	_unreadable = "unreadable: " // opens an artifact the page could not read, then the read error
+)
+
+// _sectionOpen opens a trial's section on the page; pageArtifact renders the same text to find
+// one, so a case id html/template escapes in the attribute is found as written.
+const _sectionOpen = `<section id="trial-{{.Case}}-{{.TrialNum}}"`
+
+// The probe closes the tag, which html/template requires; pageArtifact drops the ">".
+var _sectionProbe = template.Must(template.New("section").Parse(_sectionOpen + ">"))
 
 // page renders a run as one self-contained HTML page: no script and no external asset, every value
 // escaped by html/template. Its cases are s's rows, in their order. It reads each trial's artifacts
 // from runsDir/<id>/<case>/<trial>/; an artifact it cannot read is shown as its read error, never
-// failing the run.
+// failing the run. That directory is gitignored, so an artifact whose file is gone — in a fresh
+// clone, or another worktree — is kept from the run's existing page, never dropped.
 func page(runsDir, id string, h Header, s summary, lines []Line) ([]byte, error) {
+	old, err := os.ReadFile(filepath.Join(runsDir, id+".html"))
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, err
+	}
 	var byCase []pageCase
 	for _, c := range s.Rows {
 		var own []Line
@@ -62,7 +82,7 @@ func page(runsDir, id string, h Header, s summary, lines []Line) ([]byte, error)
 		slices.SortFunc(own, func(a, b Line) int { return a.TrialNum - b.TrialNum })
 		pc := pageCase{ID: c.ID}
 		for _, l := range own {
-			t, err := newPageTrial(runsDir, id, l)
+			t, err := newPageTrial(runsDir, id, l, string(old))
 			if err != nil {
 				return nil, err
 			}
@@ -71,7 +91,7 @@ func page(runsDir, id string, h Header, s summary, lines []Line) ([]byte, error)
 		byCase = append(byCase, pc)
 	}
 	var b bytes.Buffer
-	err := _page.Execute(&b, struct {
+	err = _page.Execute(&b, struct {
 		ID    string
 		H     Header
 		S     summary
@@ -83,7 +103,7 @@ func page(runsDir, id string, h Header, s summary, lines []Line) ([]byte, error)
 	return b.Bytes(), nil
 }
 
-func newPageTrial(runsDir, id string, l Line) (pageTrial, error) {
+func newPageTrial(runsDir, id string, l Line, old string) (pageTrial, error) {
 	rel := path.Join(id, l.Case, fmt.Sprint(l.TrialNum))
 	t := pageTrial{Line: l, Transcript: path.Join(rel, "transcript.jsonl")}
 	var err error
@@ -99,15 +119,19 @@ func newPageTrial(runsDir, id string, l Line) (pageTrial, error) {
 		body, err := os.ReadFile(filepath.Join(runsDir, filepath.FromSlash(rel), name))
 		switch {
 		case errors.Is(err, fs.ErrNotExist):
-			continue
+			kept, ok := pageArtifact(old, l.Case, l.TrialNum, name)
+			if !ok {
+				continue
+			}
+			body = []byte(kept)
 		case err != nil: // the trial already records why it could not write the file
-			body = []byte("unreadable: " + err.Error())
+			body = []byte(_unreadable + err.Error())
 		case len(body) > _artifactCap:
 			n := _artifactCap
 			for n > 0 && !utf8.RuneStart(body[n]) { // never cut inside a character
 				n--
 			}
-			body = fmt.Appendf(body[:n:n], "\n… cut at %d KiB; the whole file is %s", _artifactCap>>10, path.Join(rel, name))
+			body = fmt.Appendf(body[:n:n], _cutNote+"%d KiB; the whole file is %s", _artifactCap>>10, path.Join(rel, name))
 		}
 		t.Artifacts = append(t.Artifacts, artifact{Name: name, Body: string(body)})
 	}
@@ -259,7 +283,7 @@ var _page = template.Must(template.New("page").Funcs(template.FuncMap{
 
 <h2>Trials</h2>
 {{- range .Cases}}{{range .Trials}}
-<section id="trial-{{.Case}}-{{.TrialNum}}" class="trial {{if .InfraError}}infra{{else if .Passed}}pass{{else}}fail{{end}}">
+` + _sectionOpen + ` class="trial {{if .InfraError}}infra{{else if .Passed}}pass{{else}}fail{{end}}">
 <h3>{{.Case}} · trial {{.TrialNum}} · <span class="verdict">{{if .InfraError}}infra error{{else if .Passed}}pass{{else}}fail{{end}}</span> · score {{printf "%.1f" .Score}}</h3>
 {{- if .Error}}
 <p class="error">{{.Error}}</p>
@@ -287,3 +311,26 @@ var _page = template.Must(template.New("page").Funcs(template.FuncMap{
 </body>
 </html>
 `))
+
+// pageArtifact finds the artifact name a rendered run page carries for one trial, unescaped, as the
+// page shows it: possibly cut, or a read error in its place.
+func pageArtifact(page, caseID string, trial int, name string) (string, bool) {
+	var open strings.Builder
+	if err := _sectionProbe.Execute(&open, struct {
+		Case     string
+		TrialNum int
+	}{caseID, trial}); err != nil {
+		return "", false
+	}
+	_, sec, ok := strings.Cut(page, strings.TrimSuffix(open.String(), ">"))
+	if !ok {
+		return "", false
+	}
+	sec, _, _ = strings.Cut(sec, "</section>")
+	_, body, ok := strings.Cut(sec, "<details><summary>"+name+"</summary><pre>")
+	if !ok {
+		return "", false
+	}
+	body, _, ok = strings.Cut(body, "</pre></details>")
+	return html.UnescapeString(body), ok
+}

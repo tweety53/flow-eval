@@ -421,3 +421,31 @@ func TestSIGTERMCancelsARun(t *testing.T) {
 		t.Fatal("SIGTERM did not cancel the run context")
 	}
 }
+
+// regrade exits 2, naming why, before any judge call: without a run id, without the judge's
+// credential, and on a run that does not exist.
+func TestRegradeExitCodes(t *testing.T) {
+	bin := buildBinary(t)
+	env := []string{"PATH=" + os.Getenv("PATH"), "HOME=" + t.TempDir()}
+	dirs := []string{"--root", "../../cases", "--judge", "../../judge.json", "--pricing", "../../pricing.json",
+		"--runs", t.TempDir()}
+	for _, tc := range []struct {
+		name       string
+		args, env  []string
+		wantStderr string
+	}{
+		{"no run id", append([]string{"regrade"}, dirs...), []string{"ANTHROPIC_API_KEY=k"}, "usage: flow-eval regrade"},
+		{"judge credential missing", append([]string{"regrade", "r1"}, dirs...), nil, "CLAUDE_CODE_OAUTH_TOKEN"},
+		{"unknown run", append([]string{"regrade", "r1"}, dirs...), []string{"ANTHROPIC_API_KEY=k"}, "r1"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var stderr bytes.Buffer
+			cmd := exec.Command(bin, tc.args...)
+			cmd.Env, cmd.Stderr = append(slices.Clone(env), tc.env...), &stderr
+			err := cmd.Run()
+			if ee, ok := errors.AsType[*exec.ExitError](err); !ok || ee.ExitCode() != 2 || !strings.Contains(stderr.String(), tc.wantStderr) {
+				t.Errorf("err %v, stderr %q; want exit 2 naming %q", err, stderr.String(), tc.wantStderr)
+			}
+		})
+	}
+}

@@ -87,7 +87,7 @@ What it mines, from the same archive:
 - **`labels.json`**, from `panel.md`'s findings table and its `finding-status:` lines:
   - Every label carries `slot`, the row's Slot column: the panel slot that raised it.
   - `mustFind[]`: `fixed` findings of severity Critical or Important, each `{id, slot, file, line,
-    summary, severity}`. `file` and `line` come from the row's Location (the first line number is
+    summary, severity}`, plus `also` where edited in (below). `file` and `line` come from the row's Location (the first line number is
     kept, 0 when there is none). A finding that duplicates another slot's finding is a must-find of
     its own slot, wherever its cited line lies.
   - Plan-alignment findings are left out: a fixed finding located in the change's own plan
@@ -116,6 +116,10 @@ What to check and edit:
   carried it): re-mine it.
 - Check each `line` against `diff.patch`: the grader pairs a reported finding with a label in the
   same file within ±15 lines.
+- A defect that sits at several lines of its file — a stored value each of several writers keeps
+  wrong — lists the others in `also` (`"also": [295]`), added by hand: a finding near `line` or
+  any `also` line is put to the judge, which is shown every one, so a reviewer may anchor the
+  defect at any of its writers.
 - `severity` feeds `severity_agreement`; correct it if the panel's was later revised.
 
 ## Visual case (`visual`)

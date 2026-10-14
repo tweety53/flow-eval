@@ -418,6 +418,25 @@ func TestReviewGradedOnItsSlotsMustFinds(t *testing.T) {
 			t.Errorf("known_false_hits = %d, want 1: principles' known-false F3 applies to a primary trial", got)
 		}
 	})
+	t.Run("a review run's id names its slot, so two slots started in one second both run", func(t *testing.T) {
+		stamp := time.Date(2026, 10, 9, 12, 0, 0, 0, time.UTC)
+		now = func() time.Time { return stamp }
+		t.Cleanup(func() { now = time.Now })
+		mixed := all[slices.IndexFunc(all, func(c cases.Case) bool { return c.ID == "mixed" })]
+		cfg := config([]cases.Case{mixed})
+		cfg.RunsDir = filepath.Join(t.TempDir(), "runs")
+		d := &hostDocker{root: t.TempDir()}
+		for _, slot := range []string{"primary", "principles"} {
+			cfg.Slot = slot
+			id, err := Run(t.Context(), cfg, d)
+			if err != nil {
+				t.Fatalf("%s run: %v", slot, err)
+			}
+			if want := "-review-" + slot + "-script-m1-low"; !strings.HasSuffix(id, want) {
+				t.Errorf("run id %q, want <stamp>%s", id, want)
+			}
+		}
+	})
 	t.Run("a slot with no prompt is named before the must-find refusal", func(t *testing.T) {
 		cfg := config(all)
 		cfg.Slot = "bogus"
@@ -1602,4 +1621,247 @@ func TestServedModelIsDerivedFromTrials(t *testing.T) {
 			}
 		}
 	})
+}
+
+// regradeFixture records a one-trial review run of case caseID whose only finding, at a.txt:1, sits
+// outside the window of the case's one must-find at a.txt:40, and returns its config and run id.
+func regradeFixture(t *testing.T, caseID string) (Config, string) {
+	t.Helper()
+	root := t.TempDir()
+	repos := filepath.Join(root, "repos")
+	head := gitRepo(t, filepath.Join(repos, "src"), map[string]string{"a.txt": "a\n"})
+	writeFiles(t, filepath.Join(root, "cases", "review", caseID), map[string]string{
+		"case.json":   `{"id":"` + caseID + `","role":"review","source":{"repo":"src","change":"c"},"snapshot":"` + head + `","notes":"n"}`,
+		"diff.patch":  "d\n",
+		"labels.json": `{"mustFind":[{"id":"F1","file":"a.txt","line":40,"summary":"a","slot":"principles"}],"knownFalse":[]}`,
+	})
+	cfg := Config{
+		Role: "review", Model: "m1", Effort: "low", Slot: "principles", K: 1, Parallel: 1,
+		Harness:  scriptHarness{script: `printf -- '#### Important\n- a.txt:1 the <defect> & more\n'`},
+		Cases:    loadCases(t, filepath.Join(root, "cases"), "review"),
+		ReposDir: repos, PromptsDir: "../../prompts", RunsDir: filepath.Join(root, "runs"),
+		RunnerImage: "r", ProxyImage: "p", FlowEvalSHA: "f0", Pricing: _pricing, Judge: sameJudge{}, JudgePin: _judgePin,
+	}
+	id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, lines := readRun(t, cfg.RunsDir, id); lines[0].Passed {
+		t.Fatalf("recorded trial = %+v, want a fail: its finding is outside the window", lines[0])
+	}
+	// The label now also sits at line 1, where the trial's finding is.
+	writeFiles(t, cfg.Cases[0].Dir, map[string]string{
+		"labels.json": `{"mustFind":[{"id":"F1","file":"a.txt","line":40,"also":[1],"summary":"a","slot":"principles"}],"knownFalse":[]}`,
+	})
+	cfg.Cases = loadCases(t, filepath.Join(root, "cases"), "review")
+	cfg.FlowEvalSHA = "f1"
+	return cfg, id
+}
+
+func TestRegradeRescoresFromTrialOutputs(t *testing.T) {
+	cfg, id := regradeFixture(t, "c1")
+	before, was := readRun(t, cfg.RunsDir, id)
+	if err := Regrade(t.Context(), cfg, id); err != nil {
+		t.Fatal(err)
+	}
+	h, lines := readRun(t, cfg.RunsDir, id)
+	l := lines[0]
+	if !l.Passed || l.Review == nil || l.Review.Recall != 1 || l.Score == 0 {
+		t.Errorf("re-graded trial = %+v, want a pass at recall 1", l)
+	}
+	if l.Judge == nil || l.Judge.Input != _judgeUsage.Input {
+		t.Errorf("judge usage = %+v, want the re-grade's", l.Judge)
+	}
+	if l.Input != was[0].Input || l.CostUSD != was[0].CostUSD {
+		t.Errorf("trial usage %d/$%v, want the recorded %d/$%v kept", l.Input, l.CostUSD, was[0].Input, was[0].CostUSD)
+	}
+	want, err := cases.SetHash(cfg.Cases)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.CaseSetHash != want || h.CaseHashes["c1"] != want || h.CaseSetHash == before.CaseSetHash {
+		t.Errorf("case hashes %s %v, want the current %s", h.CaseSetHash, h.CaseHashes, want)
+	}
+	if h.Regraded != "f1" || h.FlowEvalSHA != "f0" {
+		t.Errorf("header regraded %q, flow-eval %q; want f1 and the recorded f0", h.Regraded, h.FlowEvalSHA)
+	}
+	md, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(md), "| c1 | 1/1 | 1 | yes |") {
+		t.Errorf("report not re-rendered:\n%s", md)
+	}
+}
+
+// With the trial directory gone, as in a fresh clone, the trial is graded from its page's copy of
+// output.md, which the re-rendered page keeps — a case id the page escapes included.
+func TestRegradeRestoresOutputFromPage(t *testing.T) {
+	for _, caseID := range []string{"c1", "a+b"} {
+		t.Run(caseID, func(t *testing.T) {
+			cfg, id := regradeFixture(t, caseID)
+			if err := os.RemoveAll(filepath.Join(cfg.RunsDir, id)); err != nil {
+				t.Fatal(err)
+			}
+			if err := Regrade(t.Context(), cfg, id); err != nil {
+				t.Fatal(err)
+			}
+			if _, lines := readRun(t, cfg.RunsDir, id); !lines[0].Passed {
+				t.Errorf("trial graded from the page = %+v, want a pass", lines[0])
+			}
+			if _, err := os.Stat(filepath.Join(cfg.RunsDir, id)); !errors.Is(err, os.ErrNotExist) {
+				t.Errorf("trial directory: %v, want none written", err)
+			}
+			page, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".html"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.Contains(string(page), "the &lt;defect&gt; &amp; more") {
+				t.Error("re-rendered page lost the trial's output.md")
+			}
+		})
+	}
+}
+
+// A page copy the page cut at its artifact cap is not the trial's report, and is never graded.
+func TestRegradeRefusesACutPageCopy(t *testing.T) {
+	cfg, id := regradeFixture(t, "c1")
+	if err := os.RemoveAll(filepath.Join(cfg.RunsDir, id)); err != nil {
+		t.Fatal(err)
+	}
+	pagePath := filepath.Join(cfg.RunsDir, id+".html")
+	page, err := os.ReadFile(pagePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cut := strings.Replace(string(page), "&amp; more\n</pre>", "&amp; more\n… cut at 256 KiB; the whole file is x</pre>", 1)
+	if cut == string(page) {
+		t.Fatal("fixture page carries no output.md to cut")
+	}
+	writeFiles(t, cfg.RunsDir, map[string]string{id + ".html": cut})
+	before, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := Regrade(t.Context(), cfg, id); err == nil || !strings.Contains(err.Error(), "not the whole report") {
+		t.Errorf("Regrade = %v, want a refusal of the cut copy", err)
+	}
+	if after, _ := os.ReadFile(filepath.Join(cfg.RunsDir, id+".jsonl")); !bytes.Equal(after, before) {
+		t.Error("a refused re-grade rewrote the run record")
+	}
+}
+
+// A trial whose old grade failed and whose sandbox would not stop keeps the sandbox note once its
+// grade is replaced.
+func TestRegradeKeepsASandboxStopNote(t *testing.T) {
+	cfg, id := regradeFixture(t, "c1")
+	h, lines, err := Load(cfg.RunsDir, id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lines[0].Error = "grade: judge down" + _stopSandbox + "gone"
+	var b bytes.Buffer
+	for _, v := range []any{h, lines[0]} {
+		if err := writeJSONLine(&b, v); err != nil {
+			t.Fatal(err)
+		}
+	}
+	writeFiles(t, cfg.RunsDir, map[string]string{id + ".jsonl": b.String()})
+	if err := Regrade(t.Context(), cfg, id); err != nil {
+		t.Fatal(err)
+	}
+	if _, got := readRun(t, cfg.RunsDir, id); got[0].Error != "; stop sandbox: gone" {
+		t.Errorf("error = %q, want only the sandbox note kept", got[0].Error)
+	}
+}
+
+func TestRegradeRefusesANonReviewRun(t *testing.T) {
+	cfg := visualConfig(t, 1)
+	id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := Regrade(t.Context(), cfg, id); err == nil || !strings.Contains(err.Error(), "review") {
+		t.Errorf("Regrade = %v, want a refusal naming review runs", err)
+	}
+}
+
+// runs/<id>/ is gitignored, so a fresh clone or another worktree has no trial files; a repaint
+// there must keep the output each committed page already carries.
+func TestRepaintKeepsArtifactsOfAPageWithoutTrialFiles(t *testing.T) {
+	cfg, id := regradeFixture(t, "a+b") // a case id the page escapes
+	if err := os.RemoveAll(filepath.Join(cfg.RunsDir, id)); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Repaint(cfg.RunsDir, filepath.Join(t.TempDir(), "baselines")); err != nil {
+		t.Fatal(err)
+	}
+	page, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(page), "<summary>output.md</summary><pre>#### Important\n- a.txt:1 the &lt;defect&gt; &amp; more\n</pre>") {
+		t.Error("repainted page lost the trial's output.md")
+	}
+}
+
+// tagJudge rates a finding the labelled defect when it says "the defect", and plausible unless it
+// says "made up".
+type tagJudge struct{}
+
+func (tagJudge) Same(_ context.Context, _, reported string) (bool, harness.Usage, error) {
+	return strings.Contains(reported, "the defect"), harness.Usage{}, nil
+}
+
+func (tagJudge) Plausible(_ context.Context, _, finding string) (bool, harness.Usage, error) {
+	return !strings.Contains(finding, "made up"), harness.Usage{}, nil
+}
+
+// A review trial's score is F1 × 100 plus a bonus per net extra — plausible unlabelled findings less
+// implausible ones, floored at 0 — capped (decision review-extras-net).
+func TestReviewScoreNetsExtras(t *testing.T) {
+	tests := []struct {
+		name   string
+		minors string // Minor findings: outside precision, so F1 stays 1
+		score  float64
+	}{
+		{"four plausible add the capped 15", `- b.txt:1 one\n- b.txt:30 two\n- b.txt:60 three\n- b.txt:90 four\n`, 115},
+		{"two implausible cancel two plausible", `- b.txt:1 one\n- b.txt:30 two\n- b.txt:60 made up\n- b.txt:90 made up\n`, 100},
+		{"three plausible less one implausible add 10", `- b.txt:1 one\n- b.txt:30 two\n- b.txt:60 three\n- b.txt:90 made up\n`, 110},
+		{"more implausible than plausible takes nothing off F1", `- b.txt:1 one\n- b.txt:60 made up\n- b.txt:90 made up\n`, 100},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := t.TempDir()
+			repos := filepath.Join(root, "repos")
+			head := gitRepo(t, filepath.Join(repos, "src"), map[string]string{"a.txt": "a\n", "b.txt": "b\n"})
+			writeFiles(t, filepath.Join(root, "cases", "review", "c"), map[string]string{
+				"case.json": `{"id":"c","role":"review","source":{"repo":"src","change":"c"},"snapshot":"` + head +
+					`","notes":"n"}`,
+				"diff.patch":  "d\n",
+				"labels.json": `{"mustFind":[{"id":"F1","file":"a.txt","line":1,"summary":"a","slot":"primary"}],"knownFalse":[]}`,
+			})
+			report := `#### Important\n- a.txt:1 the defect\n#### Minor\n` + tt.minors
+			cfg := Config{
+				Role: "review", Model: "m1", Effort: "low", Slot: "primary", K: 1, Parallel: 1,
+				Harness: scriptHarness{script: `printf -- '` + report + `'`}, Cases: loadCases(t, filepath.Join(root, "cases"), "review"),
+				ReposDir: repos, PromptsDir: "../../prompts", RunsDir: filepath.Join(root, "runs"),
+				RunnerImage: "r", ProxyImage: "p", FlowEvalSHA: "f", Pricing: _pricing, Judge: tagJudge{}, JudgePin: _judgePin,
+			}
+			id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, lines := readRun(t, cfg.RunsDir, id)
+			if len(lines) != 1 || lines[0].Review == nil {
+				t.Fatalf("lines = %+v, want one review trial", lines)
+			}
+			if r := lines[0].Review; r.F1 != 1 {
+				t.Fatalf("f1 = %v, want 1", r.F1)
+			}
+			if got := lines[0].Score; got != tt.score {
+				t.Errorf("score = %v, want %v", got, tt.score)
+			}
+		})
+	}
 }

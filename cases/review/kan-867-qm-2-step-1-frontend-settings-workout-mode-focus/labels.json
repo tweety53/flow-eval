@@ -13,6 +13,7 @@
       "slot": "principles",
       "file": "shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt",
       "line": 339,
+      "also": [295],
       "summary": "loadFailed is a stored copy of 'some field is unconfirmed'; each field's write path clears it alone, so it drifts from the facts (Single Source of Truth).",
       "severity": "Important"
     },

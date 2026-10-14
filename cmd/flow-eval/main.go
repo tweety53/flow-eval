@@ -52,6 +52,11 @@ var commands = []command{
 		summary: "baseline set <run-id>: record a run as its role's baseline",
 		run:     baselineCmd,
 	},
+	{
+		name:    "regrade",
+		summary: "regrade <run-id>…: grade stored review runs again against the current labels and judge",
+		run:     regradeCmd,
+	},
 	{name: "case", summary: "case add|validate: add and check eval cases", run: caseCmd},
 	{
 		name:    "prompts",
@@ -173,19 +178,9 @@ func runCmd(args []string) int {
 		fmt.Fprintf(os.Stderr, "flow-eval run: %v\n", err)
 		return 2
 	}
-	pricing, err := metrics.LoadPricing(*pricingPath)
+	pricing, judge, sha, err := grading(*pricingPath, *judgePath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "flow-eval run: %v\n", err)
-		return 2
-	}
-	judge, err := grade.LoadJudge(*judgePath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "flow-eval run: %v\n", err)
-		return 2
-	}
-	sha, err := exec.Command("git", "rev-parse", "HEAD").Output()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "flow-eval run: flow-eval git sha: %v\n", err)
 		return 2
 	}
 	// Checked here, not left to the first trial: docker would create the volume empty, and every
@@ -222,7 +217,7 @@ func runCmd(args []string) int {
 		Role: *role, Model: *model, Effort: *effort, Slot: *slot, Harness: hr.h, K: *k, Parallel: *parallel,
 		Cases: selected, ReposDir: *repos, PromptsDir: *promptsDir, RunsDir: *runsDir, BaselinesDir: *baselines,
 		RunnerImage: *runner, ProxyImage: *proxy, Credentials: creds, Mounts: hr.mounts,
-		FlowEvalSHA: strings.TrimSpace(string(sha)), Pricing: pricing, Judge: judge, JudgePin: judge.Pin,
+		FlowEvalSHA: sha, Pricing: pricing, Judge: judge, JudgePin: judge.Pin,
 		Warnings: os.Stderr,
 	}, run.DockerHost{CLI: sandbox.DockerCLI{}})
 	if err != nil {
@@ -231,6 +226,24 @@ func runCmd(args []string) int {
 	}
 	fmt.Printf("run %s: %s/%s.jsonl, %s/%s.md, %s/%s.html\n", id, *runsDir, id, *runsDir, id, *runsDir, id)
 	return 0
+}
+
+// grading loads what grading a trial needs and a run records: the model prices, the judge, and the
+// flow-eval sha checked out.
+func grading(pricingPath, judgePath string) (metrics.Pricing, grade.CLIJudge, string, error) {
+	pricing, err := metrics.LoadPricing(pricingPath)
+	if err != nil {
+		return nil, grade.CLIJudge{}, "", err
+	}
+	judge, err := grade.LoadJudge(judgePath)
+	if err != nil {
+		return nil, grade.CLIJudge{}, "", err
+	}
+	sha, err := exec.Command("git", "rev-parse", "HEAD").Output()
+	if err != nil {
+		return nil, grade.CLIJudge{}, "", fmt.Errorf("flow-eval git sha: %w", err)
+	}
+	return pricing, judge, strings.TrimSpace(string(sha)), nil
 }
 
 // selectCases loads role's cases under root and keeps those named in the comma-separated only,
@@ -360,6 +373,68 @@ func baselineCmd(args []string) int {
 	fmt.Printf("%s baseline: %s\n", key, id)
 	if err := errors.Join(run.Repaint(*runsDir, *baselines)); err != nil {
 		fmt.Fprintf(os.Stderr, "flow-eval baseline set: warning: baseline recorded, repaint failed: %v\n", err)
+	}
+	return 0
+}
+
+// regradeCmd exits 0 when every named run is re-graded, and 2 on a usage error, missing judge
+// credentials, an invalid case, or a run that cannot be re-graded, naming it; the runs named before
+// it stay re-graded.
+func regradeCmd(args []string) int {
+	fs := flag.NewFlagSet("regrade", flag.ContinueOnError)
+	root := fs.String("root", "cases", "cases directory")
+	runsDir := fs.String("runs", "runs", "directory holding the run records")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json, read to paint the index")
+	pricingPath := fs.String("pricing", "pricing.json", "model prices")
+	judgePath := fs.String("judge", "judge.json", "judge pin")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "usage: flow-eval regrade <run-id>… [--root cases] [--runs runs] [--baselines baselines]")
+		fs.PrintDefaults()
+	}
+	var ids []string
+	for rest := args; ; {
+		if code, ok := parseFlags(fs, rest); !ok {
+			return code
+		}
+		if fs.NArg() == 0 {
+			break
+		}
+		ids, rest = append(ids, fs.Arg(0)), fs.Args()[1:]
+	}
+	if len(ids) == 0 {
+		fs.Usage()
+		return 2
+	}
+	judgeCreds := _harnesses["claude-code"].creds
+	if len(firstCredential(judgeCreds)) == 0 {
+		fmt.Fprintf(os.Stderr, "flow-eval regrade: the review grader's judge needs one of %s set\n", strings.Join(judgeCreds, ", "))
+		return 2
+	}
+	pricing, judge, sha, err := grading(*pricingPath, *judgePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "flow-eval regrade: %v\n", err)
+		return 2
+	}
+	loaded, invalid, err := cases.LoadAll(*root, "review")
+	if err == nil && len(invalid) > 0 {
+		err = fmt.Errorf("invalid cases: %w", errors.Join(invalid...))
+	}
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "flow-eval regrade: %v\n", err)
+		return 2
+	}
+	ctx, stop := signal.NotifyContext(context.Background(), stopSignals...)
+	defer stop()
+	cfg := run.Config{
+		Cases: loaded, RunsDir: *runsDir, BaselinesDir: *baselines, FlowEvalSHA: sha,
+		Pricing: pricing, Judge: judge, JudgePin: judge.Pin, Warnings: os.Stderr,
+	}
+	for _, id := range ids {
+		if err := run.Regrade(ctx, cfg, id); err != nil {
+			fmt.Fprintf(os.Stderr, "flow-eval regrade: %v\n", err)
+			return 2
+		}
+		fmt.Printf("regraded %s: %s/%s.jsonl, %s/%s.md, %s/%s.html\n", id, *runsDir, id, *runsDir, id, *runsDir, id)
 	}
 	return 0
 }

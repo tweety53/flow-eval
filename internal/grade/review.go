@@ -30,9 +30,12 @@ type Label struct {
 	ID string `json:"id"`
 	// Slot is the panel slot that raised the finding; a --slot X trial is graded on slot X's
 	// must-finds only.
-	Slot    string `json:"slot"`
-	File    string `json:"file"`
-	Line    int    `json:"line"`
+	Slot string `json:"slot"`
+	File string `json:"file"`
+	Line int    `json:"line"`
+	// Also lists further lines of File where the same defect sits — a stored value written from
+	// several places, say — so a finding at any of them is a candidate match.
+	Also    []int  `json:"also,omitempty"`
 	Summary string `json:"summary"`
 	// Severity is the panel's severity, Critical or Important; severity_agreement counts only labels
 	// that carry one.
@@ -65,6 +68,8 @@ var (
 	_heading         = regexp.MustCompile(`^#{1,4}\s`)
 	_subHeading      = regexp.MustCompile(`^#{5,6}\s`)
 	_boldLed         = regexp.MustCompile(`^\*\*`)
+	_numberedBold    = regexp.MustCompile(`^\*\*\d+[.)]\s`)
+	_boldOnly        = regexp.MustCompile(`^\*\*[^*]+\*\*\s*$`)
 	_listItem        = regexp.MustCompile(`^(?:\d+[.)]|[-*+])\s+`)
 	_none            = regexp.MustCompile(`(?i)^[*_\s]*(none|n/a)\b`)
 	// _location is a path:line whose path has a directory or an extension; a range keeps its start.
@@ -75,21 +80,36 @@ var (
 )
 
 // ParseReview returns the issues under a report's #### Critical, #### Important and #### Minor
-// headings, in order. An issue opens at an unindented list item, a bold-led paragraph naming a
-// path:line, or a ##### sub-heading, and runs over the lines that follow it; an item saying only
-// "None" is no issue. Any other heading of level four or above ends the severity section.
+// headings, in order. An issue opens at a ##### sub-heading, at a bold-led paragraph that names a
+// path:line or opens with an item number (**3. …), or at an unindented list item, and runs over the
+// lines that follow it. An issue opened by a sub-heading or a bold-led paragraph also runs over the
+// list items that follow it: only the next sub-heading, bold-led issue or heading ends it, or a
+// paragraph that is a bold label alone. A bold label alone ends any issue, however it opened, and
+// its own items are no issue (decision parse-bold-led-bullets). An item saying only "None" is no issue. Any other heading of level four
+// or above ends the severity section.
 func ParseReview(report string) []Finding {
 	var findings []Finding
 	var severity string
 	var cur *Finding
+	// keepsItems: a list item continues cur, or opens nothing — cur opened at a sub-heading or a
+	// bold-led paragraph, or a bold label ended it.
+	keepsItems := false
 	prevBlank := true
 	for line := range strings.SplitSeq(report, "\n") {
 		blank := strings.TrimSpace(line) == ""
-		opens := _listItem.MatchString(line) || _subHeading.MatchString(line) ||
-			(prevBlank && _boldLed.MatchString(line) && _location.MatchString(line))
-		prevBlank = blank
+		bold := prevBlank && _boldLed.MatchString(line)
+		heads := _subHeading.MatchString(line) || (bold && (_location.MatchString(line) || _numberedBold.MatchString(line)))
+		opens := heads || (_listItem.MatchString(line) && !keepsItems)
+		prevBlank = blank || _heading.MatchString(line) // a heading ends a paragraph as a blank line does
+		if bold && !heads && _boldOnly.MatchString(line) {
+			// A bold-only label ("**Considered and not raised:**") ends the issue, whichever way it
+			// opened; its items are none, so they open nothing until the next bold-led issue,
+			// sub-heading or heading.
+			cur, keepsItems = nil, true
+			continue
+		}
 		if _heading.MatchString(line) {
-			severity, cur = "", nil
+			severity, cur, keepsItems = "", nil, false
 			if m := _severityHeading.FindStringSubmatch(line); m != nil {
 				severity = m[1]
 			}
@@ -101,6 +121,7 @@ func ParseReview(report string) []Finding {
 		if opens {
 			findings = append(findings, Finding{Severity: severity, Text: line})
 			cur = &findings[len(findings)-1]
+			keepsItems = heads
 		} else if cur != nil {
 			cur.Text += "\n" + line
 		}
@@ -128,11 +149,26 @@ func cleanPath(p string) string {
 	return strings.TrimPrefix(path.Clean(p), "./")
 }
 
-// near reports whether f sits in l's file within _window lines of it. A reviewer may name the file
-// from the trial's working tree root (/work/a/b.go), relative to it (a/b.go) or by a shorter tail
-// (b.go): the file matches when one path is the other's tail at a directory boundary.
+// near reports whether f sits in l's file within _window lines of its line or of one of its also
+// lines. A reviewer may name the file from the trial's working tree root (/work/a/b.go), relative to
+// it (a/b.go) or by a shorter tail (b.go): the file matches when one path is the other's tail at a
+// directory boundary.
 func near(f Finding, l Label) bool {
-	return f.File != "" && sameFile(f.File, cleanPath(l.File)) && max(f.Line-l.Line, l.Line-f.Line) <= _window
+	if f.File == "" || !sameFile(f.File, cleanPath(l.File)) {
+		return false
+	}
+	return slices.ContainsFunc(append([]int{l.Line}, l.Also...), func(line int) bool {
+		return max(f.Line-line, line-f.Line) <= _window
+	})
+}
+
+// lines is l's line then its also lines, comma-separated: where the judge is told the defect sits.
+func (l Label) lines() string {
+	s := strconv.Itoa(l.Line)
+	for _, a := range l.Also {
+		s += "," + strconv.Itoa(a)
+	}
+	return s
 }
 
 func sameFile(a, b string) bool {
@@ -141,18 +177,18 @@ func sameFile(a, b string) bool {
 
 // GradeReview scores report against labels per design.md §5. Every finding near a label is put to
 // the judge, which decides the match. Recall is the share of mustFind labels any finding matched.
-// Precision is over Critical and Important findings: matched to mustFind is a true positive;
-// otherwise matched to knownFalse, or rated implausible against diff, a false positive; otherwise
-// unlabelled-not-wrong, in neither count. Nothing to find gives recall 1, and no counted finding
-// precision 1. severity_agreement is the share of mustFind matches whose finding repeats a
-// labelled severity; duplicates counts every match to a label beyond its first.
+// A finding that matches no label, of any severity, is put to the judge against every mustFind label
+// it is not near; one that names a labelled defect away from its label is no extra, no implausible
+// finding and no true positive. Every other one is put to the judge for plausibility against diff:
+// plausible, it is an extra; otherwise it is implausible (decision review-extras-net). Precision is
+// over Critical and Important findings: matched to mustFind near its label is a true positive;
+// otherwise matched to knownFalse, or implausible, a false positive; an extra is in neither count. Nothing to find gives recall 1,
+// and no counted finding precision 1. severity_agreement is the share of mustFind matches whose
+// finding repeats a labelled severity; duplicates counts every match to a label beyond its first.
 func GradeReview(ctx context.Context, report, diff string, labels ReviewLabels, j Judge) (Review, error) {
 	var r Review
 	same := func(f Finding, l Label) (bool, error) {
-		if !near(f, l) {
-			return false, nil
-		}
-		ok, u, err := j.Same(ctx, fmt.Sprintf("%s:%d: %s", l.File, l.Line, l.Summary), f.Text)
+		ok, u, err := j.Same(ctx, fmt.Sprintf("%s:%s: %s", l.File, l.lines(), l.Summary), f.Text)
 		addUsage(&r.JudgeUsage, u)
 		return ok, err
 	}
@@ -162,6 +198,9 @@ func GradeReview(ctx context.Context, report, diff string, labels ReviewLabels, 
 	for _, f := range ParseReview(report) {
 		var isTP, isFalse bool
 		for i, l := range labels.MustFind {
+			if !near(f, l) {
+				continue
+			}
 			ok, err := same(f, l)
 			if err != nil {
 				return r, err
@@ -179,6 +218,9 @@ func GradeReview(ctx context.Context, report, diff string, labels ReviewLabels, 
 			}
 		}
 		for i, l := range labels.KnownFalse {
+			if !near(f, l) {
+				continue
+			}
 			ok, err := same(f, l)
 			if err != nil {
 				return r, err
@@ -191,21 +233,45 @@ func GradeReview(ctx context.Context, report, diff string, labels ReviewLabels, 
 		if isFalse {
 			r.Metrics.KnownFalseHits++
 		}
-		if f.Severity == "Minor" {
-			continue
-		}
+		counted := f.Severity != "Minor" // precision is over Critical and Important findings
 		switch {
 		case isTP:
-			tp++
+			if counted {
+				tp++
+			}
 		case isFalse:
-			fp++
+			if counted {
+				fp++
+			}
 		default:
+			restated := false // f names a mustFind defect away from its label
+			for _, l := range labels.MustFind {
+				if near(f, l) {
+					continue // already put to the judge above
+				}
+				ok, err := same(f, l)
+				if err != nil {
+					return r, err
+				}
+				if ok {
+					restated = true
+					break
+				}
+			}
+			if restated {
+				continue
+			}
 			ok, u, err := j.Plausible(ctx, diff, f.Text)
 			addUsage(&r.JudgeUsage, u)
 			if err != nil {
 				return r, err
 			}
-			if !ok {
+			if ok {
+				r.Metrics.Extras++
+				continue
+			}
+			r.Metrics.Implausible++
+			if counted {
 				fp++
 			}
 		}
