@@ -125,7 +125,18 @@ go run ./cmd/flow-eval run --role review --slot <slot> --harness claude-code \
 4. Baselines change only by an explicit `flow-eval baseline set <run-id>`: a cheap-model run is a
    candidate against the slot's baseline, not its replacement.
 5. If landing rebases the agents branch and rewrites its sha, re-sync `prompts/PIN` to the landed
-   sha. The bytes are the same, so nothing is re-run.
+   sha, found on agents `origin/main` as the newest commit whose subject line equals the winner
+   commit's subject exactly. No match stops the command before `prompts sync` runs. The bytes are
+   the same, so nothing is re-run; the `git diff` fails if they are not. Write a `'` in the subject
+   as `'\''`:
+
+   ```bash
+   git -C <agents> fetch origin && sha="$(git -C <agents> log origin/main --format='%H%x09%s' |
+     awk -F'\t' -v s='<winner subject>' '$2==s{print $1; f=1; exit}
+       END{if(!f){print "no commit on origin/main with subject: " s > "/dev/stderr"; exit 1}}')" &&
+     go run ./cmd/flow-eval prompts sync --agents <agents> --sha "$sha" &&
+     git diff --exit-code -- prompts ':!prompts/PIN'
+   ```
 
 ## Worked examples
 
