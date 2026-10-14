@@ -132,11 +132,20 @@ go run ./cmd/flow-eval run --role review --slot <slot> --harness claude-code \
 |------|------|--------|-------|--------|
 | primary | Shared-state check: re-read every writer of state the diff reuses | 0/33 | 14/33 across models (opus-low 8/9, haiku-low 4/15, sonnet-low 2/9) | `2e053aaa` |
 | principles | Derived-state check: a stored summary of other state set or cleared from part of its facts is a Single Source of Truth violation | 0/6 haiku-low k=6; 0/9 across models at k=3 | k=6: haiku-low 3/6 (variant 1, `df6cae35`), sonnet-low 3/6, opus-low 6/6 | `0ff796c0` (read-order fix `55252252`), vendored at `2441dced` |
+| failure-modes | Failure-recovery check: a success that clears a failure's state must re-confirm everything the failure left unconfirmed | 0/6 haiku-low k=6 | haiku-low 4/6 at k=6 (variant 2, `c0372d03`; variant 1 `0502293c` 1/6); k=3: haiku-low 2/3, sonnet-low 3/3, opus-low 3/3 | `c0372d03` (variant 2, on the pushed `kan-979-failure-modes-variants` branch) |
 
-Both ran on the `kan-867-qm-2-step-1-frontend-settings-workout-mode-focus` review case. Before the
+All three ran on the `kan-867-qm-2-step-1-frontend-settings-workout-mode-focus` review case. Before the
 principles step, haiku-low reported the inlined failure-message literal, the tripled save-failure
 string and the duplicated default instead of `loadFailed`'s partial writers; with it, every trial
 filled the Derived-state check and listed `loadFailed`'s writers, and four judged a writer partial; the judge credited three.
+
+Before the failure-modes step, haiku-low reported a cancelled write leaving the optimistic value,
+a lost-response revert, a stale-unit overwrite and the mutex held across the PUT, and never asked
+what `chooseUnit`'s later success clears after the failed load. Variant 1 had every trial fill the
+Failure-recovery check, but most judged `:295` a full recovery because the mode was "untouched",
+or never grepped past the diff hunks; variant 2 made the reviewer grep the whole file and name a
+re-confirming line per unconfirmed value, and four trials wrote `none` for the mode at `:295` and
+named the discarded `sessionView` in the unit PUT's answer.
 
 The principles figures are as re-graded after F6's label gained `also: [295]`. Scored against
 `:339` alone, the same runs read sonnet-low 1/6 and opus-low 0/6: every opus trial reported F6 at

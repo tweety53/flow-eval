@@ -20,8 +20,9 @@ import (
 // regrade-from-stored-outputs). A trial's own metrics are kept; its review grade, score, pass and
 // judge usage are replaced. The header takes the cases' current hashes and the judge's pin, and
 // records cfg.FlowEvalSHA as Regraded. Each trial's report is read from its output.md, or, once that
-// gitignored file is gone, from the copy the run page carries, which the re-rendered page keeps; a
-// copy the page cut or could not read is refused. Nothing is written unless every trial re-grades.
+// file is gone — an older run's directory was never committed — from the copy the run page carries,
+// which the re-rendered page keeps; a copy the page cut or could not read is refused. Nothing is
+// written unless every trial re-grades.
 func Regrade(ctx context.Context, cfg Config, id string) error {
 	h, lines, err := Load(cfg.RunsDir, id)
 	if err != nil {

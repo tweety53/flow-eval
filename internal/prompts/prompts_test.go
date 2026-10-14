@@ -91,7 +91,8 @@ func TestRenderFillsInputs(t *testing.T) {
 		{target: "review-principles", want: []string{"DIFF-TEXT", "# Engineering Principles",
 			"## Scope\n\n**Project standards:** /work/CLAUDE.md\n\nGrep the touched files"},
 			not: []string{"[STANDARDS_PATHS]", "GLOBAL_CONSTRAINTS", "PRINCIPLES_PATH"}},
-		{target: "review-failure-modes", want: []string{"DIFF-TEXT", "### Assessment", "## Scope\n\nGrep the touched files"}},
+		{target: "review-failure-modes", want: []string{"DIFF-TEXT", "### Assessment", "## Scope\n\nGrep the touched files",
+			"**Recovery after a failure", "### Failure-recovery check"}},
 		{target: "visual", want: []string{"/case/mockup.png", "/case/capture.png", "verdict: match"}},
 	}
 	for _, tt := range tests {

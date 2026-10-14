@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261014T113252Z-review-failure-modes-claude-code-sonnet-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261014T113252Z-review-failure-modes-claude-code-sonnet-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>sonnet</dd>
+<dt>served</dt><dd>claude-sonnet-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>failure-modes</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>3934752454570b5412c2992304b0126c73d24686</dd>
+<dt>case set</dt><dd>4a69b4892171373d5eee344f3715671fbd2966aac76100ac8eb4a1894bf8922c</dd>
+<dt>flow-eval</dt><dd>a144e07d3bccf28243f655296c8ece49608a2cca</dd>
+<dt>started</dt><dd>2026-10-14T11:32:52Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">101.7</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-better"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>3</td><td>yes</td><td>101.7</td><td>2.4</td><td>$0.1023</td><td>$0.3070</td><td>24.5</td><td>273287</td><td>$0.2478</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">pass</span> · score 105.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999054127550899</dd></div>
+<div><dt>cache_read</dt><dd>42285</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>23512</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1267745</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>2849</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>34252</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>1179</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.131003</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:0}</dd></div>
+<div><dt>score</dt><dd>105</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>1</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>2</dd></div>
+<div><dt>wall_ms</dt><dd>25729</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>1605</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>20608</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0827145</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>11</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0827145</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Failure-recovery check
+
+Failure states the diff&#39;s code sets:
+
+- **`loadFailed = true`** is set at `SettingsState.kt:275` (load failure), `:310` (`chooseUnit`, NOTHING_CONFIRMED) and `:351` (`chooseSessionView`, NOTHING_CONFIRMED).
+- **`viewWrite.value` shown as optimistic or default, with `viewWrite.confirmed == null`.** This is the default `FOCUS` after a failed load, or the optimistic choice after a failed view write. `OptimisticWrite.onFailure` (`:~118`) leaves it in place.
+
+Lines that clear `loadFailed`: `:270`, `:295`, `:339`.
+
+A failed `load()` leaves two values unconfirmed: unit (`unitWrite.confirmed`) and view (`viewWrite.confirmed`).
+
+| Clearing line | Unit re-confirmed by | View re-confirmed by |
+|---|---|---|
+| `:270` (load success, requires no write succeeded since the load began) | `:272` `unitWrite.adoptLoad` | `:273` `viewWrite.adoptLoad` |
+| `:295` (`chooseUnit` success) | `:295` `unitWrite.onSuccess` | **none** |
+| `:339` (`chooseSessionView` success) | implied: the send requires `unitWrite.confirmed != null` | `:339` `viewWrite.onSuccess` |
+
+`:295` is a partial recovery. The PUT response already carries `sessionView`: the fake and the UI test&#39;s mock both answer with it, and `WorkoutPreferences` now has the field. `chooseUnit` discards it, and `:295` isn&#39;t in the diff.
+
+### Summary
+The diff adds a `sessionView` field to the preferences PUT and GET, and a `chooseSessionView` write beside `chooseUnit`. It also changes how `load` handles the second field. All four lenses were checked. The code adds no timeout or other boundary beyond the existing `api` calls, and I didn&#39;t check `apiCall` for timeouts. The new write mutex handling is sound: the confirmed unit is read inside `sendMutex`, so a queued unit choice can&#39;t leak through the view write. One recovery gap is Important.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+**`SettingsState.kt:295` (`chooseUnit` success path), error-return lens: partial recovery.**
+- **Scenario:** `load()` fails (offline), so `loadFailed = true` and the view control shows the default FOCUS, unconfirmed. The user then taps a unit, and `chooseUnit` succeeds. `:295` clears `loadFailed`, so the UI now claims recovery. But `viewWrite.confirmed` is still null and the control still shows FOCUS, even though the server holds QUICK. The PUT response contained `sessionView=QUICK`, and it is discarded.
+- **Fix:** In `chooseUnit`&#39;s success handler, also adopt the answer&#39;s view when the view write has no confirmed value or isn&#39;t saving, for example `viewWrite.adoptLoad(it.sessionView)`. This needs the same guard as in `load`: no view write succeeded in the meantime. Alternatively, clear `loadFailed` at `:295` only when both fields are confirmed.
+- **Reproducer:** none — no test exists for this path. To demonstrate it, add a test in `SettingsStateTest.kt` and run `./gradlew :shared:desktopTest --tests &#39;*SettingsStateTest*&#39;`:
+  1. Make `getPreferences` fail on the first call.
+  2. Set `api.updatePreferencesResult = Result.success(WorkoutPreferences(KG, QUICK))`.
+  3. Call `load()`, then `chooseUnit(LBS)`.
+  4. Observe `state.sessionView == FOCUS` and `loadFailed == false`.
+
+#### Minor (Nice to Have)
+- **`SettingsState.kt:~330`, concurrent re-entry:** `chooseSessionView` sends the last-confirmed unit. If another device changed the unit since the last load, this PUT silently reverts it. The answer&#39;s unit is deliberately not adopted. Consider adopting it when no unit write is in flight.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** Adding the second preference field creates a partial-recovery state. A successful unit write clears the failure banner while the workout-mode value remains unconfirmed, even though the response carried it. The fix is small and local. Nothing else rises above Minor.</pre></details>
+<p class="muted">transcript: 20261014T113252Z-review-failure-modes-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.999921739470698</dd></div>
+<div><dt>cache_read</dt><dd>76661</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>24688</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1314101</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>2498</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>35428</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>675</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1390762</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:0,&#34;implausible&#34;:1}</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Grep&#34;:1,&#34;Read&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>wall_ms</dt><dd>23104</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>1605</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>20474</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0821685</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>10</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0821685</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Failure-recovery check
+
+**State set on failure: `loadFailed`**, the retry affordance. The unconfirmed fallback values are `unitWrite.value`/`confirmed` and `viewWrite.value`/`confirmed`. `viewWrite` starts at `FOCUS` with `confirmed = null`.
+
+Lines that set it, all in `SettingsState.kt`:
+- `:275`, a failed `load`.
+- `:310`, `chooseUnit` with nothing confirmed.
+- `:351`, `chooseSessionView` with nothing confirmed. This also covers the new &#34;no confirmed unit&#34; refusal, which comes through `onFailure`.
+
+Lines that clear it:
+- `:270`, `load` success. It requires no write of either field to have succeeded, and re-confirms both fields through `unitWrite.adoptLoad` (`:271`) and `viewWrite.adoptLoad` (`:272`). This one is fine.
+- `:295`, `chooseUnit` success.
+- `:339`, `chooseSessionView` success.
+
+After a failed `load`, both the unit and the mode are unconfirmed.
+
+| Clearing line | Unit | Mode |
+|---|---|---|
+| `:295` | `:295` via `unitWrite.onSuccess` | **none** |
+| `:339` | Already confirmed, because `:329` refuses to send otherwise | `:339` via `viewWrite.onSuccess` |
+
+The `:295` path is a partial recovery. The PUT response carries `sessionView`, and `chooseUnit` discards it.
+
+### Summary
+The diff adds a `sessionView` field to the preferences payload and a `chooseSessionView` write that shares `sendMutex` and `loadFailed` with `chooseUnit`. I checked it against all four lenses.
+- **Error return:** the &#34;unit not confirmed&#34; refusal is sound, but one `loadFailed` flag now covers two fields. That causes the partial recovery above.
+- **Concurrent re-entry:** reading `unitWrite.confirmed` inside the mutex is correct, and the diff&#39;s own test covers it.
+- **Timeout:** the diff adds no new wait, so I raised nothing on that lens.
+- **Partial write:** the diff has no multi-write sequence, so I raised nothing on that lens.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+- **`SettingsState.kt:295`** (error return). The initial `load` fails, so `loadFailed` is true and `sessionView` shows the `FOCUS` default with `viewWrite.confirmed == null`. The user taps a unit, and `chooseUnit` succeeds. `loadFailed = false` clears the retry affordance, but the stored mode is still unknown. If the server holds `QUICK`, the screen shows `Focus` as though it were confirmed. The success response already contained the real `sessionView`, and it is discarded.
+  - **Fix:** in `chooseUnit`&#39;s success path, call `viewWrite.adoptLoad(it.sessionView)` when `viewWrite.confirmed == null` and `viewWrite.succeededWriteCount` is unchanged. Alternatively, only clear `loadFailed` when both fields are confirmed.
+  - **Reproducer:** none — no runnable command was executed. A test would have `getPreferences` fail with `QUICK` stored, call `chooseUnit(LBS)`, and assert `sessionView == QUICK` and `loadFailed == false`. Today `sessionView` stays `FOCUS`.
+
+#### Minor (Nice to Have)
+- **`SettingsState.kt:329`** (error return). The refusal throws a bare `error(&#34;Could not save your workout mode.&#34;)`. It has the same text as the generic fallback, so a debugger can&#39;t tell it from a network failure. Use a message that names the cause, for example &#34;unit not loaded&#34;. Reproducer: none — wording only.
+
+### Assessment
+**Ready for the human gate?** With fixes
+
+**Reasoning:** The new write is serialised correctly and refuses to guess the unit. The one real gap is that a unit-write success clears `loadFailed` while the mode is still unconfirmed, so the Settings screen can show a wrong mode with no retry affordance.</pre></details>
+<p class="muted">transcript: 20261014T113252Z-review-failure-modes-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial pass">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999368161666369</dd></div>
+<div><dt>cache_read</dt><dd>94955</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>3156</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0488015</dd></div>
+<div><dt>egress_denied</dt><dd>2</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>2667</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>34705</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>826</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.05829700000000001</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:1,&#34;precision&#34;:1,&#34;f1&#34;:1,&#34;severity_agreement&#34;:1,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:0,&#34;implausible&#34;:1}</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Grep&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>2</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>wall_ms</dt><dd>24604</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>1605</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>20673</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0829645</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>6</dd></div>
+<div><dt>output</dt><dd>10</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0829645</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>### Failure-recovery check
+
+**State set on failure: `loadFailed`**, which shows the retry affordance.
+- Set at `SettingsState.kt:275` (load failed), `:310` (`chooseUnit`, NOTHING_CONFIRMED) and `:351` (`chooseSessionView`, NOTHING_CONFIRMED).
+- Cleared at `:270` (load success), `:295` (unit write success) and `:339` (view write success).
+- A failed load leaves two values unconfirmed: `unitWrite.confirmed` and `viewWrite.confirmed`. Both are null, and `viewWrite.value` shows the FOCUS default.
+
+| Clearing line | Unit re-confirmed by | View re-confirmed by |
+|---|---|---|
+| `:270` | `:271` (`unitWrite.adoptLoad`) | `:272` (`viewWrite.adoptLoad`). The clear only runs when `noWriteSucceeded`, and each adopt is gated on its own field&#39;s count. |
+| `:295` (`chooseUnit` success) | `unitWrite.onSuccess` | **none** |
+| `:339` (`chooseSessionView` success) | A prior unit confirmation is required before the send (`unitWrite.confirmed ?: error(...)`) | `viewWrite.onSuccess` |
+
+The `:295` row is a partial recovery. It is reported below.
+
+### Summary
+The diff adds a second optimistic field, `sessionView`, to the preferences write path. It touches network PUT and GET calls, a shared `sendMutex`, and a `loadFailed` flag now shared by two fields. The error-return lens finds one real gap. Concurrent re-entry is handled well: the mutex serialises sends, and the unit is read inside the lock. I did not check timeouts. The HTTP client&#39;s timeout configuration is outside this diff, and the diff adds no new unbounded wait. No partial-write issue applies, because each call is a single PUT.
+
+### Issues
+
+#### Critical (Must Fix)
+None.
+
+#### Important (Should Fix)
+1. **`SettingsState.kt:295` (`chooseUnit` success clears `loadFailed`). Lens: error return, partial recovery.**
+   - **Scenario:** The initial `load()` fails, so unit and view are both unconfirmed and `loadFailed` is true. The user taps a unit, and that PUT succeeds. Line 295 clears `loadFailed`, and the retry affordance disappears. `viewWrite.confirmed` is still null, and the UI still shows the invented default Focus. The PUT response carried the real `sessionView`, but the code discards it.
+   - **Consequence:** If the user then taps a mode and that PUT fails, `onFailure` returns NOTHING_CONFIRMED. The control stays on the optimistic choice, with no revert to the stored mode. The screen claims it is in sync while the displayed mode was never confirmed. If the stored mode was QUICK, Settings shows Focus as though confirmed.
+   - **Fix:** In `chooseUnit`&#39;s `onSuccess`, also adopt `it.sessionView` into `viewWrite`. One option is `adoptLoad`, guarded by &#34;no view write in flight or succeeded&#34;. Alternatively, only clear `loadFailed` when `viewWrite.confirmed != null`.
+   - **Reproducer:** none — no run was done. A unit test in `SettingsStateTest` would show it. Set `api.preferencesResult = failure`, call `load()`, then set `preferencesResult` to `WorkoutPreferences(KG, QUICK)` and call `chooseUnit(LBS)`. Assert `state.loadFailed == false` and `state.sessionView == QUICK`. The second assertion fails, because the view stays FOCUS.
+
+#### Minor (Nice to Have)
+- **`SettingsState.kt:262-275`. Lens: error return.** A failed load reports &#34;Could not load your settings.&#34; This replaces the `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` fallback. The new string is an inline literal, so it is not shared with the other messages. This is cosmetic.
+
+### Assessment
+**Ready for the human gate?** With fixes
+**Reasoning:** The write serialisation and the &#34;no confirmed unit, no send&#34; guard are sound. The one real gap is that `loadFailed` is cleared on a unit-write success while the view value stays unconfirmed. This is a recoverable wrong state, not data loss, so it is Important rather than Critical.</pre></details>
+<p class="muted">transcript: 20261014T113252Z-review-failure-modes-claude-code-sonnet-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

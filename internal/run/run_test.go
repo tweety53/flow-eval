@@ -1786,8 +1786,8 @@ func TestRegradeRefusesANonReviewRun(t *testing.T) {
 	}
 }
 
-// runs/<id>/ is gitignored, so a fresh clone or another worktree has no trial files; a repaint
-// there must keep the output each committed page already carries.
+// An older run's runs/<id>/ was never committed, so a fresh clone or another worktree has no
+// trial files for it; a repaint there must keep the output each committed page already carries.
 func TestRepaintKeepsArtifactsOfAPageWithoutTrialFiles(t *testing.T) {
 	cfg, id := regradeFixture(t, "a+b") // a case id the page escapes
 	if err := os.RemoveAll(filepath.Join(cfg.RunsDir, id)); err != nil {

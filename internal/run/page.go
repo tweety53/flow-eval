@@ -64,8 +64,9 @@ var _sectionProbe = template.Must(template.New("section").Parse(_sectionOpen + "
 // page renders a run as one self-contained HTML page: no script and no external asset, every value
 // escaped by html/template. Its cases are s's rows, in their order. It reads each trial's artifacts
 // from runsDir/<id>/<case>/<trial>/; an artifact it cannot read is shown as its read error, never
-// failing the run. That directory is gitignored, so an artifact whose file is gone — in a fresh
-// clone, or another worktree — is kept from the run's existing page, never dropped.
+// failing the run. An older run's directory was never committed, so an artifact whose file is
+// gone — in a fresh clone, or another worktree — is kept from the run's existing page, never
+// dropped.
 func page(runsDir, id string, h Header, s summary, lines []Line) ([]byte, error) {
 	old, err := os.ReadFile(filepath.Join(runsDir, id+".html"))
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {

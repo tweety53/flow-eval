@@ -58,7 +58,7 @@ flow-eval run --role impl --harness claude-code --model sonnet --effort low -k 1
 - Measure Haiku as `--model claude-haiku-5-5`: the CLI's `haiku` alias resolves to Haiku 4.5.
 
 Writes `runs/<id>.jsonl`, `runs/<id>.md` and `runs/<id>.html`, and rewrites `runs/index.html`. Raw
-transcripts, outputs, `work.patch` and `verify.log` go to `runs/<id>/`, which is gitignored.
+transcripts, outputs, `work.patch` and `verify.log` go to `runs/<id>/`; commit it with the run files.
 
 **Pricing:** `cost_usd` comes from `pricing.json` — per model id, USD per million tokens of `input`,
 `output`, `cache_read`, `cache_write` (5-minute), `cache_write_1h`, and the `source` page. A `long`
@@ -98,8 +98,9 @@ Grades every graded trial of each stored review run again, against the case labe
 wall-clock are kept; its review grade, score, pass and judge usage are replaced, and the header
 takes the cases' current hashes and judge pin and records the regrading flow-eval sha as
 `regraded`. Each trial's report is read from `runs/<id>/<case>/<trial>/output.md`, or, when that
-gitignored file is gone, from the copy the committed run page carries, which the re-rendered page
-keeps; a copy the page cut at its size cap is refused, and the run is left as it was.
+file is gone — an older run's directory was never committed — from the copy the committed run
+page carries, which the re-rendered page keeps; a copy the page cut at its size cap is refused,
+and the run is left as it was.
 Rewrites the run's `.jsonl`, `.md` and `.html` and the index; needs the judge's credential, as `run`
 does. Commit the rewritten files.
 
