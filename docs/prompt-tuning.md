@@ -110,7 +110,8 @@ go run ./cmd/flow-eval run --role review --slot <slot> --harness claude-code \
 
 1. Cherry-pick the winner onto the agents change branch as one commit. Its body says what the step
    makes the reviewer do, one line per variant — `variant <n> <sha>: <one-line wording difference>
-   — finds <n>/<k>` — and the before run's finds. Push it.
+   — finds <n>/<k>` — and the before run's finds. It carries the change's `Task-Id: <n>` trailer
+   before it is pushed: adding it after the push rewrites a pushed sha and forces a force-push. Push it.
 2. Vendor the change branch's tip into flow-eval, and check its prompt bytes equal the winner's, so
    the winner run measured exactly what ships:
 
