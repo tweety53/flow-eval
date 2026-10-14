@@ -1,0 +1,3 @@
+runs/*/** -diff
+runs/*.html -diff
+runs/*.jsonl -diff
