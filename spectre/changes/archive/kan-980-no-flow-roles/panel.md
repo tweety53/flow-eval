@@ -12,8 +12,9 @@ Rendered from the store. Do not edit: the findings are rows, and the next render
 | F6 | primary | Important | cmd/flow-eval/main.go:166 | No test covers the half of the change the CLI makes: --no-flow --role review --harness muse-code being accepted; a binary that still refuses muse-code passes the whole cmd/flow-eval suite. |   |
 | F7 | primary | Minor | internal/run/run.go:44 | _noFlowPrep's doc still says the working tree's diff is what /code-review reviews; on muse-code the plain request reviews it. |   |
 | F8 | principles | Minor | internal/run/run.go:470 | Which harness has a no-flow review is held twice — the CLI allowlist and noFlowTarget; run.Run accepts a codex no-flow review and silently renders review-plain. |   |
+| F9 | primary | Minor | internal/run/run.go:974 | A no-flow run's report renders its empty prompt pin as a bare empty code span (prompt pin ``,). |   |
 
-findings-total: 8
+findings-total: 9
 finding-status: F1 fixed
 finding-status: F2 fixed
 finding-status: F3 fixed
@@ -22,8 +23,9 @@ finding-status: F5 fixed
 finding-status: F6 fixed
 finding-status: F7 fixed
 finding-status: F8 fixed
+finding-status: F9 fixed
 
-reproducers-total: 8
+reproducers-total: 9
 finding-reproducer: F1 .superpowers/sdd/reproducers/0-primary-2.sh
 finding-reproducer: F2 .superpowers/sdd/reproducers/0-primary-1.sh
 finding-reproducer: F3 .superpowers/sdd/reproducers/0-primary-3.sh
@@ -32,6 +34,7 @@ finding-reproducer: F5 .superpowers/sdd/reproducers/0-principles-1.sh
 finding-reproducer: F6 .superpowers/sdd/reproducers/2-primary-1.sh
 finding-reproducer: F7 none — doc wording, no behaviour
 finding-reproducer: F8 none — a structural duplication; no current caller reaches run.Run with codex past the CLI refusal
+finding-reproducer: F9 .superpowers/sdd/reproducers/4-P1-1.sh
 
 ## Pass log
 
@@ -75,3 +78,13 @@ fix-mutation: cmd/flow-eval/main.go — an init() refusing --no-flow review on m
 fix-mutation: internal/run/run.go — Run ignores NoFlowReviewTarget error — TestNoFlowReviewNeedsAHarnessWithOne
 fix-mutation: internal/run/run.go — none — F7 is a comment-only change
 fix-mutations-total: 4
+
+### Round 4
+
+- append scope: 136 changed lines since 723b8b0 (the reshaped close; pre-reshape close shas no longer on the branch)
+- roster: compact — 9
+- diff size: 1566 lines, under cap — proceed; docs-only: exit 1 — cmd/flow-eval/main_test.go; roster primary+principles
+- no addition this round — the resolved list ran alone.
+- citation check: no ## review panel citation check declared — skipped; standards: none resolved
+- fix: parent fixed F9 (Minor) inline in 5917f9c under the standing rule; TestReportNamesAnEmptyPromptPinNone fails on revert (RED before the fix); six no-flow run .md files rewritten. The reproducer's premise names run.go:974's old text, so it exits 2 on the fixed tree — the text-bound premise defect the self-review already filed
+- fix-mutation꞉ internal/run/run.go — render h.PromptPin in a code span unconditionally — TestReportNamesAnEmptyPromptPinNone
