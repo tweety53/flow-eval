@@ -165,7 +165,7 @@ func Compare(cand, base Run, margin float64) (Decision, error) {
 	case ch.Role != "impl" && ch.Judge == (grade.Pin{}):
 		d.Judges = fmt.Sprintf("warning: judge %s vs %s — UNRECORDED: scores may not be comparable", ch.Judge, bh.Judge)
 	}
-	if ch.PromptPin != bh.PromptPin {
+	if ch.PromptPin != bh.PromptPin && !ch.NoFlow && !bh.NoFlow { // a no-flow run renders no pinned prompt
 		d.Prompts = fmt.Sprintf("warning: prompt pin %s vs %s — DIFFER: prompts may have changed between the runs",
 			ch.PromptPin, bh.PromptPin)
 	}
@@ -189,9 +189,9 @@ func report(cand, base Run, cs, bs side, ids, flips []string, margin float64, d 
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s vs %s\n\n", cand.ID, base.ID)
 	fmt.Fprintf(&b, "- role `%s`, margin %g points\n", cand.Header.Role, margin)
-	fmt.Fprintf(&b, "- candidate `%s` `%s` `%s` served %s; baseline `%s` `%s` `%s` served %s\n",
-		cand.Header.Harness, cand.Header.Model, cand.Header.Effort, cmp.Or(run.Served(cand.Lines), "–"),
-		base.Header.Harness, base.Header.Model, base.Header.Effort, cmp.Or(run.Served(base.Lines), "–"))
+	fmt.Fprintf(&b, "- candidate `%s` `%s` `%s` served %s%s; baseline `%s` `%s` `%s` served %s%s\n",
+		cand.Header.Harness, cand.Header.Model, cand.Header.Effort, cmp.Or(run.Served(cand.Lines), "–"), run.NoFlowNote(cand.Header),
+		base.Header.Harness, base.Header.Model, base.Header.Effort, cmp.Or(run.Served(base.Lines), "–"), run.NoFlowNote(base.Header))
 	fmt.Fprintf(&b, "- %s\n", d.FlowEval)
 	for _, w := range d.Warnings() {
 		fmt.Fprintf(&b, "- %s\n", w)

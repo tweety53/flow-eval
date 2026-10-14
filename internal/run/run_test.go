@@ -24,6 +24,7 @@ import (
 	"github.com/tweety53/flow-eval/internal/grade"
 	"github.com/tweety53/flow-eval/internal/harness"
 	"github.com/tweety53/flow-eval/internal/metrics"
+	"github.com/tweety53/flow-eval/internal/prompts"
 	"github.com/tweety53/flow-eval/internal/sandbox"
 )
 
@@ -95,6 +96,9 @@ func (h *hostTrial) Exec(ctx context.Context, cmd ...string) (sandbox.Result, er
 	h.d.record("exec " + strings.Join(cmd, " "))
 	if slices.Equal(cmd, []string{"sh", "-c", "kill -KILL -1"}) {
 		return sandbox.Result{}, nil // on the host it would kill every process of the user
+	}
+	if slices.Equal(cmd, _noFlowPrep["visual"]) {
+		return sandbox.Result{}, nil // on the host it would delete this machine's tools
 	}
 	c := exec.CommandContext(ctx, cmd[0], cmd[1:]...)
 	c.Dir = filepath.Join(h.dir, "work")
@@ -1288,13 +1292,13 @@ func TestEachReviewSlotHasItsOwnBaseline(t *testing.T) {
 			t.Errorf("index.html lacks %q", want)
 		}
 	}
-	if id, err := BaselineID(baselines, "review", "principles"); err != nil || id != "q-base" {
+	if id, err := BaselineID(baselines, "review", "principles", false); err != nil || id != "q-base" {
 		t.Errorf("BaselineID(review, principles) = %q, %v; want q-base", id, err)
 	}
 	if key, err := SetBaseline(dir, baselines, "q-cand", time.Now()); err != nil || key != "review-principles" {
 		t.Errorf("SetBaseline = %q, %v; want review-principles", key, err)
 	}
-	if id, _ := BaselineID(baselines, "review", "primary"); id != "p-base" {
+	if id, _ := BaselineID(baselines, "review", "primary", false); id != "p-base" {
 		t.Errorf("setting the principles baseline changed the primary one to %q", id)
 	}
 }
@@ -1319,7 +1323,7 @@ func TestBaselineIDNamesWhatIsWrong(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			dir := t.TempDir()
 			writeFiles(t, dir, map[string]string{"review-primary.json": tc.body})
-			_, err := BaselineID(dir, "review", "primary")
+			_, err := BaselineID(dir, "review", "primary", false)
 			if err == nil || !strings.HasPrefix(err.Error(), tc.want) || strings.Contains(err.Error(), "%!") {
 				t.Errorf("BaselineID = %v, want an error starting %q", err, tc.want)
 			}
@@ -1863,5 +1867,364 @@ func TestReviewScoreNetsExtras(t *testing.T) {
 				t.Errorf("score = %v, want %v", got, tt.score)
 			}
 		})
+	}
+}
+
+// plainTask hands a no-flow impl trial its task as a plain spec: the flow plan's fields, comments and
+// checkboxes go, the title and each step's text stay.
+func TestPlainTaskStripsFlowFields(t *testing.T) {
+	for _, tc := range []struct{ name, task, want string }{
+		{
+			name: "every flow field, comment and checkbox dropped",
+			task: "- [ ] 3. The PATCH takes expected\n\n**Build:** green\n**Files:** `a.kt`\n**Tests:** `t`\n" +
+				"**Regression:** r\n**Baseline:** before=0 after=4\n<!-- predicted: x -->\n**Commit:** `feat: x`\n" +
+				"**After:** Task 1, 2\n\n**Decision:** d1\n**Allowed-collateral:** `x/*`\n**Squash-with:** Task 4\n\n" +
+				"  - [ ] **Step 1: Read first.** `Dto` (~line 703)\n    continued wrapped text\n",
+			want: "The PATCH takes expected\n\n**Step 1: Read first.** `Dto` (~line 703)\n  continued wrapped text\n",
+		},
+		{
+			name: "a field name inside step text is kept",
+			task: "- [x] 1. T\n\n  - [ ] **Step 2:** set **Files:** later\n",
+			want: "T\n\n**Step 2:** set **Files:** later\n",
+		},
+		{
+			name: "a field line after the steps is dropped wherever it sits",
+			task: "- [ ] 1. T\n\n  - [x] **Step 1:** do\n**Build:** green\n  **Commit:** `x`\n",
+			want: "T\n\n**Step 1:** do\n",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := plainTask(tc.task); got != tc.want {
+				t.Errorf("plainTask =\n%q\nwant\n%q", got, tc.want)
+			}
+		})
+	}
+}
+
+// noFlowReviewConfig is a one-case no-flow review run of slot over a repository whose head has a.txt =
+// new and a project standard flow would resolve for a principles trial: patch is the case's diff.patch
+// and script the agent.
+func noFlowReviewConfig(t *testing.T, slot, patch, script string) Config {
+	t.Helper()
+	root := t.TempDir()
+	repos := filepath.Join(root, "repos")
+	head := gitRepo(t, filepath.Join(repos, "src"), map[string]string{
+		"a.txt": "new\n", ".flow/project.md": "## standards\n\n- `be-brief.mdc`\n",
+	})
+	writeFiles(t, filepath.Join(root, "cases", "review", "c"), map[string]string{
+		"case.json": `{"id":"c","role":"review","source":{"repo":"src","change":"c"},"snapshot":"` + head +
+			`","notes":"n"}`,
+		"diff.patch":  patch,
+		"labels.json": `{"mustFind":[{"id":"F1","file":"a.txt","line":1,"summary":"a","slot":"` + slot + `"}],"knownFalse":[]}`,
+	})
+	return Config{
+		Role: "review", Model: "m1", Effort: "low", Slot: slot, K: 1, Parallel: 1, NoFlow: true,
+		Harness: namedHarness{scriptHarness{script: script}, "muse-code"}, Cases: loadCases(t, filepath.Join(root, "cases"), "review"),
+		ReposDir: repos, PromptsDir: "../../prompts", RunsDir: filepath.Join(root, "runs"),
+		RunnerImage: "r", ProxyImage: "p", FlowEvalSHA: "f", Pricing: _pricing, Judge: sameJudge{}, JudgePin: _judgePin,
+	}
+}
+
+// namedHarness is a scriptHarness under another harness's name, for what a run decides by name.
+type namedHarness struct {
+	scriptHarness
+	name string
+}
+
+func (h namedHarness) Name() string { return h.name }
+
+// _aTxtPatch is the change a.txt old → new, as git diff writes it.
+const _aTxtPatch = "diff --git a/a.txt b/a.txt\n--- a/a.txt\n+++ b/a.txt\n@@ -1 +1 @@\n-old\n+new\n"
+
+// trialPrompt is the prompt.md artifact of trial 1 of case c of run id.
+func trialPrompt(t *testing.T, cfg Config, id, c string) string {
+	t.Helper()
+	b, err := os.ReadFile(filepath.Join(cfg.RunsDir, id, c, "1", "prompt.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(b)
+}
+
+// A no-flow trial renders flow-eval's own prompt from prompts/no-flow, never the vendored flow one.
+func TestNoFlowRendersItsOwnPrompts(t *testing.T) {
+	const task = "- [ ] 1. Add the feature\n\n**Files:** `feature.txt`\n**Commit:** `feat: x`\n\n" +
+		"  - [ ] **Step 1: Write it.** echo\n"
+	for _, tc := range []struct {
+		name  string
+		cfg   func(t *testing.T) Config
+		check func(t *testing.T, prompt string)
+	}{
+		{
+			name: "impl gets the plain spec and the context",
+			cfg: func(t *testing.T) Config {
+				cfg := implConfig(t, "true", "echo done")
+				cfg.NoFlow = true
+				writeFiles(t, cfg.Cases[0].Dir, map[string]string{"task.md": task, "context.md": "the context\n"})
+				return cfg
+			},
+			check: func(t *testing.T, prompt string) {
+				want, err := prompts.Render("../../prompts/no-flow", "impl", map[string]string{
+					"Task": "Add the feature\n\n**Step 1: Write it.** echo\n", "Context": "the context\n",
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if prompt != want || strings.Contains(prompt, "**Files:**") {
+					t.Errorf("prompt =\n%s\nwant\n%s", prompt, want)
+				}
+			},
+		},
+		{
+			name: "review on claude-code invokes /code-review at the run's effort, with no diff in the prompt",
+			cfg: func(t *testing.T) Config {
+				cfg := noFlowReviewConfig(t, "primary", _aTxtPatch, "echo")
+				cfg.Harness = namedHarness{cfg.Harness.(namedHarness).scriptHarness, "claude-code"}
+				return cfg
+			},
+			check: func(t *testing.T, prompt string) {
+				if !strings.HasPrefix(prompt, "/code-review low\n") || strings.Contains(prompt, "+new") {
+					t.Errorf("prompt =\n%s\nwant it to open /code-review low and carry no diff", prompt)
+				}
+			},
+		},
+		{
+			name: "review on muse-code is a plain review request, with no diff in the prompt",
+			cfg:  func(t *testing.T) Config { return noFlowReviewConfig(t, "primary", _aTxtPatch, "echo") },
+			check: func(t *testing.T, prompt string) {
+				want, err := prompts.Render("../../prompts/no-flow", "review-plain", map[string]string{})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if prompt != want || strings.Contains(prompt, "/code-review") || strings.Contains(prompt, "+new") {
+					t.Errorf("prompt =\n%s\nwant the plain review request\n%s", prompt, want)
+				}
+			},
+		},
+		{
+			name: "visual names the pair and no flow tool",
+			cfg: func(t *testing.T) Config {
+				cfg := visualConfig(t, 1)
+				cfg.NoFlow = true
+				return cfg
+			},
+			check: func(t *testing.T, prompt string) {
+				if !strings.Contains(prompt, "/case/mockup.png") || strings.Contains(prompt, "measure-visual-properties") {
+					t.Errorf("prompt =\n%s\nwant the mockup path and no flow measuring tool", prompt)
+				}
+			},
+		},
+		{
+			name: "a flow run still renders the vendored prompt",
+			cfg:  func(t *testing.T) Config { return visualConfig(t, 1) },
+			check: func(t *testing.T, prompt string) {
+				want, err := prompts.Render("../../prompts", "visual", map[string]string{
+					"Mockup": "/case/mockup.png", "Capture": "/case/capture.png",
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if prompt != want {
+					t.Errorf("a flow visual trial's prompt is not the vendored one:\n%s", prompt)
+				}
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := tc.cfg(t)
+			id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+			if err != nil {
+				t.Fatal(err)
+			}
+			tc.check(t, trialPrompt(t, cfg, id, cfg.Cases[0].ID))
+		})
+	}
+}
+
+// A no-flow review runs only on a harness with one: any other is refused before any container.
+func TestNoFlowReviewNeedsAHarnessWithOne(t *testing.T) {
+	cfg := noFlowReviewConfig(t, "primary", _aTxtPatch, "echo")
+	cfg.Harness = scriptHarness{script: "echo"}
+	d := &hostDocker{root: t.TempDir()}
+	if _, err := Run(t.Context(), cfg, d); err == nil || !strings.Contains(err.Error(), "--no-flow review runs on --harness claude-code or muse-code") {
+		t.Errorf("Run = %v, want a refusal naming the harnesses a no-flow review runs on", err)
+	}
+	if len(d.log) > 0 {
+		t.Errorf("a container started before the refusal:\n%s", strings.Join(d.log, "\n"))
+	}
+}
+
+// A no-flow trial's prep runs in the container after /case is copied in and before the agent: a
+// review trial's agent finds the change as the working tree's diff, a visual trial's container loses
+// flow's measuring tool, and an impl trial has no prep.
+func TestNoFlowPrepRunsBeforeTheAgent(t *testing.T) {
+	order := func(t *testing.T, d *hostDocker, prep []string) {
+		t.Helper()
+		at := func(prefix string) int {
+			return slices.IndexFunc(d.log, func(s string) bool { return strings.HasPrefix(s, prefix) })
+		}
+		inputs, agent := at("copyin / "), at("exec env SCRIPT_HOME=/tmp/script-home")
+		want := inputs + 1 // the agent straight after /case, with no prep
+		if prep != nil {
+			if got := at("exec " + strings.Join(prep, " ")); got != inputs+1 {
+				t.Errorf("prep at %d, want straight after the /case copy at %d:\n%s", got, inputs, strings.Join(d.log, "\n"))
+			}
+			want = inputs + 2
+		}
+		if inputs < 0 || agent != want {
+			t.Errorf("agent exec at %d, want %d:\n%s", agent, want, strings.Join(d.log, "\n"))
+		}
+	}
+
+	t.Run("review: the change is the working tree's diff", func(t *testing.T) {
+		cfg := noFlowReviewConfig(t, "primary", _aTxtPatch, "git diff --stat; git show HEAD:a.txt")
+		d := &hostDocker{root: t.TempDir()}
+		id, err := Run(t.Context(), cfg, d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, lines := readRun(t, cfg.RunsDir, id)
+		if len(lines) != 1 || lines[0].InfraError {
+			t.Fatalf("lines = %+v, want one scored trial", lines)
+		}
+		out, err := os.ReadFile(filepath.Join(cfg.RunsDir, id, "c", "1", "output.md"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(out), "a.txt | 2") || !strings.Contains(string(out), "old") {
+			t.Errorf("the agent saw:\n%s\nwant a.txt changed in the working tree over an old HEAD", out)
+		}
+		order(t, d, _noFlowPrep["review"])
+	})
+	t.Run("review: a patch that does not reverse-apply is an infra error", func(t *testing.T) {
+		cfg := noFlowReviewConfig(t, "primary", strings.ReplaceAll(_aTxtPatch, "new", "other"), "echo reviewed")
+		id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, lines := readRun(t, cfg.RunsDir, id)
+		if len(lines) != 1 || !lines[0].InfraError || !strings.Contains(lines[0].Error, "no-flow prep") {
+			t.Errorf("lines = %+v, want an infra error naming no-flow prep", lines)
+		}
+	})
+	t.Run("visual: flow's measuring tool is removed", func(t *testing.T) {
+		cfg := visualConfig(t, 1)
+		cfg.NoFlow = true
+		d := &hostDocker{root: t.TempDir()}
+		if _, err := Run(t.Context(), cfg, d); err != nil {
+			t.Fatal(err)
+		}
+		order(t, d, _noFlowPrep["visual"])
+	})
+	t.Run("impl: no prep, and /case holds only the prompt", func(t *testing.T) {
+		cfg := implConfig(t, "true", "echo feature > feature.txt && echo done")
+		cfg.NoFlow = true
+		d := &hostDocker{root: t.TempDir()}
+		if _, err := Run(t.Context(), cfg, d); err != nil {
+			t.Fatal(err)
+		}
+		order(t, d, nil)
+		if !slices.Contains(d.log, "copyin / case/,case/prompt.md") {
+			t.Errorf("want /case to carry the prompt alone, never the flow plan's task.md:\n%s", strings.Join(d.log, "\n"))
+		}
+	})
+	t.Run("principles: no standards are resolved or copied in", func(t *testing.T) {
+		cfg := noFlowReviewConfig(t, "principles", _aTxtPatch, "echo reviewed")
+		d := &hostDocker{root: t.TempDir()}
+		id, err := Run(t.Context(), cfg, d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(id, "-review-no-flow-principles-") {
+			t.Errorf("run id %s, want it keyed review-no-flow-principles", id)
+		}
+		if !slices.Contains(d.log, "copyin / case/,case/diff.patch,case/prompt.md") {
+			t.Errorf("want /case to carry the diff and the prompt alone, no agents rule:\n%s", strings.Join(d.log, "\n"))
+		}
+	})
+}
+
+// A no-flow run has its own key — run id, baseline file and index section — so it is never painted
+// against a flow baseline, yet compare takes a flow run as its baseline.
+func TestNoFlowRunsHaveTheirOwnKeyAndSection(t *testing.T) {
+	for _, tc := range []struct {
+		role, slot string
+		noFlow     bool
+		want       string
+	}{
+		{"impl", "", false, "impl"},
+		{"impl", "", true, "impl-no-flow"},
+		{"review", "primary", true, "review-no-flow-primary"},
+		{"visual", "", true, "visual-no-flow"},
+	} {
+		if got := BaselineKey(tc.role, tc.slot, tc.noFlow); got != tc.want {
+			t.Errorf("BaselineKey(%q, %q, %t) = %q, want %q", tc.role, tc.slot, tc.noFlow, got, tc.want)
+		}
+	}
+
+	for _, noFlow := range []bool{false, true} {
+		cfg := implConfig(t, "true", "echo feature > feature.txt && echo done")
+		cfg.NoFlow = noFlow
+		id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+		if err != nil {
+			t.Fatal(err)
+		}
+		data, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".jsonl"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		header, _, _ := strings.Cut(string(data), "\n")
+		if strings.Contains(id, "-impl-no-flow-") != noFlow || strings.Contains(header, `"no_flow":true`) != noFlow ||
+			!noFlow && strings.Contains(header, "no_flow") || strings.Contains(header, `"prompt_pin":""`) != noFlow {
+			t.Errorf("no-flow %t: id %s, header %s", noFlow, id, header)
+		}
+		md, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".md"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(md), ", no-flow\n") != noFlow {
+			t.Errorf("no-flow %t: report settings line:\n%s", noFlow, md)
+		}
+	}
+
+	run := func(noFlow bool, started string) string {
+		h := fmt.Sprintf(`{"role":"impl","k":1,"case_set_hash":"a","case_hashes":{"a":"x"},"started":%q`, started)
+		if noFlow {
+			h += `,"no_flow":true`
+		}
+		return h + "}\n" + `{"case":"a","trial":1,"score":100,"passed":true}` + "\n"
+	}
+	dir, baselines := t.TempDir(), t.TempDir()
+	writeFiles(t, dir, map[string]string{
+		"flow.jsonl":    run(false, "2026-10-10T08:00:00Z"),
+		"no-flow.jsonl": run(true, "2026-10-10T09:00:00Z"),
+	})
+	writeFiles(t, baselines, map[string]string{"impl.json": `{"runId":"flow"}`})
+	if err := errors.Join(Repaint(dir, baselines)); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	index := string(data)
+	flowAt, noFlowAt := strings.Index(index, `<h2 id="impl">`), strings.Index(index, `<h2 id="impl-no-flow">`)
+	if flowAt < 0 || noFlowAt < flowAt {
+		t.Fatalf("index sections: impl at %d, impl-no-flow at %d; want both, impl first:\n%s", flowAt, noFlowAt, index)
+	}
+	if flow, noFlow := index[flowAt:noFlowAt], index[noFlowAt:]; !strings.Contains(flow, `class="muted">baseline</td>`) ||
+		!strings.Contains(noFlow, `class="muted">no baseline</td>`) {
+		t.Errorf("want the flow run the impl baseline and the no-flow run with none:\n%s", index)
+	}
+	fh, fl, err := Load(dir, "flow")
+	if err != nil {
+		t.Fatal(err)
+	}
+	nh, nl, err := Load(dir, "no-flow")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := Comparable("no-flow", nh, nl, "flow", fh, fl); err != nil {
+		t.Errorf("Comparable(no-flow, flow) = %v, want nil", err)
 	}
 }

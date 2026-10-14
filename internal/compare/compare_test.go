@@ -303,3 +303,18 @@ func TestCompareWarnsOnDifferentServedModels(t *testing.T) {
 		})
 	}
 }
+
+// A no-flow run compares with a flow run of its role, and the report names which side ran without
+// flow; the no-flow side records no prompt pin, which is no warning.
+func TestCompareNamesANoFlowSide(t *testing.T) {
+	base := fixture("base", "impl", 3, map[string][]float64{"a": {100, 100, 100}})
+	cand := fixture("cand", "impl", 3, map[string][]float64{"a": {100, 100, 100}})
+	cand.Header.NoFlow, cand.Header.PromptPin = true, ""
+	d := decide(t, cand, base)
+	if d.Prompts != "" || strings.Contains(d.Report, "prompt pin") {
+		t.Errorf("Prompts %q; want no prompt-pin warning against a no-flow side", d.Prompts)
+	}
+	if line := "- candidate `` `` `` served –, no-flow; baseline `` `` `` served –\n"; !strings.Contains(d.Report, line) {
+		t.Errorf("report lacks %q:\n%s", line, d.Report)
+	}
+}

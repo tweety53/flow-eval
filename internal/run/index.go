@@ -48,7 +48,7 @@ type indexRun struct {
 type delta struct{ Text, Class string }
 
 // indexRole is one index section's runs, newest first: a role's, or one slot's of a role whose runs
-// carry a slot (review-primary), keyed like its baseline.
+// carry a slot (review-primary), flow and no-flow runs apart, keyed like its baseline.
 type indexRole struct {
 	Key  string
 	Runs []indexRun
@@ -61,23 +61,30 @@ var (
 )
 
 // Baseline is baselines/<key>.json: the run a role's candidates are compared against. The key is the
-// role, or role-slot for a run of a slot (review-primary), so each review slot has its own baseline.
+// BaselineKey: the role, then -no-flow for a no-flow run, then -slot for a run of a slot
+// (review-primary), so each review slot, and each role or slot without flow, has its own baseline.
 type Baseline struct {
 	RunID string    `json:"runId"`
 	SetAt time.Time `json:"setAt"`
 }
 
-// BaselineKey names the baseline a run of role and slot is compared against.
-func BaselineKey(role, slot string) string {
-	if slot == "" {
-		return role
+// BaselineKey names the baseline a run of role and slot, with or without flow, is compared against:
+// <role>[-no-flow][-<slot>]. It also names the run's id and its index section, so a no-flow run is
+// never painted against a flow baseline.
+func BaselineKey(role, slot string, noFlow bool) string {
+	key := role
+	if noFlow {
+		key += "-no-flow"
 	}
-	return role + "-" + slot
+	if slot != "" {
+		key += "-" + slot
+	}
+	return key
 }
 
-// BaselineID returns the run id baselinesDir records for role and slot.
-func BaselineID(baselinesDir, role, slot string) (string, error) {
-	key := BaselineKey(role, slot)
+// BaselineID returns the run id baselinesDir records for role and slot, with or without flow.
+func BaselineID(baselinesDir, role, slot string, noFlow bool) (string, error) {
+	key := BaselineKey(role, slot, noFlow)
 	data, err := os.ReadFile(filepath.Join(baselinesDir, key+".json"))
 	if err != nil {
 		return "", fmt.Errorf("baseline for %s: %w", key, err)
@@ -107,7 +114,7 @@ func SetBaseline(runsDir, baselinesDir, id string, now time.Time) (string, error
 	if err := os.MkdirAll(baselinesDir, 0o755); err != nil {
 		return "", err
 	}
-	key := BaselineKey(h.Role, h.Slot)
+	key := BaselineKey(h.Role, h.Slot, h.NoFlow)
 	if err := os.WriteFile(filepath.Join(baselinesDir, key+".json"), append(data, '\n'), 0o644); err != nil {
 		return "", err
 	}
@@ -192,21 +199,22 @@ func Repaint(runsDir, baselinesDir string) (pages, err error) {
 		byRole[h.Role] = append(byRole[h.Role], r)
 	}
 	for role, runs := range byRole {
-		baseAt := map[string]int{} // slot → the index of its baseline run in runs, -1 with none
+		baseAt := map[string]int{} // baseline key → the index of its baseline run in runs, -1 with none
 		for i := range runs {
 			r := &runs[i]
-			bi, ok := baseAt[r.H.Slot]
+			key := BaselineKey(role, r.H.Slot, r.H.NoFlow)
+			bi, ok := baseAt[key]
 			if !ok {
 				bi = -1
-				if baseID, err := BaselineID(baselinesDir, role, r.H.Slot); err == nil {
+				if baseID, err := BaselineID(baselinesDir, role, r.H.Slot, r.H.NoFlow); err == nil {
 					bi = slices.IndexFunc(runs, func(r indexRun) bool { return r.ID == baseID })
 				}
-				baseAt[r.H.Slot] = bi
+				baseAt[key] = bi
 			}
 			var base *summary
 			switch {
 			case bi == i:
-				r.Baseline = BaselineKey(role, r.H.Slot)
+				r.Baseline = key
 			case bi >= 0:
 				b := &runs[bi]
 				if Comparable(r.ID, r.H, r.lines, b.ID, b.H, b.lines) != nil {
@@ -231,7 +239,7 @@ func Repaint(runsDir, baselinesDir string) (pages, err error) {
 	}
 	var roles []indexRole
 	// The known roles first, in their order, then any other role a run file names, by name; each
-	// split by slot.
+	// split by slot, a slot's flow runs before its no-flow runs.
 	others := slices.Sorted(maps.Keys(byRole))
 	others = slices.DeleteFunc(others, func(r string) bool { return slices.Contains(_indexRoles, r) })
 	for _, role := range slices.Concat(_indexRoles, others) {
@@ -242,14 +250,16 @@ func Repaint(runsDir, baselinesDir string) (pages, err error) {
 		// The known slots first, in their order, then any other slot, by name.
 		slots := slices.DeleteFunc(slices.Sorted(maps.Keys(bySlot)), func(s string) bool { return slices.Contains(_indexSlots, s) })
 		for _, slot := range slices.Concat(_indexSlots, slots) {
-			runs := bySlot[slot]
-			if len(runs) == 0 {
-				continue
+			for _, noFlow := range []bool{false, true} {
+				runs := slices.DeleteFunc(slices.Clone(bySlot[slot]), func(r indexRun) bool { return r.H.NoFlow != noFlow })
+				if len(runs) == 0 {
+					continue
+				}
+				slices.SortFunc(runs, func(a, b indexRun) int {
+					return cmp.Or(b.H.Started.Compare(a.H.Started), strings.Compare(b.ID, a.ID))
+				})
+				roles = append(roles, indexRole{BaselineKey(role, slot, noFlow), runs})
 			}
-			slices.SortFunc(runs, func(a, b indexRun) int {
-				return cmp.Or(b.H.Started.Compare(a.H.Started), strings.Compare(b.ID, a.ID))
-			})
-			roles = append(roles, indexRole{BaselineKey(role, slot), runs})
 		}
 	}
 	var b bytes.Buffer

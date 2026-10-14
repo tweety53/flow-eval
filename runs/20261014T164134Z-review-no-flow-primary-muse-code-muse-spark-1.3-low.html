@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261014T164134Z-review-no-flow-primary-muse-code-muse-spark-1.3-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261014T164134Z-review-no-flow-primary-muse-code-muse-spark-1.3-low</h1>
+<dl class="header">
+<dt>role</dt><dd>review</dd>
+<dt>harness</dt><dd>muse-code</dd>
+<dt>model</dt><dd>muse-spark-1.3</dd>
+<dt>served</dt><dd>muse-spark-1.3</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>slot</dt><dd>primary</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd></dd>
+<dt>case set</dt><dd>4a69b4892171373d5eee344f3715671fbd2966aac76100ac8eb4a1894bf8922c</dd>
+<dt>flow-eval</dt><dd>3e80e87ef963f54537b4f38e2d903cc06a92703a</dd>
+<dt>started</dt><dd>2026-10-14T16:41:34Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus">kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1">trial 1</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2">trial 2</a> · <a href="#trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">0.0</span> <span class="muted">mean of the case scores, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus" class="row-fail"><td>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus</td><td>3/3</td><td>0</td><td>no</td><td>0.0</td><td>0.0</td><td>–</td><td>$0.6251</td><td>72.0</td><td>1541798</td><td>$1.5425</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-1" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 1 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.8336667111170378</dd></div>
+<div><dt>cache_read</dt><dd>356345</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1705315</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>71098</dd></div>
+<div><dt>output</dt><dd>6637</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>48185</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>4435</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:1,&#34;implausible&#34;:4}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:4,&#34;read_file&#34;:7,&#34;search&#34;:1}</dd></div>
+<div><dt>tool_calls_total</dt><dd>12</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>10</dd></div>
+<div><dt>wall_ms</dt><dd>47671</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>5350</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>89430</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.371875</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>20</dd></div>
+<div><dt>output</dt><dd>1358</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>1265</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.371875</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>10</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Reviewed the uncommitted preferences/mode diff. The top finding is that the &#34;null means unchanged and is left off the wire&#34; contract is not actually enforced by the serializer in use, so unit writes risk sending an explicit null mode.
+
+#### Critical
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:700`: `UpdateWorkoutPreferencesRequest.sessionView = null` is documented as omitted via `encodeDefaults = false`, but neither the model (no `@EncodeDefault(Mode.NEVER)`) nor the wire `Json` in `shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:245` (only `ignoreUnknownKeys`/`isLenient`) enables that, so a unit-only write serializes `&#34;sessionView&#34;:null` instead of omitting the key.
+
+#### Important
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt:248`: `WorkoutModeSetting` (and its divider at line 243) is nested inside `if (profile != null)` at line 233, so a preferences-backed row gated on `settings.hasLoaded` is additionally hidden until the unrelated profile fetch answers.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339`: `chooseSessionView` adopts only `it.sessionView` and deliberately drops the answer&#39;s `displayUnit`, leaving `unitWrite.confirmed` stale if the server ever echoes or normalizes a different unit, which later mode writes then resend.
+- `shared/src/commonTest/kotlin/com/gymie/shared/ui/SettingsStateTest.kt:712`: the &#34;unit write omits the mode&#34; check encodes with a bare `Json` instance rather than the wire `Json`, so it asserts nothing about what `WorkoutApiImpl` actually sends and will disagree with the wire config.
+
+#### Minor
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:237`: `loadFailed` KDoc still describes only `chooseUnit` failing with nothing confirmed, omitting the new `chooseSessionView` path that also sets it.
+</pre></details>
+<p class="muted">transcript: 20261014T164134Z-review-no-flow-primary-muse-code-muse-spark-1.3-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-2" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 2 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.8221609538002981</dd></div>
+<div><dt>cache_read</dt><dd>386169</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1953616</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>83531</dd></div>
+<div><dt>output</dt><dd>7770</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>56306</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>4809</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:0,&#34;implausible&#34;:8}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:6,&#34;read_file&#34;:6,&#34;search&#34;:3}</dd></div>
+<div><dt>tool_calls_total</dt><dd>15</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>10</dd></div>
+<div><dt>wall_ms</dt><dd>93047</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>8560</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>142868</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.587722</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>32</dd></div>
+<div><dt>output</dt><dd>1533</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>1263</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.587722</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>16</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Review of the uncommitted diff (`git diff`, 8 files):
+
+The feature itself is coherent — separate `OptimisticWrite` per field, mutex-serialized sends, confirmed-unit carried on mode writes — but the &#34;null means unchanged and is omitted from the wire&#34; contract is not enforced, and the fake hides that from the tests.
+
+#### Critical
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:700`: the KDoc claims a null `sessionView` &#34;is left off the wire (`encodeDefaults = false`)&#34;, but neither the data class nor the app `Json` (`shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:245`, only `ignoreUnknownKeys`/`isLenient`) configures `encodeDefaults = false` / `explicitNulls = false`, so a real PUT sends an explicit `&#34;sessionView&#34;:null`.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:293`: `chooseUnit` therefore sends that explicit null on every unit write, risking a server-side mode reset; `shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:198` treats null as &#34;unchanged&#34;, so the tests mask the real-wire behavior.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:270`: `loadFailed` clearing/raising is gated on `noWriteSucceeded` across *both* fields, so a succeeded write on one field vetoes the `loadFailed` update even when the other field&#39;s fresh load payload was just adopted — a stale error banner persists (and a fresh failure can be swallowed).
+
+#### Important
+- `shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:124`: `updatePreferencesRequests` records only units, so the ordering assertion in `shared/src/commonTest/kotlin/com/gymie/shared/ui/SettingsStateTest.kt:745` cannot detect a mode value sent on the wrong PUT.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339`: `chooseSessionView` discards the answer&#39;s `displayUnit`, leaving `unitWrite.confirmed` stale if the server ever normalizes or echoes a different unit.
+- `shared/src/commonTest/kotlin/com/gymie/shared/ui/SettingsStateTest.kt:712`: the &#34;leaves the mode off the wire&#34; check uses a default `Json` instance that shares production defaults, so it verifies the interface-level null rather than omission on the real wire.
+
+#### Minor
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/AppScreens.kt:413`: `WorkoutModeSetting` hard-codes `enabled = true`, so the control stays interactive while its write is in flight with no saving/loading guard.
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:689`: the KDoc names the backend key `session_view` while the wire key is camelCase `sessionView`, an inconsistent contract reference.</pre></details>
+<p class="muted">transcript: 20261014T164134Z-review-no-flow-primary-muse-code-muse-spark-1.3-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-867-qm-2-step-1-frontend-settings-workout-mode-focus-3" class="trial fail">
+<h3>kan-867-qm-2-step-1-frontend-settings-workout-mode-focus · trial 3 · <span class="verdict">fail</span> · score 0.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.8012318029115342</dd></div>
+<div><dt>cache_read</dt><dd>499419</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>0</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.2592511</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>123895</dd></div>
+<div><dt>output</dt><dd>6934</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>66747</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>4393</dd></div>
+<div><dt>review</dt><dd>{&#34;recall&#34;:0,&#34;precision&#34;:0,&#34;f1&#34;:0,&#34;severity_agreement&#34;:0,&#34;duplicates&#34;:0,&#34;known_false_hits&#34;:0,&#34;extras&#34;:2,&#34;implausible&#34;:6}</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>muse-spark-1.3</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;bash&#34;:3,&#34;read_file&#34;:5,&#34;search&#34;:6}</dd></div>
+<div><dt>tool_calls_total</dt><dd>14</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>11</dd></div>
+<div><dt>wall_ms</dt><dd>75418</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>8560</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>143252</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.582948</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>32</dd></div>
+<div><dt>output</dt><dd>902</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>852</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.582948</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>16</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Review of the uncommitted diff (`git diff`). The feature mostly works, but the wire contract and the cross-field write ordering have real defects.
+
+#### Critical
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:702`: `UpdateWorkoutPreferencesRequest.sessionView = null` is not omitted on the wire: the class has no `@EncodeDefault(NEVER)` / `explicitNulls = false`, and the client&#39;s `Json` at `shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:245` sets only `ignoreUnknownKeys`/`isLenient`, so a unit-only write serializes as `&#34;sessionView&#34;:null` instead of the documented &#34;left off the wire&#34;, risking the server clearing or rejecting the stored mode.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:335`: `chooseSessionView` reads `unitWrite.confirmed` inside `sendMutex`, but `chooseUnit` publishes `confirmed` in `unitWrite.onSuccess` outside the mutex (`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295`), so a queued mode write can acquire the lock before the preceding unit write&#39;s `onSuccess` runs and send a stale unit, contradicting the &#34;once every earlier write has settled&#34; comment.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339`: `chooseSessionView` adopts only `it.sessionView` and silently drops the response&#39;s `displayUnit`, so a concurrent server-side unit change echoed in that response never updates `unitWrite.confirmed` and later mode writes resend the stale unit.
+
+#### Important
+- `shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:124`: `updatePreferencesRequests` records only `WeightUnit`, so the order/interleaving of `sessionView` writes cannot be asserted; only the last view survives via `lastUpdatePreferencesView`.
+- `shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:81`: `beforeUpdatePreferences` takes only the unit, so a gate cannot distinguish a unit write from a mode write carrying the same unit without reading back mutable `lastUpdatePreferencesView`, as the new ordering test is forced to do.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276`: load-failure copy changed to `&#34;Could not load your settings.&#34;` while `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` still exists and is still used by `WorkoutEditorScreen`, leaving two copies for the same failure with no shared constant.
+
+#### Minor
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:689`: doc says the wire field is `` `session_view` `` but the serialized property is camelCase `sessionView`, matching the existing `displayUnit` convention; the doc name is wrong or misleading.
+- `shared/src/desktopTest/kotlin/com/gymie/shared/ui/SettingsScreenUiTest.kt:209`: `assertEquals(1, puts.size)` after `waitUntil { puts.isNotEmpty() }` plus `waitForIdle()` is racy against retries or recomposition-driven resends; it should wait for selection/idle first or tolerate the retry case.</pre></details>
+<p class="muted">transcript: 20261014T164134Z-review-no-flow-primary-muse-code-muse-spark-1.3-low/kan-867-qm-2-step-1-frontend-settings-workout-mode-focus/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

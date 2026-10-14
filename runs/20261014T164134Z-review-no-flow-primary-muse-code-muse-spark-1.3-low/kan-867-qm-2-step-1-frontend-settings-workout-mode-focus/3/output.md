@@ -1,0 +1,15 @@
+Review of the uncommitted diff (`git diff`). The feature mostly works, but the wire contract and the cross-field write ordering have real defects.
+
+#### Critical
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:702`: `UpdateWorkoutPreferencesRequest.sessionView = null` is not omitted on the wire: the class has no `@EncodeDefault(NEVER)` / `explicitNulls = false`, and the client's `Json` at `shared/src/commonMain/kotlin/com/gymie/shared/api/GymieApiClient.kt:245` sets only `ignoreUnknownKeys`/`isLenient`, so a unit-only write serializes as `"sessionView":null` instead of the documented "left off the wire", risking the server clearing or rejecting the stored mode.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:335`: `chooseSessionView` reads `unitWrite.confirmed` inside `sendMutex`, but `chooseUnit` publishes `confirmed` in `unitWrite.onSuccess` outside the mutex (`shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:295`), so a queued mode write can acquire the lock before the preceding unit write's `onSuccess` runs and send a stale unit, contradicting the "once every earlier write has settled" comment.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:339`: `chooseSessionView` adopts only `it.sessionView` and silently drops the response's `displayUnit`, so a concurrent server-side unit change echoed in that response never updates `unitWrite.confirmed` and later mode writes resend the stale unit.
+
+#### Important
+- `shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:124`: `updatePreferencesRequests` records only `WeightUnit`, so the order/interleaving of `sessionView` writes cannot be asserted; only the last view survives via `lastUpdatePreferencesView`.
+- `shared/src/commonTest/kotlin/com/gymie/shared/api/FakeWorkoutApi.kt:81`: `beforeUpdatePreferences` takes only the unit, so a gate cannot distinguish a unit write from a mode write carrying the same unit without reading back mutable `lastUpdatePreferencesView`, as the new ordering test is forced to do.
+- `shared/src/commonMain/kotlin/com/gymie/shared/ui/SettingsState.kt:276`: load-failure copy changed to `"Could not load your settings."` while `FailureMessages.COULD_NOT_LOAD_WEIGHT_UNIT` still exists and is still used by `WorkoutEditorScreen`, leaving two copies for the same failure with no shared constant.
+
+#### Minor
+- `shared/src/commonMain/kotlin/com/gymie/shared/domain/WorkoutModels.kt:689`: doc says the wire field is `` `session_view` `` but the serialized property is camelCase `sessionView`, matching the existing `displayUnit` convention; the doc name is wrong or misleading.
+- `shared/src/desktopTest/kotlin/com/gymie/shared/ui/SettingsScreenUiTest.kt:209`: `assertEquals(1, puts.size)` after `waitUntil { puts.isNotEmpty() }` plus `waitForIdle()` is racy against retries or recomposition-driven resends; it should wait for selection/idle first or tolerate the retry case.

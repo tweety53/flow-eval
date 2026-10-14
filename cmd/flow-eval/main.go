@@ -138,11 +138,12 @@ func runCmd(args []string) int {
 	k := fs.Int("k", 3, "trials per case")
 	only := fs.String("cases", "", "comma-separated case ids to run; all of the role when empty")
 	parallel := fs.Int("parallel", 2, "trials run at once")
-	slot := fs.String("slot", "primary", "reviewer slot whose prompt a review run uses")
+	slot := fs.String("slot", "primary", "reviewer slot whose prompt a review run uses, and whose must-finds it is graded on")
+	noFlow := fs.Bool("no-flow", false, "run the role with no flow prompt, rules or tooling: the harness's own behaviour (review: claude-code's /code-review, or a plain review request on muse-code)")
 	root := fs.String("root", "cases", "cases directory")
 	repos := fs.String("repos", "..", "directory holding each case's source checkout as <repos>/<source.repo>")
 	runsDir := fs.String("runs", "runs", "directory the run records are written to")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json, read to paint the index")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-no-flow][-<slot>].json, read to paint the index")
 	promptsDir := fs.String("prompts", "prompts", "vendored prompts directory")
 	pricingPath := fs.String("pricing", "pricing.json", "model prices")
 	judgePath := fs.String("judge", "judge.json", "judge pin")
@@ -150,7 +151,7 @@ func runCmd(args []string) int {
 	proxy := fs.String("proxy-image", "flow-eval-proxy", "egress proxy image")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: flow-eval run --role R --harness H --model M --effort E [-k 3] "+
-			"[--cases id,…] [--parallel 2] [--slot primary]")
+			"[--cases id,…] [--parallel 2] [--slot primary] [--no-flow]")
 		fs.PrintDefaults()
 	}
 	if code, ok := parseFlags(fs, args); !ok {
@@ -161,6 +162,12 @@ func runCmd(args []string) int {
 		*model == "" || *effort == "" || *k < 1 || *parallel < 1 {
 		fs.Usage()
 		return 2
+	}
+	if *noFlow && *role == "review" {
+		if _, err := run.NoFlowReviewTarget(*harnessName); err != nil {
+			fmt.Fprintf(os.Stderr, "flow-eval run: %v\n", err)
+			return 2
+		}
 	}
 	creds := firstCredential(hr.creds)
 	if len(hr.creds) > 0 && len(creds) == 0 {
@@ -218,7 +225,7 @@ func runCmd(args []string) int {
 		Cases: selected, ReposDir: *repos, PromptsDir: *promptsDir, RunsDir: *runsDir, BaselinesDir: *baselines,
 		RunnerImage: *runner, ProxyImage: *proxy, Credentials: creds, Mounts: hr.mounts,
 		FlowEvalSHA: sha, Pricing: pricing, Judge: judge, JudgePin: judge.Pin,
-		Warnings: os.Stderr,
+		Warnings: os.Stderr, NoFlow: *noFlow,
 	}, run.DockerHost{CLI: sandbox.DockerCLI{}})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "flow-eval run: %v\n", err)
@@ -297,10 +304,10 @@ func parseWithID(fs *flag.FlagSet, args []string) (id string, code int, ok bool)
 // compared: another role or slot, another case set, another k, or missing trials (design.md §7).
 func compareCmd(args []string) int {
 	fs := flag.NewFlagSet("compare", flag.ContinueOnError)
-	baseID := fs.String("baseline", "", "baseline run id; the run's baselines/<role>[-<slot>].json when empty")
+	baseID := fs.String("baseline", "", "baseline run id; the run's baselines/<role>[-no-flow][-<slot>].json when empty")
 	margin := fs.Float64("margin", 5, "non-inferiority margin in score points")
 	runsDir := fs.String("runs", "runs", "directory holding the run records")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-no-flow][-<slot>].json")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: flow-eval compare <candidate-run-id> [--baseline <run-id>] [--margin 5]")
 		fs.PrintDefaults()
@@ -319,7 +326,7 @@ func compareCmd(args []string) int {
 		return 2
 	}
 	if *baseID == "" {
-		if *baseID, err = run.BaselineID(*baselines, cand.Header.Role, cand.Header.Slot); err != nil {
+		if *baseID, err = run.BaselineID(*baselines, cand.Header.Role, cand.Header.Slot, cand.Header.NoFlow); err != nil {
 			fmt.Fprintf(os.Stderr, "flow-eval compare: %v\n", err)
 			return 2
 		}
@@ -346,7 +353,7 @@ func compareCmd(args []string) int {
 	return d.Exit
 }
 
-// baselineCmd exits 0 when baselines/<role>[-<slot>].json now names the run, 2 on a usage error or a run
+// baselineCmd exits 0 when baselines/<role>[-no-flow][-<slot>].json now names the run, 2 on a usage error or a run
 // that cannot be read. It then repaints the runs index and pages by the new baseline; a repaint
 // failure is a warning on stderr and leaves the exit at 0, since the baseline is recorded.
 func baselineCmd(args []string) int {
@@ -356,7 +363,7 @@ func baselineCmd(args []string) int {
 	}
 	fs := flag.NewFlagSet("baseline set", flag.ContinueOnError)
 	runsDir := fs.String("runs", "runs", "directory holding the run records")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-no-flow][-<slot>].json")
 	fs.Usage = func() {
 		fmt.Fprintln(fs.Output(), "usage: flow-eval baseline set <run-id> [--runs runs] [--baselines baselines]")
 		fs.PrintDefaults()
@@ -384,7 +391,7 @@ func regradeCmd(args []string) int {
 	fs := flag.NewFlagSet("regrade", flag.ContinueOnError)
 	root := fs.String("root", "cases", "cases directory")
 	runsDir := fs.String("runs", "runs", "directory holding the run records")
-	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-<slot>].json, read to paint the index")
+	baselines := fs.String("baselines", "baselines", "directory holding baselines/<role>[-no-flow][-<slot>].json, read to paint the index")
 	pricingPath := fs.String("pricing", "pricing.json", "model prices")
 	judgePath := fs.String("judge", "judge.json", "judge pin")
 	fs.Usage = func() {

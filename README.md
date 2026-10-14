@@ -55,6 +55,14 @@ flow-eval run --role impl --harness claude-code --model sonnet --effort low -k 1
 - `-k` trials per case (default 3), `--cases id,…` limits the run, `--parallel` (default 2).
 - `--slot primary|principles|failure-modes` picks the reviewer prompt (default `primary`). A case
   with no must-find for the slot is refused.
+- `--no-flow` runs the role with no flow prompt, rules or tooling — impl gets the task as a plain
+  spec plus the change's proposal and design; review runs claude-code's own `/code-review` on the
+  change as the working tree's diff, or on muse-code, which ships no review command, a plain request to
+  review that diff (codex is refused), graded on `--slot`'s must-finds; visual
+  compares the pair with flow's measuring tool removed. Its runs and baselines are keyed
+  `<role>-no-flow[-<slot>]`; compare one with its flow counterpart by
+  `compare <run> --baseline <flow run>`. The prompts are `prompts/no-flow/`, which `prompts sync`
+  never touches.
 - Measure Haiku as `--model claude-haiku-5-5`: the CLI's `haiku` alias resolves to Haiku 4.5.
 
 Writes `runs/<id>.jsonl`, `runs/<id>.md` and `runs/<id>.html`, and rewrites `runs/index.html`. Raw
@@ -69,12 +77,12 @@ a judge model missing from it fails the trial (design.md §6).
 ### `compare`
 
 ```bash
-flow-eval compare <candidate-run-id>                              # against baselines/<role>[-<slot>].json
+flow-eval compare <candidate-run-id>                              # against baselines/<role>[-no-flow][-<slot>].json
 flow-eval compare <candidate-run-id> --baseline <run-id> --margin 5
 ```
 
 The pass rule is design.md §7. Writes `runs/<cand>-vs-<base>.md`. Runs with different flow-eval
-shas, judges, prompt pins or served models are still compared, with a `DIFFER` warning: check
+shas, judges, prompt pins (never warned against a `--no-flow` run, which records none) or served models are still compared, with a `DIFFER` warning: check
 `git log <base sha>..<cand sha> -- internal/grade` before trusting a verdict across shas.
 
 ### `baseline set`
@@ -83,7 +91,8 @@ shas, judges, prompt pins or served models are still compared, with a `DIFFER` w
 flow-eval baseline set <run-id>
 ```
 
-Writes `baselines/<role>.json` — `baselines/review-<slot>.json` for a review run, one per slot — and
+Writes `baselines/<role>.json` — `baselines/review-<slot>.json` for a review run, one per slot, and
+`<role>-no-flow[-<slot>]` for a `--no-flow` run — and
 repaints the index and run pages. Commit it with the run's
 `.jsonl` and `.md`.
 
@@ -128,7 +137,7 @@ Tuning a prompt with flow-eval is [`docs/prompt-tuning.md`](docs/prompt-tuning.m
 
 ## Reading results
 
-- **`runs/index.html`** — start here: the baselines first, one per role and review slot, then every
+- **`runs/index.html`** — start here: the baselines first, one per role and review slot, flow and no-flow apart, then every
   run by role, newest first, with its score, passes, infra errors, cost, wall-clock and tokens in
   (the whole prompt: uncached input, cache reads and writes) and out, as min/avg/max over its valid
   trials, each linking to its page. The `vs baseline` columns give a run's role-score difference

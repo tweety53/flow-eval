@@ -1,0 +1,13 @@
+Done and committed as `a48c7cc`.
+
+What changed:
+- [GroupSessionDtos.kt](/work/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt): new `PatchFloorSetRequest(weight, effort, confirmed, expected: FloorSetValuesDto? = null)` and `FloorSetValuesDto(weight, effort, confirmed)`, with the same `@field:JsonProperty(required = true)` markers and `@JsonAnySetter` unknown-field rejection as `PatchWorkoutSetRequest` (on both classes; `expected` itself optional).
+- [GroupSessionWorkoutController.kt](/work/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt): floor `patchSet` now takes `PatchFloorSetRequest` and calls `patchSet` with `actorId` from the authentication name (the driver) and `expected` converted via `SetWeightWebConverter`/`SetEffortWebConverter` into domain `SetValues`.
+- [GroupSessionExceptionHandler.kt](/work/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt): new `handleSetChanged` mapping `WorkoutSetChangedException` to `409` with `detail` "This set was changed on another phone.", `code: set_changed`, `current` in wire shape (`confirmed` from `confirmedAt != null`), and `updatedBy` (`{id, displayName}` via `profileOf`) plus `updatedAt`, both omitted when the set is unstamped.
+- Tests: updated the `patch set delegates…` stub/verify in `GroupSessionWorkoutControllerTest` to `patchSet(jana, workoutId, setId, null, null, true, owner, null)`; added [GroupSessionSetChangedProblemTest.kt](/work/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionSetChangedProblemTest.kt) with 4 tests (delegation with actor + converted `expected`, stamped 409 body, unstamped nulls, unknown-field 400).
+
+Commands and results:
+- `./gradlew ktlintFormat` → BUILD SUCCESSFUL.
+- `./gradlew verifyChange :groupsession:test --tests '*GroupSessionSetChangedProblemTest*' --tests '*GroupSessionFloorSetConflictTest*' --tests '*GroupSessionWorkoutControllerTest*'` → BUILD SUCCESSFUL; result XMLs confirm 4/4 new tests and 17/17 controller tests passed, 0 failures. (`GroupSessionFloorSetConflictTest` does not exist in the repo, so that filter matched nothing; the other two suites ran.)
+
+One finding from verification: the handler calls `profileOf` for a stamped set, so any test throwing a stamped `WorkoutSetChangedException` must stub `profileOf`, otherwise the mapping itself fails.

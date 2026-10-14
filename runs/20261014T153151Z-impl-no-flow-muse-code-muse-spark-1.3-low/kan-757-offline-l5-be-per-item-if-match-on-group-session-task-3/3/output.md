@@ -1,0 +1,13 @@
+Done and committed as [6af312e](http://localhost/commit/6af312e) `kan-757: floor set PATCH compare-and-set with 409 set_changed` (working tree clean).
+
+What changed:
+- [GroupSessionDtos.kt](/work/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt): new `PatchFloorSetRequest(weight, effort, confirmed, expected: FloorSetValuesDto? = null)` and `FloorSetValuesDto(weight, effort, confirmed)`, both with `@field:JsonProperty(required = true)` and a `@JsonAnySetter` unknown-field rejection mirroring `PatchWorkoutSetRequest` (`expected` itself optional).
+- [GroupSessionWorkoutController.kt](/work/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt): `patchSet` takes the new DTO and calls `patchSet` with `actorId = UUID.fromString(authentication.name)` and `expected` converted via `SetWeightWebConverter`/`SetEffortWebConverter` into `SetValues`.
+- [GroupSessionExceptionHandler.kt](/work/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt): new `handleSetChanged` maps `WorkoutSetChangedException` to 409 with detail `This set was changed on another phone.`, `code: set_changed`, `current` in wire shape (`confirmed` from `confirmedAt != null`), `updatedBy` via `profileOf` (`{id, displayName}`), and `updatedAt`; both stamp properties are omitted for an unstamped set.
+- Tests: new [GroupSessionFloorSetConflictTest](/work/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt) with four tests (delegate with actor + converted expected; 409 with current/author/time; unstamped set with no author/time; `foo` body → 400 with no service call), and the existing `patch set delegates…` stub/verify updated to the 8-argument call (`actor = owner`, `expected = null`).
+
+Commands and results:
+- `./gradlew ktlintFormat` → BUILD SUCCESSFUL.
+- `./gradlew verifyChange :groupsession:test --tests '*GroupSessionFloorSetConflictTest*' --tests '*GroupSessionWorkoutControllerTest*'` → BUILD SUCCESSFUL; suites report 4/4 and 17/17 passing, 0 failures.
+- Two hiccups along the way, both fixed: detekt `MaxLineLength` in the new test, and the new delegate test initially stubbing `responses.respond` with a fresh `Workout` per call (audit timestamps differ), fixed by sharing one stub instance as the existing test does.
+- Note: I set the repo-local git identity to the prior commits' `flow-eval <flow-eval@localhost>` since none was configured; commit succeeded, nothing pushed.

@@ -193,6 +193,49 @@ func TestRunRefusesBeforeAnyContainer(t *testing.T) {
 	}
 }
 
+// A no-flow review runs claude-code's own /code-review or a plain review request on muse-code, so any
+// other harness is refused by name before any container.
+func TestRunNoFlowReviewRefusesAHarnessWithoutOne(t *testing.T) {
+	bin := buildBinary(t)
+	fakeBin := t.TempDir()
+	called := filepath.Join(t.TempDir(), "docker-called")
+	if err := os.WriteFile(filepath.Join(fakeBin, "docker"), []byte("#!/bin/sh\ntouch "+called+"\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	const refusal = "--no-flow review runs on --harness claude-code or muse-code"
+	for _, tc := range []struct {
+		harness string
+		refused bool
+	}{{"codex", true}, {"muse-code", false}, {"claude-code", false}} {
+		t.Run(tc.harness, func(t *testing.T) {
+			os.Remove(called)
+			var stderr bytes.Buffer
+			// --root names no cases directory, so an accepted run stops at case selection, never a trial.
+			root := filepath.Join(t.TempDir(), "none")
+			cmd := exec.Command(bin, "run", "--role", "review", "--no-flow", "--harness", tc.harness, "--model", "m",
+				"--effort", "low", "--root", root)
+			cmd.Env = []string{"PATH=" + fakeBin + ":" + os.Getenv("PATH"), "HOME=" + t.TempDir(), "OPENAI_API_KEY=k", "ANTHROPIC_API_KEY=k"}
+			cmd.Stderr = &stderr
+			err := cmd.Run()
+			if got := strings.Contains(stderr.String(), refusal); got != tc.refused {
+				t.Errorf("err %v, stderr %q; want the no-flow review refusal %t", err, stderr.String(), tc.refused)
+			}
+			if !tc.refused {
+				if !strings.Contains(stderr.String(), root) {
+					t.Errorf("stderr %q; want an accepted run to reach case selection under %s", stderr.String(), root)
+				}
+				return
+			}
+			if ee, ok := errors.AsType[*exec.ExitError](err); !ok || ee.ExitCode() != 2 {
+				t.Errorf("err %v, want exit 2", err)
+			}
+			if _, err := os.Stat(called); err == nil {
+				t.Error("docker was called before the refusal")
+			}
+		})
+	}
+}
+
 // A muse-code run checks its volume holds the binary and the login before any trial, by running the
 // local runner image, never a pulled one, with the harness's mounts, and exits 2 naming the setup
 // when it does not, or naming the image when docker cannot run it; once the check passes, each

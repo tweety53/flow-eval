@@ -171,6 +171,24 @@ func TestClaudeParseSumsEveryResult(t *testing.T) {
 	}
 }
 
+// A slash command whose skill runs in a forked agent — /code-review — writes a result with an all-zero
+// usage: its tokens are only in the session's modelUsage, cache writes 5-minute as the CLI prices them.
+func TestClaudeParseTakesAForkedCommandsTokensFromModelUsage(t *testing.T) {
+	const transcript = `{"type":"result","num_turns":0,"result":"r","total_cost_usd":0.12,"usage":{"input_tokens":0,"output_tokens":0,"cache_read_input_tokens":0,"cache_creation_input_tokens":0,"cache_creation":{"ephemeral_1h_input_tokens":0}},"modelUsage":{"claude-haiku-5-5":{"inputTokens":8,"outputTokens":3150,"cacheReadInputTokens":52495,"cacheCreationInputTokens":33157,"thinkingTokens":2467}},"local_command":"code_review"}
+`
+	got, err := Claude{}.Parse(strings.NewReader(transcript))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := Usage{
+		Input: 8, Output: 3150, CacheRead: 52495, CacheWrite: 33157, Reasoning: 2467,
+		ServedModels: []string{"claude-haiku-5-5"}, ReportedCostUSD: new(0.12), FinalText: "r",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Usage =\n%+v\nwant\n%+v", got, want)
+	}
+}
+
 func TestClaudeParseRejectsTranscriptWithoutResult(t *testing.T) {
 	data, err := os.ReadFile("testdata/claude.jsonl")
 	if err != nil {

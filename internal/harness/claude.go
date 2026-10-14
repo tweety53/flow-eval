@@ -78,6 +78,10 @@ type claudeEvent struct {
 	TotalCostUSD float64      `json:"total_cost_usd"`
 	Usage        claudeTokens `json:"usage"`
 	ModelUsage   map[string]struct {
+		Input          int64 `json:"inputTokens"`
+		Output         int64 `json:"outputTokens"`
+		CacheRead      int64 `json:"cacheReadInputTokens"`
+		CacheWrite     int64 `json:"cacheCreationInputTokens"`
 		ThinkingTokens int64 `json:"thinkingTokens"`
 	} `json:"modelUsage"`
 	PermissionDenials []struct{} `json:"permission_denials"`
@@ -89,12 +93,15 @@ var _claudeEditTools = []string{"Edit", "MultiEdit", "Write", "NotebookEdit"}
 // Parse implements Harness. Totals come from the result events: a session that runs several turns
 // writes one per turn, each with that turn's usage, turn count and permission denials, and each with
 // the session's cumulative modelUsage and cost. A transcript without one (the CLI died mid-run) is
-// an error. A call's final output is its message_delta's, attributed to the message the delta names
+// an error. A session whose every result carries no token — a slash command whose skill ran in a
+// forked agent the transcript skips, such as /code-review — takes its tokens from the last result's
+// modelUsage instead. A call's final output is its message_delta's, attributed to the message the delta names
 // or else to the one streaming; a transcript written without partial messages has only its assistant
 // events, whose output is the count at its stream's start.
 func (Claude) Parse(r io.Reader) (Usage, error) {
 	var u Usage
 	var sawResult bool
+	var session Usage          // the last result's modelUsage tokens
 	callAt := map[string]int{} // message id → its index in u.Calls
 	// addCall records a call's usage the first time its id is seen: its earlier events split the cache
 	// write by TTL, its message_delta does not, so the delta later sets only the final output.
@@ -160,9 +167,15 @@ func (Claude) Parse(r io.Reader) (Usage, error) {
 			u.FinalText = ev.Result
 			u.ReportedCostUSD = new(ev.TotalCostUSD)
 			u.ServedModels = slices.Sorted(maps.Keys(ev.ModelUsage))
-			u.Reasoning = 0
+			u.Reasoning, session = 0, Usage{}
 			for _, m := range ev.ModelUsage {
 				u.Reasoning += m.ThinkingTokens
+				session.Input += m.Input
+				session.Output += m.Output
+				session.CacheRead += m.CacheRead
+				// modelUsage does not split cache writes by TTL; the CLI prices a forked command's
+				// writes as 5-minute ones, its reported cost matching that pricing exactly.
+				session.CacheWrite += m.CacheWrite
 			}
 		}
 	})
@@ -171,6 +184,9 @@ func (Claude) Parse(r io.Reader) (Usage, error) {
 	}
 	if !sawResult {
 		return Usage{}, errors.New("claude transcript has no result event")
+	}
+	if u.Tokens() == 0 {
+		u.Input, u.Output, u.CacheRead, u.CacheWrite = session.Input, session.Output, session.CacheRead, session.CacheWrite
 	}
 	return u, nil
 }

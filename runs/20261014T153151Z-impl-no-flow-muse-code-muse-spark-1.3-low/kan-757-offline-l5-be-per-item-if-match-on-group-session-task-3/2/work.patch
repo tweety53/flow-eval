@@ -1,0 +1,475 @@
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+index 2c4dc2f..7b40fdf 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
++++ b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionExceptionHandler.kt
+@@ -9,9 +9,12 @@ import com.gymie.groupsession.core.exceptions.GroupSessionParticipantNotEligible
+ import com.gymie.groupsession.core.exceptions.GroupSessionValidationException
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
+ import com.gymie.workout.core.exceptions.WorkoutNotFoundException
++import com.gymie.workout.core.exceptions.WorkoutSetChangedException
+ import com.gymie.workout.core.exceptions.WorkoutStaleException
+ import com.gymie.workout.core.exceptions.WorkoutValidationException
+ import com.gymie.workout.infrastructure.presentation.web.converters.ETagWebConverter
++import com.gymie.workout.infrastructure.presentation.web.converters.SetEffortWebConverter
++import com.gymie.workout.infrastructure.presentation.web.converters.SetWeightWebConverter
+ import org.springframework.http.HttpStatus
+ import org.springframework.http.ProblemDetail
+ import org.springframework.web.bind.MethodArgumentNotValidException
+@@ -103,4 +106,28 @@ class GroupSessionExceptionHandler(
+         ProblemDetail
+             .forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: "Workout changed")
+             .apply { setProperty("etag", ETagWebConverter.toETag(ex.currentUpdatedAt)) }
++
++    /**
++     * A stale floor set replay (KAN-757, decision `value-compare-and-set`): nothing was written.
++     * `current` is the stored set in the request's own wire shape, `updatedBy` names who got there
++     * first (`{id, displayName}`, omitted for a set no PATCH has stamped yet) and `updatedAt` when
++     * the stamp exists (omitted otherwise, as with the transition actors above).
++     */
++    @ExceptionHandler(WorkoutSetChangedException::class)
++    fun handleSetChanged(ex: WorkoutSetChangedException): ProblemDetail =
++        ProblemDetail
++            .forStatusAndDetail(HttpStatus.CONFLICT, "This set was changed on another phone.")
++            .apply {
++                setProperty("code", "set_changed")
++                setProperty(
++                    "current",
++                    mapOf(
++                        "weight" to SetWeightWebConverter.toDto(ex.current.weight),
++                        "effort" to SetEffortWebConverter.toDto(ex.current.effort),
++                        "confirmed" to (ex.current.confirmedAt != null),
++                    ),
++                )
++                ex.current.updatedBy?.let { setProperty("updatedBy", actorOf(it)) }
++                ex.current.updatedAt?.let { setProperty("updatedAt", it) }
++            }
+ }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+index 2f11870..6a2c1f1 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
++++ b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutController.kt
+@@ -1,6 +1,9 @@
+ package com.gymie.groupsession.infrastructure.presentation.web
+ 
+ import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
++import com.gymie.groupsession.infrastructure.presentation.web.dto.FloorSetValuesDto
++import com.gymie.groupsession.infrastructure.presentation.web.dto.PatchFloorSetRequest
++import com.gymie.workout.core.domain.workout.SetValues
+ import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
+ import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
+ import com.gymie.workout.core.services.workout.WorkoutService
+@@ -16,7 +19,6 @@ import com.gymie.workout.infrastructure.presentation.web.dto.FinishReadinessResp
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutBlockRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutExerciseRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutRequest
+-import com.gymie.workout.infrastructure.presentation.web.dto.PatchWorkoutSetRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.UpdateWorkoutRequest
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse
+ import com.gymie.workout.infrastructure.presentation.web.validators.WorkoutRequestValidator
+@@ -159,7 +161,7 @@ class GroupSessionWorkoutController(
+         @PathVariable id: UUID,
+         @PathVariable userId: UUID,
+         @PathVariable setId: UUID,
+-        @RequestBody request: PatchWorkoutSetRequest,
++        @RequestBody request: PatchFloorSetRequest,
+     ): WorkoutResponse {
+         val workoutId = resolveForWrite(authentication, id, userId)
+         val updated =
+@@ -170,6 +172,8 @@ class GroupSessionWorkoutController(
+                 SetWeightWebConverter.toDomain(request.weight),
+                 SetEffortWebConverter.toDomain(request.effort),
+                 request.confirmed,
++                UUID.fromString(authentication.name),
++                request.expected?.toDomain(),
+             )
+         return responses.respond(updated)
+     }
+@@ -214,4 +218,11 @@ class GroupSessionWorkoutController(
+         id: UUID,
+         userId: UUID,
+     ): UUID = groupSessionQueryService.participantWorkoutIdForWrite(UUID.fromString(authentication.name), id, userId)
++
++    private fun FloorSetValuesDto.toDomain(): SetValues =
++        SetValues(
++            SetWeightWebConverter.toDomain(weight),
++            SetEffortWebConverter.toDomain(effort),
++            confirmed,
++        )
+ }
+diff --git a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+index 7c77c30..008ff29 100644
+--- a/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
++++ b/src/app/groupsession/src/main/kotlin/com/gymie/groupsession/infrastructure/presentation/web/dto/GroupSessionDtos.kt
+@@ -1,11 +1,16 @@
+ package com.gymie.groupsession.infrastructure.presentation.web.dto
+ 
++import com.fasterxml.jackson.annotation.JsonAnySetter
+ import com.fasterxml.jackson.annotation.JsonFormat
++import com.fasterxml.jackson.annotation.JsonProperty
+ import com.fasterxml.jackson.annotation.JsonUnwrapped
+ import com.gymie.groupsession.core.domain.groupsession.GroupSessionStatus
+ import com.gymie.groupsession.core.domain.groupsession.specification.SessionAccess
+ import com.gymie.groupsession.core.domain.groupsession.specification.ViewerAccess
+ import com.gymie.workout.core.domain.workout.WorkoutStatus
++import com.gymie.workout.core.exceptions.WorkoutValidationException
++import com.gymie.workout.infrastructure.presentation.web.dto.SetEffortDto
++import com.gymie.workout.infrastructure.presentation.web.dto.SetWeightDto
+ import com.gymie.workout.infrastructure.presentation.web.dto.WorkoutSummaryResponse
+ import jakarta.validation.Valid
+ import jakarta.validation.constraints.NotEmpty
+@@ -167,3 +172,50 @@ data class CopyGroupSessionResponse(
+     @get:JsonUnwrapped val session: GroupSessionResponse,
+     val leftOut: List<ParticipantUserResponse>,
+ )
++
++/**
++ * The floor set PATCH's own request (KAN-757, decision `floor-set-request-dto`): `weight`, `effort`
++ * and `confirmed` as the solo `PatchWorkoutSetRequest` carries them, plus an optional `expected`
++ * with the same three fields — the values the phone last read, compared with the stored set under
++ * the workout row lock. Absent `expected` the PATCH is last-write-wins as today.
++ *
++ * [rejectUnknownField] mirrors the solo request: without it a misspelled key returns `200` with
++ * nothing written while the client believes it saved.
++ */
++data class PatchFloorSetRequest(
++    @field:JsonProperty(required = true)
++    val weight: SetWeightDto?,
++    @field:JsonProperty(required = true)
++    val effort: SetEffortDto?,
++    @field:JsonProperty(required = true)
++    val confirmed: Boolean,
++    val expected: FloorSetValuesDto? = null,
++) {
++    @JsonAnySetter
++    fun rejectUnknownField(
++        name: String,
++        value: Any?,
++    ): Unit =
++        throw WorkoutValidationException(
++            "The set patch endpoint accepts weight, effort, confirmed and expected only, but the body carried '$name' ($value)",
++        )
++}
++
++/** The `expected` inside [PatchFloorSetRequest]: all three fields required when it is present. */
++data class FloorSetValuesDto(
++    @field:JsonProperty(required = true)
++    val weight: SetWeightDto?,
++    @field:JsonProperty(required = true)
++    val effort: SetEffortDto?,
++    @field:JsonProperty(required = true)
++    val confirmed: Boolean,
++) {
++    @JsonAnySetter
++    fun rejectUnknownField(
++        name: String,
++        value: Any?,
++    ): Unit =
++        throw WorkoutValidationException(
++            "The expected set values accept weight, effort and confirmed only, but the body carried '$name' ($value)",
++        )
++}
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+new file mode 100644
+index 0000000..6d14d1f
+--- /dev/null
++++ b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionFloorSetConflictTest.kt
+@@ -0,0 +1,268 @@
++package com.gymie.groupsession.infrastructure.presentation.web
++
++import com.fasterxml.jackson.databind.ObjectMapper
++import com.gymie.groupsession.core.domain.groupsession.specification.ParticipantProfile
++import com.gymie.groupsession.core.services.groupsession.GroupSessionQueryService
++import com.gymie.workout.core.domain.workout.SetEffort
++import com.gymie.workout.core.domain.workout.SetValues
++import com.gymie.workout.core.domain.workout.SetWeight
++import com.gymie.workout.core.domain.workout.WeightUnit
++import com.gymie.workout.core.domain.workout.Workout
++import com.gymie.workout.core.domain.workout.WorkoutLifecycle
++import com.gymie.workout.core.domain.workout.WorkoutSet
++import com.gymie.workout.core.domain.workout.WorkoutStatus
++import com.gymie.workout.core.exceptions.WorkoutSetChangedException
++import com.gymie.workout.core.services.workout.WorkoutFieldPatchService
++import com.gymie.workout.core.services.workout.WorkoutFinishReadinessService
++import com.gymie.workout.core.services.workout.WorkoutService
++import com.gymie.workout.infrastructure.presentation.web.WorkoutExceptionHandler
++import com.gymie.workout.infrastructure.presentation.web.WorkoutResponseAssembler
++import io.mockk.clearMocks
++import io.mockk.every
++import io.mockk.mockk
++import io.mockk.verify
++import org.junit.jupiter.api.BeforeEach
++import org.junit.jupiter.api.Test
++import org.springframework.beans.factory.annotation.Autowired
++import org.springframework.boot.test.context.TestConfiguration
++import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
++import org.springframework.context.annotation.Bean
++import org.springframework.context.annotation.Import
++import org.springframework.http.MediaType
++import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
++import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
++import org.springframework.test.web.servlet.MockMvc
++import org.springframework.test.web.servlet.patch
++import java.math.BigDecimal
++import java.time.Instant
++import java.time.LocalDate
++import java.util.UUID
++
++/**
++ * The floor set PATCH's compare-and-set (KAN-757, decision `value-compare-and-set`): an optional
++ * `expected` object reaches the service beside the driver as actor, and a stale one answers `409`
++ * `set_changed` carrying the stored set, who changed it and when.
++ */
++@WebMvcTest(controllers = [GroupSessionWorkoutController::class])
++@Import(
++    GroupSessionWorkoutController::class,
++    GroupSessionExceptionHandler::class,
++    WorkoutExceptionHandler::class,
++    GroupSessionFloorSetConflictTest.TestConfig::class,
++)
++class GroupSessionFloorSetConflictTest {
++    @Autowired lateinit var mockMvc: MockMvc
++
++    @Autowired lateinit var objectMapper: ObjectMapper
++
++    @Autowired lateinit var groupSessionQueryService: GroupSessionQueryService
++
++    @Autowired lateinit var workoutFieldPatchService: WorkoutFieldPatchService
++
++    @Autowired lateinit var responses: WorkoutResponseAssembler
++
++    private val owner = UUID.fromString("11111111-1111-1111-1111-111111111111")
++    private val jana = UUID.fromString("22222222-2222-2222-2222-222222222222")
++    private val sessionId = UUID.randomUUID()
++    private val workoutId = UUID.randomUUID()
++    private val setId = UUID.randomUUID()
++    private val date = LocalDate.of(2026, 9, 4)
++
++    @BeforeEach
++    fun resetMocks() {
++        clearMocks(groupSessionQueryService, workoutFieldPatchService, responses)
++    }
++
++    private fun basePath() = "/api/group-sessions/$sessionId/participants/$jana/workout"
++
++    private val stubWorkout =
++        Workout(
++            id = workoutId,
++            userId = jana,
++            scheduledDate = date,
++            scheduledTime = null,
++            unit = WeightUnit.KG,
++            lifecycle = WorkoutLifecycle(status = WorkoutStatus.PLANNED),
++        )
++
++    private fun workoutResponse() =
++        com.gymie.workout.infrastructure.presentation.web.dto.WorkoutResponse(
++            id = workoutId,
++            scheduledDate = date,
++            scheduledTime = null,
++            unit = WeightUnit.KG,
++            name = null,
++            displayName = "Stub",
++            notes = null,
++            status = WorkoutStatus.PLANNED,
++            startedAt = null,
++            finishedAt = null,
++            blocks = emptyList(),
++        )
++
++    @Test
++    fun `expected reaches the service with the driver as actor`() {
++        val weight = SetWeight.Measured(BigDecimal("82.50"))
++        val effort = SetEffort.Count(6)
++        val expected = SetValues(SetWeight.Measured(BigDecimal("80")), SetEffort.Count(8), false)
++        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
++        every {
++            workoutFieldPatchService.patchSet(jana, workoutId, setId, weight, effort, true, owner, expected)
++        } returns stubWorkout
++        every { responses.respond(stubWorkout) } returns workoutResponse()
++
++        mockMvc
++            .patch("${basePath()}/sets/$setId") {
++                with(user(owner.toString()))
++                with(csrf())
++                contentType = MediaType.APPLICATION_JSON
++                content =
++                    objectMapper.writeValueAsString(
++                        mapOf(
++                            "weight" to mapOf("kind" to "MEASURED", "value" to 82.5),
++                            "effort" to mapOf("kind" to "COUNT", "value" to 6),
++                            "confirmed" to true,
++                            "expected" to
++                                mapOf(
++                                    "weight" to mapOf("kind" to "MEASURED", "value" to 80),
++                                    "effort" to mapOf("kind" to "COUNT", "value" to 8),
++                                    "confirmed" to false,
++                                ),
++                        ),
++                    )
++            }.andExpect { status { isOk() } }
++
++        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, weight, effort, true, owner, expected) }
++    }
++
++    @Test
++    fun `a set_changed refusal carries current updatedBy and updatedAt`() {
++        val updatedAt = Instant.parse("2026-10-07T09:05:00Z")
++        val current =
++            WorkoutSet(
++                id = setId,
++                position = 0,
++                weight = SetWeight.Measured(BigDecimal("82.50")),
++                effort = SetEffort.Count(6),
++                confirmedAt = Instant.parse("2026-10-07T09:04:00Z"),
++                updatedAt = updatedAt,
++                updatedBy = owner,
++            )
++        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
++        every {
++            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, any())
++        } throws WorkoutSetChangedException(current)
++        every { groupSessionQueryService.profileOf(owner) } returns
++            ParticipantProfile(owner, "Owner Name", "owner", null, null)
++
++        mockMvc
++            .patch("${basePath()}/sets/$setId") {
++                with(user(owner.toString()))
++                with(csrf())
++                contentType = MediaType.APPLICATION_JSON
++                content =
++                    objectMapper.writeValueAsString(
++                        mapOf(
++                            "weight" to null,
++                            "effort" to null,
++                            "confirmed" to true,
++                            "expected" to
++                                mapOf(
++                                    "weight" to null,
++                                    "effort" to null,
++                                    "confirmed" to false,
++                                ),
++                        ),
++                    )
++            }.andExpect {
++                status { isConflict() }
++                jsonPath("$.code") { value("set_changed") }
++                jsonPath("$.current.weight.kind") { value("MEASURED") }
++                jsonPath("$.current.weight.value") { value(82.5) }
++                jsonPath("$.current.effort.kind") { value("COUNT") }
++                jsonPath("$.current.effort.value") { value(6) }
++                jsonPath("$.current.confirmed") { value(true) }
++                jsonPath("$.updatedBy.id") { value(owner.toString()) }
++                jsonPath("$.updatedBy.displayName") { value("Owner Name") }
++                jsonPath("$.updatedAt") { value("2026-10-07T09:05:00Z") }
++            }
++    }
++
++    @Test
++    fun `a never-stamped set answers null updatedBy and updatedAt`() {
++        val current =
++            WorkoutSet(
++                id = setId,
++                position = 0,
++                weight = null,
++                effort = null,
++                confirmedAt = null,
++            )
++        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
++        every {
++            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, false, owner, any())
++        } throws WorkoutSetChangedException(current)
++
++        mockMvc
++            .patch("${basePath()}/sets/$setId") {
++                with(user(owner.toString()))
++                with(csrf())
++                contentType = MediaType.APPLICATION_JSON
++                content =
++                    objectMapper.writeValueAsString(
++                        mapOf(
++                            "weight" to null,
++                            "effort" to null,
++                            "confirmed" to false,
++                            "expected" to
++                                mapOf(
++                                    "weight" to mapOf("kind" to "MEASURED", "value" to 80),
++                                    "effort" to null,
++                                    "confirmed" to false,
++                                ),
++                        ),
++                    )
++            }.andExpect {
++                status { isConflict() }
++                jsonPath("$.code") { value("set_changed") }
++                jsonPath("$.current.confirmed") { value(false) }
++                jsonPath("$.updatedBy") { doesNotExist() }
++                jsonPath("$.updatedAt") { doesNotExist() }
++            }
++    }
++
++    @Test
++    fun `an unknown field is still refused`() {
++        every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
++
++        mockMvc
++            .patch("${basePath()}/sets/$setId") {
++                with(user(owner.toString()))
++                with(csrf())
++                contentType = MediaType.APPLICATION_JSON
++                content = """{"weight":null,"effort":null,"confirmed":true,"foo":1}"""
++            }.andExpect { status { isBadRequest() } }
++
++        verify(exactly = 0) {
++            workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any())
++        }
++    }
++
++    @TestConfiguration
++    class TestConfig {
++        @Bean
++        fun groupSessionQueryService(): GroupSessionQueryService = mockk()
++
++        @Bean
++        fun workoutService(): WorkoutService = mockk()
++
++        @Bean
++        fun workoutFieldPatchService(): WorkoutFieldPatchService = mockk()
++
++        @Bean
++        fun workoutFinishReadinessService(): WorkoutFinishReadinessService = mockk()
++
++        @Bean
++        fun workoutResponseAssembler(): WorkoutResponseAssembler = mockk()
++    }
++}
+diff --git a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+index 104e5a8..8a7c4b9 100644
+--- a/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
++++ b/src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/GroupSessionWorkoutControllerTest.kt
+@@ -222,7 +222,7 @@ class GroupSessionWorkoutControllerTest {
+         val setId = UUID.randomUUID()
+         every { groupSessionQueryService.participantWorkoutIdForWrite(owner, sessionId, jana) } returns workoutId
+         every {
+-            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true)
++            workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, null)
+         } returns workout()
+         every { responses.respond(workout()) } returns workoutResponse()
+ 
+@@ -234,7 +234,7 @@ class GroupSessionWorkoutControllerTest {
+                 content = """{"weight":null,"effort":null,"confirmed":true}"""
+             }.andExpect { status { isOk() } }
+ 
+-        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true) }
++        verify { workoutFieldPatchService.patchSet(jana, workoutId, setId, null, null, true, owner, null) }
+     }
+ 
+     @Test
+@@ -299,7 +299,7 @@ class GroupSessionWorkoutControllerTest {
+                 jsonPath("$.code") { value("edit_access_required") }
+             }
+ 
+-        verify(exactly = 0) { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any()) }
++        verify(exactly = 0) { workoutFieldPatchService.patchSet(any(), any(), any(), any(), any(), any(), any(), any()) }
+     }
+ 
+     @Test

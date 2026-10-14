@@ -16,6 +16,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"sync"
@@ -40,6 +41,17 @@ var Timeouts = map[string]time.Duration{
 // _promptFile is where the rendered prompt lands in the container; the harness's Command hands it to
 // the CLI.
 const _promptFile = "/case/prompt.md"
+
+// _noFlowPrep is, per role, the command a no-flow trial runs in /work after /case is copied in and
+// before the agent starts. Review: the snapshot is the change's head, so HEAD is moved to the
+// pre-change tree and the change left as the working tree's diff, which the no-flow review reviews.
+// Visual: flow's measuring tool is removed from the container (docker/runner.Dockerfile).
+var _noFlowPrep = map[string][]string{
+	"review": {"sh", "-c", "git apply -R ../case/diff.patch && git add -A -f && " +
+		"git -c user.name=flow-eval -c user.email=flow-eval@localhost commit -q -m before && " +
+		"git apply ../case/diff.patch && git add -N ."},
+	"visual": {"sh", "-c", "rm -f /usr/local/bin/measure-visual-properties.sh /usr/local/bin/flow-guard"},
+}
 
 // _inputs lists, per role, the case files a trial's /case receives. Ground truth (heldout.patch,
 // reference.stat, labels.json) is never among them.
@@ -90,7 +102,7 @@ type Config struct {
 	Cases                     []cases.Case
 	// ReposDir holds each impl or review case's source checkout as <ReposDir>/<source.repo>.
 	ReposDir, PromptsDir, RunsDir string
-	BaselinesDir                  string // holds baselines/<role>[-<slot>].json, read to paint rows beating the baseline
+	BaselinesDir                  string // holds baselines/<role>[-no-flow][-<slot>].json, read to paint rows beating the baseline
 	RunnerImage, ProxyImage       string
 	Credentials                   []string // environment variable names passed into each trial
 	Mounts                        []string // the harness's own volume --mount values, into each trial
@@ -101,6 +113,9 @@ type Config struct {
 	// Warnings receives what does not fail the run: another run's page that could not be repainted.
 	// nil discards them.
 	Warnings io.Writer
+	// NoFlow runs the role with no flow prompt, rules or tooling: flow-eval's own prompts/no-flow
+	// prompt, an impl task as a plain spec, and the role's _noFlowPrep in the container.
+	NoFlow bool
 }
 
 // Header is the first line of runs/<id>.jsonl (design.md §8).
@@ -111,7 +126,7 @@ type Header struct {
 	Effort      string            `json:"effort"`
 	Slot        string            `json:"slot,omitempty"`
 	K           int               `json:"k"`
-	PromptPin   string            `json:"prompt_pin"`
+	PromptPin   string            `json:"prompt_pin"` // "" for a no-flow run, which renders no vendored prompt
 	CaseSetHash string            `json:"case_set_hash"`
 	CaseHashes  map[string]string `json:"case_hashes"` // case id → its own set hash
 	FlowEvalSHA string            `json:"flow_eval_sha"`
@@ -122,6 +137,8 @@ type Header struct {
 	// Regraded is the flow-eval sha whose labels and grader last re-graded the run's trials (Regrade);
 	// FlowEvalSHA stays the sha that ran them. A run never re-graded records none.
 	Regraded string `json:"regraded,omitempty"`
+	// NoFlow marks a run made with no flow prompt, rules or tooling (Config.NoFlow).
+	NoFlow bool `json:"no_flow,omitzero"`
 }
 
 // Line is one trial line of runs/<id>.jsonl.
@@ -163,7 +180,15 @@ func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 			cfg.Role, cfg.K, cfg.Parallel, len(cfg.Cases))
 	}
 	if cfg.Role == "review" {
-		if err := prompts.Vendored(cfg.PromptsDir, reviewTarget(cfg.Slot)); err != nil {
+		dir, target := cfg.PromptsDir, reviewTarget(cfg.Slot)
+		if cfg.NoFlow {
+			t, err := NoFlowReviewTarget(cfg.Harness.Name())
+			if err != nil {
+				return "", fmt.Errorf("run: %w", err)
+			}
+			dir, target = noFlowPrompts(cfg), t
+		}
+		if err := prompts.Vendored(dir, target); err != nil {
 			return "", fmt.Errorf("run: slot %s has no review prompt: %w", cfg.Slot, err)
 		}
 		var unfound []string
@@ -187,7 +212,7 @@ func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 		return "", err
 	}
 	// A review run's id names its slot, so one launch per slot in the same second never collides.
-	id := fmt.Sprintf("%s-%s-%s-%s-%s", started.Format("20060102T150405Z"), BaselineKey(h.Role, h.Slot),
+	id := fmt.Sprintf("%s-%s-%s-%s-%s", started.Format("20060102T150405Z"), BaselineKey(h.Role, h.Slot, h.NoFlow),
 		cfg.Harness.Name(), cfg.Model, cfg.Effort)
 	tmp, err := os.MkdirTemp("", "flow-eval-run-")
 	if err != nil {
@@ -282,15 +307,20 @@ func writeReports(cfg Config, id string, h Header, lines []Line) error {
 }
 
 func header(cfg Config, started time.Time) (Header, error) {
-	pin, err := os.ReadFile(filepath.Join(cfg.PromptsDir, "PIN"))
-	if err != nil {
-		return Header{}, fmt.Errorf("run: prompt pin: %w", err)
-	}
 	h := Header{
 		Role: cfg.Role, Harness: cfg.Harness.Name(), Model: cfg.Model, Effort: cfg.Effort, K: cfg.K,
-		PromptPin:   strings.TrimSpace(string(pin)),
-		FlowEvalSHA: cfg.FlowEvalSHA, Started: started,
+		FlowEvalSHA: cfg.FlowEvalSHA, Started: started, NoFlow: cfg.NoFlow,
 	}
+	// A no-flow run renders no vendored prompt, so it records no pin: its prompts are flow-eval's own,
+	// versioned by FlowEvalSHA.
+	if !cfg.NoFlow {
+		pin, err := os.ReadFile(filepath.Join(cfg.PromptsDir, "PIN"))
+		if err != nil {
+			return Header{}, fmt.Errorf("run: prompt pin: %w", err)
+		}
+		h.PromptPin = strings.TrimSpace(string(pin))
+	}
+	var err error
 	if cfg.Role == "review" {
 		h.Slot = cfg.Slot
 	}
@@ -354,7 +384,7 @@ func prepare(ctx context.Context, cfg Config, docker Docker, tmp string) ([]prep
 			}
 		}
 		var std []prompts.Standard
-		if cfg.Role == "review" && cfg.Slot == "principles" {
+		if cfg.Role == "review" && cfg.Slot == "principles" && !cfg.NoFlow {
 			var err error
 			std, p.dropped, err = prompts.Standards(cfg.PromptsDir, filepath.Join(dir, "tree"))
 			if err != nil {
@@ -367,7 +397,11 @@ func prepare(ctx context.Context, cfg Config, docker Docker, tmp string) ([]prep
 		}
 		p.prompt = prompt
 		p.inputs = filepath.Join(dir, "case.tar")
-		if err := writeInputs(p.inputs, c.Dir, _inputs[cfg.Role], prompt, std); err != nil {
+		names := _inputs[cfg.Role]
+		if cfg.NoFlow && cfg.Role == "impl" { // the prompt carries the plain spec; task.md is the flow plan
+			names = nil
+		}
+		if err := writeInputs(p.inputs, c.Dir, names, prompt, std); err != nil {
 			return nil, fmt.Errorf("case %s: %w", c.ID, err)
 		}
 		preps = append(preps, p)
@@ -382,6 +416,27 @@ func render(cfg Config, c cases.Case, std []prompts.Standard) (string, error) {
 		return string(b), err
 	}
 	in := map[string]string{}
+	if cfg.NoFlow {
+		switch cfg.Role {
+		case "impl":
+			task, err := read("task.md")
+			if err != nil {
+				return "", err
+			}
+			ctxDoc, err := read("context.md")
+			if err != nil {
+				return "", err
+			}
+			in["Task"], in["Context"] = plainTask(task), ctxDoc
+		case "review":
+			if noFlowTarget(cfg) == "review" {
+				in["Effort"] = cfg.Effort
+			}
+		case "visual":
+			in["Mockup"], in["Capture"] = "/case/mockup.png", "/case/capture.png"
+		}
+		return prompts.Render(noFlowPrompts(cfg), noFlowTarget(cfg), in)
+	}
 	target := cfg.Role
 	switch cfg.Role {
 	case "impl":
@@ -408,6 +463,76 @@ func render(cfg Config, c cases.Case, std []prompts.Standard) (string, error) {
 		in["Mockup"], in["Capture"] = "/case/mockup.png", "/case/capture.png"
 	}
 	return prompts.Render(cfg.PromptsDir, target, in)
+}
+
+// noFlowPrompts is the directory of flow-eval's own no-flow prompts, which prompts sync never writes.
+func noFlowPrompts(cfg Config) string { return filepath.Join(cfg.PromptsDir, "no-flow") }
+
+// noFlowTarget is the no-flow prompt a trial of cfg renders: the role's, or a review's per
+// NoFlowReviewTarget, whose refusal Run has already made.
+func noFlowTarget(cfg Config) string {
+	if cfg.Role == "review" {
+		t, _ := NoFlowReviewTarget(cfg.Harness.Name())
+		return t
+	}
+	return cfg.Role
+}
+
+// NoFlowReviewTarget is the no-flow review prompt a harness renders (decision
+// no-flow-review-per-harness): claude-code's own /code-review, or a plain review request on
+// muse-code, which ships no review command. Any other harness has no no-flow review.
+func NoFlowReviewTarget(harness string) (string, error) {
+	switch harness {
+	case "claude-code":
+		return "review", nil
+	case "muse-code":
+		return "review-plain", nil
+	}
+	return "", fmt.Errorf("--no-flow review runs on --harness claude-code or muse-code: claude-code's /code-review, "+
+		"or a plain review request on muse-code; %s has none", harness)
+}
+
+// _planField is a flow plan field line of a task, `**<Field>:**` at any indent; _checkbox is a task
+// title's or step's checkbox prefix, with a title's `<n>. `.
+var (
+	_planField = regexp.MustCompile(`^\*\*(Build|Files|Allowed-collateral|Tests|Regression|Baseline|Commit|After|Decision|Squash-with):\*\*`)
+	_checkbox  = regexp.MustCompile(`^( *)- \[[ x]\] (?:\d+\. )?`)
+)
+
+// plainTask is a flow plan task as a plain spec: its title and each step's text, the checkboxes, the
+// title's number, every plan field line and every comment line dropped wherever they sit. A step's
+// indent goes with its checkbox, and its continuation lines lose the same indent; runs of blank lines
+// collapse to one.
+func plainTask(task string) string {
+	var out []string
+	strip := 0 // the indent of the step a continuation line belongs to
+	for line := range strings.Lines(task) {
+		line = strings.TrimRight(line, "\r\n")
+		trimmed := strings.TrimSpace(line)
+		if _planField.MatchString(trimmed) || strings.HasPrefix(trimmed, "<!--") {
+			continue
+		}
+		if m := _checkbox.FindStringSubmatch(line); m != nil {
+			strip, line = len(m[1]), line[len(m[0]):]
+		} else {
+			indent := len(line) - len(strings.TrimLeft(line, " "))
+			line = line[min(indent, strip):]
+		}
+		if trimmed == "" {
+			if len(out) == 0 || out[len(out)-1] == "" {
+				continue
+			}
+			line = ""
+		}
+		out = append(out, line)
+	}
+	if len(out) > 0 && out[len(out)-1] == "" {
+		out = out[:len(out)-1]
+	}
+	if len(out) == 0 {
+		return ""
+	}
+	return strings.Join(out, "\n") + "\n"
 }
 
 // reviewTarget is the prompt a review trial of slot renders.
@@ -514,6 +639,15 @@ func runTrial(ctx context.Context, cfg Config, docker Docker, p prepared, sandbo
 	}
 	if err := sb.CopyIn(ctx, p.inputs, "/"); err != nil {
 		return infra(err)
+	}
+	if prep, ok := _noFlowPrep[cfg.Role]; ok && cfg.NoFlow {
+		res, err := sb.Exec(ctx, prep...)
+		if err != nil {
+			return infra(fmt.Errorf("no-flow prep: %w", err))
+		}
+		if res.Exit != 0 {
+			return infra(fmt.Errorf("no-flow prep: exit %d: %s", res.Exit, strings.TrimSpace(res.Stderr)))
+		}
 	}
 
 	argv, env := cfg.Harness.Command(_promptFile, cfg.Model, cfg.Effort, "/work")
@@ -835,8 +969,8 @@ func Load(runsDir, id string) (Header, []Line, error) {
 func report(id string, h Header, s summary) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "# Run %s\n\n", id)
-	fmt.Fprintf(&b, "- role `%s`, harness `%s`, model `%s`, effort `%s`, k %d, served %s\n",
-		h.Role, h.Harness, h.Model, h.Effort, h.K, cmp.Or(s.Served, "–"))
+	fmt.Fprintf(&b, "- role `%s`, harness `%s`, model `%s`, effort `%s`, k %d, served %s%s\n",
+		h.Role, h.Harness, h.Model, h.Effort, h.K, cmp.Or(s.Served, "–"), NoFlowNote(h))
 	fmt.Fprintf(&b, "- prompt pin `%s`, case set `%s`, flow-eval `%s`, started %s\n",
 		h.PromptPin, h.CaseSetHash, h.FlowEvalSHA, h.Started.Format(time.RFC3339))
 	if s.HasScore {
@@ -872,6 +1006,14 @@ func Served(lines []Line) string {
 	}
 	slices.Sort(ids)
 	return strings.Join(ids, ", ")
+}
+
+// NoFlowNote is what a settings line appends for a no-flow run.
+func NoFlowNote(h Header) string {
+	if h.NoFlow {
+		return ", no-flow"
+	}
+	return ""
 }
 
 func yesNo(v bool) string {
