@@ -1,0 +1,304 @@
+$ ./gradlew verifyChange
+Starting a Gradle Daemon, 1 stopped Daemon could not be reused, use --status for details
+Shared read-only dependency cache is an incubating feature.
+Calculating task graph as no cached configuration is available for tasks: verifyChange
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+> Task :buildSrc:compileTestKotlin UP-TO-DATE
+> Task :buildSrc:compileTestJava NO-SOURCE
+> Task :buildSrc:compileTestGroovy NO-SOURCE
+> Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+> Task :buildSrc:processTestResources NO-SOURCE
+> Task :buildSrc:testClasses UP-TO-DATE
+> Task :buildSrc:test FROM-CACHE
+> Task :buildSrc:loadKtlintReporters UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :buildSrc:ktlintCheck UP-TO-DATE
+> Task :buildSrc:detekt UP-TO-DATE
+> Task :detekt NO-SOURCE
+> Task :admin:loadKtlintReporters UP-TO-DATE
+> Task :loadKtlintReporters UP-TO-DATE
+> Task :app:detekt UP-TO-DATE
+> Task :admin:detekt UP-TO-DATE
+> Task :admin:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :admin:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :admin:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :admin:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :admin:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :ktlintKotlinScriptCheck UP-TO-DATE
+> Task :ktlintCheck UP-TO-DATE
+> Task :admin:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :app:loadKtlintReporters UP-TO-DATE
+> Task :auth:loadKtlintReporters UP-TO-DATE
+> Task :admin:ktlintCheck UP-TO-DATE
+> Task :app:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :app:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :app:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :app:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :app:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :app:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :app:ktlintCheck UP-TO-DATE
+> Task :auth:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :auth:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :auth:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :auth:detekt UP-TO-DATE
+> Task :auth:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :auth:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :common:loadKtlintReporters UP-TO-DATE
+> Task :auth:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :common:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :auth:ktlintCheck UP-TO-DATE
+> Task :gateway:detekt UP-TO-DATE
+> Task :common:detekt UP-TO-DATE
+> Task :common:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :common:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :common:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :gateway:loadKtlintReporters UP-TO-DATE
+> Task :common:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :common:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :common:ktlintCheck UP-TO-DATE
+> Task :gateway:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :gateway:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :gateway:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :gateway:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :gateway:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :gateway:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :gateway:ktlintCheck UP-TO-DATE
+> Task :invite:detekt UP-TO-DATE
+> Task :groupsession:loadKtlintReporters UP-TO-DATE
+> Task :invite:loadKtlintReporters UP-TO-DATE
+> Task :groupsession:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :groupsession:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :groupsession:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :groupsession:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :invite:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :invite:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :invite:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :invite:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :invite:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :invite:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :invite:ktlintCheck UP-TO-DATE
+> Task :profile:loadKtlintReporters UP-TO-DATE
+> Task :profile:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :profile:detekt UP-TO-DATE
+> Task :profile:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :profile:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :profile:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :profile:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :profile:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :profile:ktlintCheck UP-TO-DATE
+> Task :tracking:detekt UP-TO-DATE
+> Task :tracking:loadKtlintReporters UP-TO-DATE
+> Task :tracking:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :tracking:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :tracking:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :tracking:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :workout:detekt UP-TO-DATE
+> Task :tracking:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :workout:loadKtlintReporters UP-TO-DATE
+> Task :workout:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :tracking:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :tracking:ktlintCheck UP-TO-DATE
+> Task :workout:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :workout:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :workout:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :workout:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :workout:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :workout:ktlintCheck UP-TO-DATE
+> Task :groupsession:runKtlintCheckOverTestSourceSet
+> Task :groupsession:ktlintTestSourceSetCheck
+> Task :groupsession:ktlintCheck
+> Task :groupsession:detekt
+> Task :verifyChange
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 16s
+98 actionable tasks: 3 executed, 1 from cache, 94 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+[exit 0]
+$ ./gradlew :groupsession:test --tests 'GroupSessionFloorSetConflictTest' --tests 'GroupSessionWorkoutControllerTest'
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test --tests GroupSessionFloorSetConflictTest --tests GroupSessionWorkoutControllerTest
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+> Task :buildSrc:compileTestKotlin UP-TO-DATE
+> Task :buildSrc:compileTestJava NO-SOURCE
+> Task :buildSrc:compileTestGroovy NO-SOURCE
+> Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+> Task :buildSrc:processTestResources NO-SOURCE
+> Task :buildSrc:testClasses UP-TO-DATE
+> Task :buildSrc:test UP-TO-DATE
+> Task :buildSrc:loadKtlintReporters UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :buildSrc:ktlintCheck UP-TO-DATE
+> Task :buildSrc:detekt UP-TO-DATE
+> Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :workout:processResources NO-SOURCE
+> Task :common:processResources NO-SOURCE
+> Task :groupsession:processResources NO-SOURCE
+> Task :groupsession:processTestResources NO-SOURCE
+> Task :common:compileKotlin UP-TO-DATE
+> Task :common:compileJava NO-SOURCE
+> Task :common:classes UP-TO-DATE
+> Task :common:jar UP-TO-DATE
+> Task :workout:compileKotlin UP-TO-DATE
+> Task :workout:compileJava NO-SOURCE
+> Task :workout:classes UP-TO-DATE
+> Task :workout:jar UP-TO-DATE
+> Task :groupsession:compileKotlin UP-TO-DATE
+> Task :groupsession:compileJava NO-SOURCE
+> Task :groupsession:classes UP-TO-DATE
+> Task :groupsession:jar UP-TO-DATE
+> Task :groupsession:compileTestKotlin
+> Task :groupsession:compileTestJava NO-SOURCE
+> Task :groupsession:testClasses UP-TO-DATE
+
+> Task :groupsession:test
+
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 15s
+23 actionable tasks: 2 executed, 21 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]
+$ ./gradlew :groupsession:test
+Calculating task graph as no cached configuration is available for tasks: :groupsession:test
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+> Task :buildSrc:compileTestKotlin UP-TO-DATE
+> Task :buildSrc:compileTestJava NO-SOURCE
+> Task :buildSrc:compileTestGroovy NO-SOURCE
+> Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+> Task :buildSrc:processTestResources NO-SOURCE
+> Task :buildSrc:testClasses UP-TO-DATE
+> Task :buildSrc:test UP-TO-DATE
+> Task :buildSrc:loadKtlintReporters UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverKotlinScripts UP-TO-DATE
+> Task :buildSrc:ktlintKotlinScriptCheck UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverMainSourceSet UP-TO-DATE
+> Task :buildSrc:ktlintMainSourceSetCheck UP-TO-DATE
+> Task :buildSrc:runKtlintCheckOverTestSourceSet UP-TO-DATE
+> Task :buildSrc:ktlintTestSourceSetCheck UP-TO-DATE
+> Task :buildSrc:ktlintCheck UP-TO-DATE
+> Task :buildSrc:detekt UP-TO-DATE
+> Task :groupsession:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :workout:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :workout:processResources NO-SOURCE
+> Task :common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :common:processResources NO-SOURCE
+> Task :groupsession:processTestResources NO-SOURCE
+> Task :groupsession:processResources NO-SOURCE
+> Task :common:compileKotlin UP-TO-DATE
+> Task :common:compileJava NO-SOURCE
+> Task :common:classes UP-TO-DATE
+> Task :common:jar UP-TO-DATE
+> Task :workout:compileKotlin UP-TO-DATE
+> Task :workout:compileJava NO-SOURCE
+> Task :workout:classes UP-TO-DATE
+> Task :workout:jar UP-TO-DATE
+> Task :groupsession:compileKotlin UP-TO-DATE
+> Task :groupsession:compileJava NO-SOURCE
+> Task :groupsession:classes UP-TO-DATE
+> Task :groupsession:jar UP-TO-DATE
+> Task :groupsession:compileTestKotlin UP-TO-DATE
+> Task :groupsession:compileTestJava NO-SOURCE
+> Task :groupsession:testClasses UP-TO-DATE
+
+> Task :groupsession:test
+
+2026-10-14T17:17:20.461Z  INFO 2405 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-14T17:17:20.466Z  INFO 2405 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-14T17:17:20.469Z  INFO 2405 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+[Incubating] Problems report is available at: file:///work/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 22s
+23 actionable tasks: 1 executed, 22 up-to-date
+Configuration cache entry stored.
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+Picked up JAVA_TOOL_OPTIONS: -Dhttps.proxyHost=proxy -Dhttps.proxyPort=3128 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=3128 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dind
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction (file:/gradle-ro/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.18.10/5b34812ced047973a6d42654d50c3b69124ce587/byte-buddy-1.18.10.jar)
+WARNING: Please consider reporting this to the maintainers of class net.bytebuddy.dynamic.loading.ClassInjector$UsingUnsafe$Dispatcher$CreationAction
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[exit 0]

@@ -2228,3 +2228,14 @@ func TestNoFlowRunsHaveTheirOwnKeyAndSection(t *testing.T) {
 		t.Errorf("Comparable(no-flow, flow) = %v, want nil", err)
 	}
 }
+
+// A no-flow run renders no vendored prompt, so its report names the pin as none rather than an
+// empty code span.
+func TestReportNamesAnEmptyPromptPinNone(t *testing.T) {
+	for pin, want := range map[string]string{"": "- prompt pin none,", "dc185c68": "- prompt pin `dc185c68`,"} {
+		md := report("id", Header{PromptPin: pin}, summary{})
+		if !strings.Contains(md, want) {
+			t.Errorf("pin %q: report lacks %q:\n%s", pin, want, md)
+		}
+	}
+}

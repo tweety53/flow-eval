@@ -971,8 +971,12 @@ func report(id string, h Header, s summary) string {
 	fmt.Fprintf(&b, "# Run %s\n\n", id)
 	fmt.Fprintf(&b, "- role `%s`, harness `%s`, model `%s`, effort `%s`, k %d, served %s%s\n",
 		h.Role, h.Harness, h.Model, h.Effort, h.K, cmp.Or(s.Served, "–"), NoFlowNote(h))
-	fmt.Fprintf(&b, "- prompt pin `%s`, case set `%s`, flow-eval `%s`, started %s\n",
-		h.PromptPin, h.CaseSetHash, h.FlowEvalSHA, h.Started.Format(time.RFC3339))
+	pin := "none" // a no-flow run renders no vendored prompt
+	if h.PromptPin != "" {
+		pin = "`" + h.PromptPin + "`"
+	}
+	fmt.Fprintf(&b, "- prompt pin %s, case set `%s`, flow-eval `%s`, started %s\n",
+		pin, h.CaseSetHash, h.FlowEvalSHA, h.Started.Format(time.RFC3339))
 	if s.HasScore {
 		fmt.Fprintf(&b, "- role score **%.1f** (%s, infra errors excluded)\n", s.Score, s.How)
 	}

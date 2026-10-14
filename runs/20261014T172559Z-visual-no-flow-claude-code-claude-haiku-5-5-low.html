@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261014T172559Z-visual-no-flow-claude-code-claude-haiku-5-5-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261014T172559Z-visual-no-flow-claude-code-claude-haiku-5-5-low</h1>
+<dl class="header">
+<dt>role</dt><dd>visual</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>claude-haiku-5-5</dd>
+<dt>served</dt><dd>claude-haiku-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd></dd>
+<dt>case set</dt><dd>d3ed92f7592902ba0ab84c1346ab1e8ff597f2a68e3a63f03d22438a04de3455</dd>
+<dt>flow-eval</dt><dd>5afa6f21d017517b8eec3cec84de6852ff3d4727</dd>
+<dt>started</dt><dd>2026-10-14T17:25:59Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-870-qm-q6">kan-870-qm-q6</a> · <a href="#trial-kan-870-qm-q6-1">trial 1</a> · <a href="#trial-kan-870-qm-q6-2">trial 2</a> · <a href="#trial-kan-870-qm-q6-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">100.0</span> <span class="muted">balanced accuracy: mean of each labelled verdict&#39;s mean case score, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-870-qm-q6" class="row-ok"><td>kan-870-qm-q6</td><td>3/3</td><td>3</td><td>yes</td><td>100.0</td><td>0.0</td><td>$0.0021</td><td>$0.0064</td><td>10.2</td><td>179471</td><td>$0.2598</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-870-qm-q6-1" class="trial pass">
+<h3>kan-870-qm-q6 · trial 1 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.999922800787432</dd></div>
+<div><dt>cache_read</dt><dd>51810</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>7136</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0023562</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>821</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>31225</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>274</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.047124</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>2</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>11009</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>5350</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>22167</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.089563</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>20</dd></div>
+<div><dt>output</dt><dd>32</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.089563</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>10</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>- defect: Header timer reads &#34;0:00&#34; in the capture but &#34;25:50&#34; in the mockup (top right).
+- defect: Progress bar&#39;s first segment is blue in the capture but dark grey in the mockup, so the step-state colors differ (top, under the header).
+- defect: Exercise shows &#34;Lat Pulldown&#34; with badge &#34;B1&#34; in the capture, but &#34;Close Grip Lat Pulldown&#34; with badge &#34;A1&#34; in the mockup, and the subtitle reads &#34;straight into B2&#34; instead of &#34;straight into A2&#34; (exercise card header).
+- defect: &#34;Next time?&#34; option buttons (Weight/Reps/Keep the same) are light fill with dark text and grey borders in the capture, but blue outlines with blue text in the mockup.
+- defect: Option buttons are inset more narrowly in the capture (about x 80–374 and 401–695) than in the mockup (about x 72–380 and 396–704), so the grid spacing and edges differ.
+- defect: Evaluation note input has a grey border in the capture but a light-blue border in the mockup.
+- defect: Card title is a single-line-wrapped serif heading with different size and spacing in the capture; the mockup title wraps across two lines with an info icon and &#34;&#43; Note&#34; link positioned differently. The capture&#39;s &#34;&#43; Note&#34; and info icon sit closer to the title.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261014T172559Z-visual-no-flow-claude-code-claude-haiku-5-5-low/kan-870-qm-q6/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-870-qm-q6-2" class="trial pass">
+<h3>kan-870-qm-q6 · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.999922800787432</dd></div>
+<div><dt>cache_read</dt><dd>51810</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>7136</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0023432</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>795</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>31225</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>294</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.046864</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>2</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>10705</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>4815</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>19975</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0807075</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>18</dd></div>
+<div><dt>output</dt><dd>29</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0807075</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>9</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>- defect: Exercise block is different. Mockup shows &#34;A1 Close Grip Lat Pulldown&#34; with &#34;straight into A2&#34;; capture shows &#34;B1 Lat Pulldown&#34; with &#34;straight into B2&#34;.
+- defect: Header timer reads &#34;0:00&#34; in the capture but &#34;25:50&#34; in the mockup (top right, next to the title).
+- defect: Progress bar&#39;s first segment is blue in the capture but dark grey in the mockup, and the segments are offset (the capture&#39;s first two segments are both blue, the mockup&#39;s first is grey and second blue).
+- defect: &#34;Next time?&#34; option buttons (Weight/Reps/Keep the same) are styled differently. Mockup has blue outlines, blue text and a light fill; capture has a beige fill, dark text and grey borders.
+- defect: &#34;Evaluation note&#34; input border is light blue in the mockup and grey in the capture.
+- defect: Set-row and button text is slightly larger in the capture, and the card and button spacing differs (e.g., the &#34;Next time?&#34; section starts about 40px lower and the cards are inset differently).
+- defect: Back arrow in the header is bolder and larger in the capture than the thin chevron in the mockup.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261014T172559Z-visual-no-flow-claude-code-claude-haiku-5-5-low/kan-870-qm-q6/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-870-qm-q6-3" class="trial pass">
+<h3>kan-870-qm-q6 · trial 3 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999278629395852</dd></div>
+<div><dt>cache_read</dt><dd>55446</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>3551</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.00174206</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>954</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>31276</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>362</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0348412</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-haiku-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>2</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>3</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>8983</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9962756052141527</dd></div>
+<div><dt>cache_read</dt><dd>5350</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>22151</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.089499</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>20</dd></div>
+<div><dt>output</dt><dd>32</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.089499</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>10</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>- defect: Header timer reads 0:00 in the capture but 25:50 in the mockup (top right).
+- defect: Progress bar, first segment is blue in the capture but dark grey in the mockup, so the completed-step styling differs (top, under the header).
+- defect: Exercise identity differs: the mockup shows &#34;A1 Close Grip Lat Pulldown&#34; with &#34;straight into A2&#34;, while the capture shows &#34;B1 Lat Pulldown&#34; with &#34;straight into B2&#34; (card header and subtitle).
+- defect: Next-time adjustment buttons are styled differently: the mockup has blue outlined buttons with blue text and borders, while the capture has grey/off-white filled buttons with dark text and grey borders.
+- defect: Button geometry differs: the mockup&#39;s buttons span wider (about 16px outer margin, tighter gutter), while the capture&#39;s buttons are inset further with a different gutter.
+- defect: Evaluation note input border is light blue in the mockup but grey in the capture (about y=1260–1350).
+- defect: Exercise title and the note link differ: the mockup title wraps to two lines with &#34;&#43; Note&#34; in blue at a larger size, and the next card reads &#34;Edit note&#34; in both; the capture title is one line and the card&#39;s heading type is smaller.
+- defect: The &#34;A1&#34;/&#34;A2&#34; and &#34;B1&#34;/&#34;B2&#34; badges and the &#34;Last time&#34; row text sizes are slightly smaller in the capture.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261014T172559Z-visual-no-flow-claude-code-claude-haiku-5-5-low/kan-870-qm-q6/3/transcript.jsonl</p>
+</section>
+</body>
+</html>
