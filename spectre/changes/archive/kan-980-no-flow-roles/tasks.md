@@ -1,7 +1,7 @@
 > **Execution:** `/flow` implements this plan. Mark a task's own checkbox when
 > `check-task-commit-fields.sh` passes on that task's commit.
 > **Relocation:** no
-> **Tasks appended:** 2
+> **Tasks appended:** 3
 > **Baseline convention:** every `**Baseline:** before=N after=M` is chain-position absolutes —
 > `before` is the count at this task's commit's parent and `after` at the commit, each task
 > measured at its own position, never a plan-wide pair — split by source set, counted by a
@@ -216,3 +216,25 @@ Correction (2026-10-14): the panel found the muse-code half untested and the sup
   - [x] **Step 2: Check the setup took**: each trial's `prompt.md` is `review-plain`, its `output.md` has a `####` severity section and names a path the case's diff touches, and the run has no infra error (a run with one is re-run once whole).
   - [x] **Step 3: Compare** with the flow muse-spark-1.3 low primary review run: `go run ./cmd/flow-eval compare <id> --baseline 20261013T163922Z-review-muse-code-muse-spark-1.3-low` (exit 0, 1 and 3 are verdicts; 2 is a failure). <!-- verified: that run's header carries slot primary, k 3 and case set 4a69b489…, the same as the no-flow claude-code review run's @ e07672e -->
   - [x] **Step 4: Lint and commit** the run's files, its compare and `runs/index.html` with the subject above; body: passes/k, role score and the compare verdict line. No `baseline set`.
+
+- [x] 7. Re-make the haiku-low no-flow impl and visual runs on the fixed code, with their compares
+
+**Build:** green
+**Files:** `runs/index.html`
+**Allowed-collateral:** `runs/*`
+**Tests:** **none** — eval runs, no code.
+**Regression:** none — records measurements.
+**Commit:** `chore(runs): re-make the haiku-low no-flow impl and visual runs on the round-1 fix`
+**After:** Task 4, 6
+
+**Decision:** no-flow-plain-spec, no-flow-runs-no-baseline
+
+The self-review pass found Task 4's impl run `20261014T145133Z-impl-no-flow-claude-code-claude-haiku-5-5-low` and visual run `20261014T150808Z-visual-no-flow-claude-code-claude-haiku-5-5-low` made before fix-round 1 (flow-eval `ede5a0c`): their headers carry `"prompt_pin":"dc185c68…"` where a no-flow run's is empty, and the impl trials' `/case` still held `task.md`. <!-- verified: head -1 of both .jsonl files @ 723b8b0; the review run 20261014T152014Z and the muse runs carry an empty pin -->
+
+  - [x] **Step 1: Delete** both runs whole — each `runs/<id>.jsonl`, `.md`, `.html`, `runs/<id>/` and its `runs/<id>-vs-<base>.md` compare.
+  - [x] **Step 2: Run** from the worktree root, one at a time, as `zsh -ic '<command>'`, exactly as Task 4 step 1:
+    - `go run ./cmd/flow-eval run --role impl --no-flow --harness claude-code --model claude-haiku-5-5 --effort low -k 3 --repos /Users/tweety53/Projects`
+    - `go run ./cmd/flow-eval run --role visual --no-flow --harness claude-code --model claude-haiku-5-5 --effort low -k 3 --repos /Users/tweety53/Projects`
+  - [x] **Step 3: Check the setup took**: each header's `prompt_pin` is empty, each impl trial's `/case` holds no `task.md` or `context.md`, and no trial has an infra error (a run with one is re-run once whole).
+  - [x] **Step 4: Compare** as Task 4 step 4: impl against `20261013T112730Z-impl-claude-code-claude-haiku-5-5-low`, visual against `20261013T114239Z-visual-claude-code-claude-haiku-5-5-low` (exit 0, 1 and 3 are verdicts; 2 is a failure).
+  - [x] **Step 5: Lint and commit** the deletions, both runs' files, their compares and `runs/index.html` with the subject above; body: per role, passes/k and the compare verdict line. No `baseline set`.

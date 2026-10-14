@@ -20,3 +20,7 @@ KAN-980.
 ## Fix 1 (2026-10-14)
 
 - `--no-flow --role review` also runs on `muse-code`. Muse Code ships no review skill or command, so its no-flow review is a plain request to review the working tree's diff, with the same one format sentence the grader reads; codex stays refused. One `muse-spark-1.3` low k=3 run is committed with its compare against the flow muse-spark-1.3 low primary review run.
+
+## Fix 2 (2026-10-14)
+
+- The committed haiku-low no-flow impl and visual runs predate fix-round 1 (flow pin in the header, `task.md` in the impl `/case`); both are re-made on the fixed code with their compares.

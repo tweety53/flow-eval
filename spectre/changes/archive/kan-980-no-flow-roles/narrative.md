@@ -27,3 +27,17 @@ Operator asked for no-flow review on muse-code after the muse-spark-1.3 low no-f
 - Unfinished-work gate clear: every plan item checked, no finding open; visual verify not configured.
 - No rebase: `origin/main` has not moved since the recorded merge base `c97af3d`.
 - Route: merge and push, the project's configured default, not asked.
+
+## 2026-10-14 — fix run
+
+- **Why.** The integrate run's self-review stopped the landing: Task 4's haiku-low no-flow impl (`20261014T145133Z`) and visual (`20261014T150808Z`) runs were made at `ede5a0c`, before fix-round 1 — flow prompt pin in their headers, `task.md` still in the impl `/case`. The earlier narrative's "no transcript read `/case/task.md`, so the measurements stand" was a judgement the pass rejected; re-making them was cheaper than defending it.
+- **Re-made runs (Task 7).** impl `20261014T170812Z`: 3/3, 100.0 vs flow 100.0, non-inferior, cost/pass $0.0458 (was $0.0452). visual `20261014T172559Z`: 3/3, 100.0 vs flow 100.0, non-inferior, cost/pass $0.0021 (was $0.0019). Both headers carry an empty pin and flow-eval `5afa6f2`; no transcript names `task.md` or `context.md`; no infra error. The verdicts did not move.
+- **Panel round 4.** Append scope (136 changed lines since the archive commit `723b8b0` — integrate's reshape replaced every pre-reshape close sha, so the reshaped archive commit stood in as the since-close sha). primary raised one Minor, F9: a no-flow run's report rendered its empty pin as a bare empty code span. Fixed inline (`5917f9c`) with `TestReportNamesAnEmptyPromptPinNone`, and the six committed no-flow run reports rewritten by `sed` on their pin line rather than re-run — `Repaint` only repaints HTML, and the line is a pure function of the header.
+- **Reproducer bound to text, again.** F9's reproducer declared `run.go:974`'s old format string as a premise, so on the fixed tree it exits 2 (premise missing), not 0 — the same `pcPremiseAudit` gap the self-review already filed for the agents repo.
+- **Plan shape.** Task 7 first named only Task 4 in `**After:**`; `check-plan-shape.sh` refused it for sharing `runs/index.html` with Task 6, repaired to `Task 4, 6`.
+
+## 2026-10-14 — integrate run
+
+- Second integrate run, after the fix run that re-made Task 4's runs and fixed F9.
+- Preflight clean; unfinished-work gate clear; no rebase (`origin/main` still at `c97af3d`).
+- Route: merge and push, the project's configured default, not asked.
