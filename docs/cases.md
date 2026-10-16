@@ -27,7 +27,8 @@ What it mines, from `<plan-repo>/spectre/changes/archive/<change>/`:
 
 - **The reference commit**: the commit of the last `ledger.md` dispatch with `Role: implementer`
   and `Task: <n>` whose `Key` is not a fix round (`-fix-`): a fix round's parent already holds the
-  task's answer. Its parent is the case's `snapshot`, the commit the trial's `/work` starts from.
+  task's answer. A cross-repository `Commit:` map, `<worktree>=<sha>[,…]`, gives the sha that is a
+  commit in `--repo`. Its parent is the case's `snapshot`, the commit the trial's `/work` starts from.
 - **`task.md`**: task `n`'s section of `tasks.md`, from its checkbox line to the next task's.
 - **`context.md`**: `proposal.md` then `design.md`.
 - `tasks.md`, `proposal.md` and `design.md` are read as they stood at the snapshot, from

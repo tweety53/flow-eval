@@ -82,7 +82,7 @@ type VisualDraft struct {
 // the draft directory, and refuses to overwrite an existing one.
 func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (string, error) {
 	art := filepath.Join(planRepo, _archive, change)
-	ledger, err := readLedger(art)
+	ledger, err := readLedger(ctx, art, repo)
 	if err != nil {
 		return "", err
 	}
@@ -215,7 +215,7 @@ func planAt(ctx context.Context, repo, ref, planRepo, change string) (string, er
 // existing one.
 func Review(ctx context.Context, root, repo, planRepo, change string) (string, error) {
 	art := filepath.Join(planRepo, _archive, change)
-	ledger, err := readLedger(art)
+	ledger, err := readLedger(ctx, art, repo)
 	if err != nil {
 		return "", err
 	}
@@ -402,8 +402,10 @@ func marshal(v any) ([]byte, error) {
 // dispatch is one ledger.md row's fields that mining reads; commit is empty for "no commit".
 type dispatch struct{ task, role, key, commit string }
 
-// readLedger parses the dispatches of art/ledger.md in ledger order.
-func readLedger(art string) ([]dispatch, error) {
+// readLedger parses the dispatches of art/ledger.md in ledger order. A cross-repository commit map,
+// `<worktree>=<sha>[,<worktree>=<sha>…]`, keeps the sha that is a commit in repo; a map with none
+// there reads as no commit — that dispatch committed to another repository only.
+func readLedger(ctx context.Context, art, repo string) ([]dispatch, error) {
 	raw, err := os.ReadFile(filepath.Join(art, "ledger.md"))
 	if err != nil {
 		return nil, err
@@ -422,13 +424,28 @@ func readLedger(art string) ([]dispatch, error) {
 				d.key = value
 			case "- Commit":
 				if value != "no commit" {
-					d.commit = value
+					d.commit = commitIn(ctx, repo, value)
 				}
 			}
 		}
 		out = append(out, d)
 	}
 	return out, nil
+}
+
+// commitIn returns the sha of a ledger Commit value that names a commit in repo: the value itself
+// when it is no map, else the first pair's sha that resolves there, or "" when none does.
+func commitIn(ctx context.Context, repo, value string) string {
+	if !strings.Contains(value, "=") {
+		return value
+	}
+	for pair := range strings.SplitSeq(value, ",") {
+		_, sha, _ := strings.Cut(strings.TrimSpace(pair), "=")
+		if _, err := gitOut(ctx, repo, "rev-parse", "--verify", "--quiet", sha+"^{commit}"); err == nil {
+			return sha
+		}
+	}
+	return ""
 }
 
 var (

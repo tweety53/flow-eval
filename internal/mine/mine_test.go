@@ -280,6 +280,21 @@ func TestMineImplFromLedger(t *testing.T) {
 			t.Errorf("heldout.patch records a rename, which the grader's reset cannot undo:\n%s", patch)
 		}
 	})
+	t.Run("a cross-repository commit map yields the sha that is a commit in the code checkout", func(t *testing.T) {
+		f := newFixture(t, nil)
+		ref := f.commits[1]
+		ledger := filepath.Join(f.repo, "spectre/changes/archive", _change, "ledger.md")
+		writeFiles(t, filepath.Dir(ledger), map[string]string{"ledger.md": readFile(t, ledger) +
+			"\n## Dispatch 97\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer-retry\n- Commit: /wt/gymie=" +
+			strings.Repeat("e", 40) + ",/wt/gymie-frontend=" + ref[:8] + "\n"})
+		root := t.TempDir()
+		if _, err := Impl(t.Context(), root, f.repo, f.repo, _change, 1); err != nil {
+			t.Fatal(err)
+		}
+		if c := loadOne(t, root, "impl"); c.Snapshot != f.commits[0] {
+			t.Errorf("snapshot %s, want the mapped commit's parent %s", c.Snapshot, f.commits[0])
+		}
+	})
 	t.Run("a fix round's commit is never the reference", func(t *testing.T) {
 		f := newFixture(t, nil)
 		ledger := filepath.Join(f.repo, "spectre/changes/archive", _change, "ledger.md")
