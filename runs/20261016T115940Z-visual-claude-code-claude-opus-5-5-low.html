@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Run 20261016T115940Z-visual-claude-code-claude-opus-5-5-low</title>
+<style>:root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --panel: #f5f5f7; --pass: #1a7f37; --fail: #cf222e; --warn: #9a6700;
+  --row-ok: #dafbe1; --row-partial: #fff8c5; --row-fail: #ffebe9; --row-better: #ddf4ff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161618; --fg: #f5f5f7; --muted: #a1a1a6; --line: #3a3a3c; --panel: #222225; --pass: #3fb950; --fail: #f85149; --warn: #d29922;
+    --row-ok: #1b3022; --row-partial: #352f17; --row-fail: #3d1d20; --row-better: #172c45; }
+}
+body { margin: 0 auto; max-width: 1200px; padding: 24px 16px; background: var(--bg); color: var(--fg);
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h1 { font-size: 20px; margin: 0 0 16px; word-break: break-all; }
+h2 { font-size: 16px; margin: 32px 0 8px; }
+h3 { font-size: 14px; margin: 0; }
+dl.header { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+.score { font-size: 28px; font-weight: 600; }
+.muted { color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; }
+.row-ok { background: var(--row-ok); }
+.row-partial { background: var(--row-partial); }
+.row-fail { background: var(--row-fail); }
+.row-better { background: var(--row-better); }
+.legend span { padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.trial { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+.trial.pass { border-left: 4px solid var(--pass); }
+.trial.fail { border-left: 4px solid var(--fail); }
+.trial.infra { border-left: 4px solid var(--warn); }
+.verdict { font-weight: 600; }
+.pass .verdict { color: var(--pass); }
+.fail .verdict { color: var(--fail); }
+.infra .verdict { color: var(--warn); }
+td.gain { color: var(--pass); font-weight: 600; }
+td.loss { color: var(--fail); font-weight: 600; }
+.error { color: var(--fail); white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; }
+dl.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px; margin: 8px 0; }
+dl.metrics div { display: flex; gap: 8px; min-width: 0; }
+dl.metrics dd { overflow-wrap: anywhere; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--muted); }
+pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: auto; max-height: 600px; margin: 4px 0; }
+nav { margin: 0 0 16px; }
+nav ul { margin: 4px 0; padding-left: 20px; }
+a { color: inherit; }
+</style>
+</head>
+<body>
+<nav><a href="index.html">← all runs</a></nav>
+<h1>Run 20261016T115940Z-visual-claude-code-claude-opus-5-5-low</h1>
+<dl class="header">
+<dt>role</dt><dd>visual</dd>
+<dt>harness</dt><dd>claude-code</dd>
+<dt>model</dt><dd>claude-opus-5-5</dd>
+<dt>served</dt><dd>claude-opus-5-5</dd>
+<dt>effort</dt><dd>low</dd>
+<dt>k</dt><dd>3</dd>
+<dt>judge</dt><dd>claude-code sonnet low</dd>
+<dt>prompt pin</dt><dd>dc185c68bbcfebeb3a96e2dadd5f665a59da3dd3</dd>
+<dt>case set</dt><dd>fb96a2a3ea0df5c4b419a0d2c47bc5054dbc5ca4475ca66cac38d759776adbad</dd>
+<dt>flow-eval</dt><dd>b9bf4e0e70a07066c19182f3cc6382f377755a5d</dd>
+<dt>started</dt><dd>2026-10-16T11:59:40Z</dd>
+</dl>
+
+<nav><strong>Contents</strong>
+<ul>
+<li><a href="#case-kan-939-cardio-p1">kan-939-cardio-p1</a> · <a href="#trial-kan-939-cardio-p1-1">trial 1</a> · <a href="#trial-kan-939-cardio-p1-2">trial 2</a> · <a href="#trial-kan-939-cardio-p1-3">trial 3</a></li>
+</ul></nav>
+
+<h2>Role score</h2>
+<p><span class="score">100.0</span> <span class="muted">balanced accuracy: mean of each labelled verdict&#39;s mean case score, infra errors excluded</span></p>
+
+<h2>Cases</h2>
+<p class="legend"><span class="row-ok">every valid trial passed</span><span class="row-partial">some passed</span><span class="row-fail">none passed</span><span class="row-better">beats the role's baseline run</span></p>
+<div class="table"><table>
+<tr><th>case</th><th>valid/k</th><th>passes</th><th>pass^k</th><th>score</th><th>stddev</th><th>cost/pass</th><th>cost</th><th>mean wall s</th><th>tokens</th><th>judge cost</th></tr>
+<tr id="case-kan-939-cardio-p1" class="row-ok"><td>kan-939-cardio-p1</td><td>3/3</td><td>3</td><td>yes</td><td>100.0</td><td>0.0</td><td>$0.1330</td><td>$0.3991</td><td>17.5</td><td>152216</td><td>$0.4030</td></tr>
+</table></div>
+
+<h2>Trials</h2>
+<section id="trial-kan-939-cardio-p1-1" class="trial pass">
+<h3>kan-939-cardio-p1 · trial 1 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9998769230769231</dd></div>
+<div><dt>cache_read</dt><dd>32496</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>15723</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.15359920000000002</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>1065</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>25954</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>17</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1535992</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-opus-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>1</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:0.6666666666666666}</dd></div>
+<div><dt>wall_ms</dt><dd>18820</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9969278033794163</dd></div>
+<div><dt>cache_read</dt><dd>12980</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>44223</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.1789</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>40</dd></div>
+<div><dt>output</dt><dd>63</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1789</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>20</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>The capture does not match the mockup. I compared the two images by eye only: the band and seam measurement didn&#39;t run, because the output parser I piped it into (`python3`) isn&#39;t installed. The differences below are clear at full-page scale, so the measurements wouldn&#39;t change the verdict. A control-level matrix was not done.
+
+- defect: The top bar in the capture has a grey fill and a hairline under it. The mockup&#39;s header sits on the page background with no rule.
+- defect: The back button in the capture is an arrow (←). The mockup draws a chevron (‹).
+- defect: The date line reads &#34;Fri 9 Oct&#34; in the capture. The mockup shows &#34;Fri 9 Oct · 18:30&#34;, so the time is missing.
+- defect: The work step reads only &#34;800 m&#34; in the capture. The mockup&#39;s &#34;@ 4:00–4:10 /km&#34; pace target is missing.
+- defect: The &#34;last time&#34; summary in the capture shows only &#34;31:40&#34;. The mockup shows &#34;4.9 km · 31:40 · 6:28 /km · 152 bpm · effort 7&#34;, so distance, pace, heart rate and effort are missing.
+- defect: Inside the repeat card, the capture indents the &#34;6×&#34; header and the work/recover rows (with their dividers) further right than the mockup. In the mockup &#34;6×&#34; sits at about x=64 and the rows at about x=88; in the capture they&#39;re at about x=88 and x=136.
+- defect: The hairline under the repeat card (above &#34;Cool-down&#34;) is missing in the capture.
+- defect: Vertical spacing is larger throughout the capture. &#34;Planned&#34;, the stats, the warm-up, the card and its rows sit lower, and the card runs from about y=655–1020 against about y=575–890 in the mockup.
+- defect: The DISTANCE stat column starts at about x=325 in the capture, against about x=280 in the mockup, so the gap between the two stats is wider.
+- defect: The section-header rules beside &#34;OUTDOOR RUN · INTERVALS&#34; and &#34;LAST TIME · TUE 29 SEP&#34; start at different x positions. The kicker text is also wider-tracked in the capture.
+- defect: The bottom action bar&#39;s divider and buttons sit at different heights: the buttons are about 1488–1584 in the capture against 1496–1584 in the mockup.
+
+The &#34;Start → P2 / Log result → L1&#34; chips in the mockup are frame annotations, not app content, so their absence from the capture is not a defect.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261016T115940Z-visual-claude-code-claude-opus-5-5-low/kan-939-cardio-p1/1/transcript.jsonl</p>
+</section>
+<section id="trial-kan-939-cardio-p1-2" class="trial pass">
+<h3>kan-939-cardio-p1 · trial 2 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9998769230769231</dd></div>
+<div><dt>cache_read</dt><dd>32496</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>17791</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.16936320000000002</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>1026</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>28022</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>21</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1693632</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-opus-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:1}</dd></div>
+<div><dt>wall_ms</dt><dd>19553</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9969278033794163</dd></div>
+<div><dt>cache_read</dt><dd>5841</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>20137</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0814681</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>18</dd></div>
+<div><dt>output</dt><dd>30</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0814681</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>9</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>I compared the two images directly and ran the script&#39;s band and seam pairing (`bands,seams`, `--scale 1`). The differences are large enough to see without measuring each control, so I didn&#39;t build the full per-element table.
+
+- defect: Header bar: the capture fills it with a grey surface and puts a hairline under it (one 104px band starting at top 0). The mockup has the header on the page colour with no hairline. The back icon is also different: an arrow in the capture, a chevron in the mockup.
+- defect: Date line: the capture reads &#34;Fri 9 Oct&#34; where the mockup reads &#34;Fri 9 Oct · 18:30&#34;, so the time is missing.
+- defect: Vertical rhythm: the capture is stretched out from the date row down. The PLANNED figures sit about 30px lower, WARM-UP about 60px lower, the repeat card starts at about 655 instead of 575, and COOL-DOWN is at about 1065 instead of 920. The gaps between sections are larger throughout.
+- defect: Planned figures: the &#34;4.8 km / DISTANCE&#34; column starts at x≈325 in the capture and x≈280 in the mockup, so the gap between the two columns is wider.
+- defect: Repeat card: everything inside is pushed further right. &#34;6×&#34; starts at about 88 instead of 64, the sub-rows and their dividers start at about 136 instead of 88, and the space between &#34;6×&#34; and REPEAT is wider. The chevron sits at about 676 instead of 692.
+- defect: Work row: the capture shows &#34;800 m&#34; but drops the &#34;@ 4:00–4:10 /km&#34; pace.
+- defect: Cool-down: the mockup has a hairline across the full width (x 40–736) just above COOL-DOWN, under the card. The capture has no such line.
+- defect: Last-time summary: the capture shows only &#34;31:40&#34; where the mockup shows &#34;4.9 km · 31:40 · 6:28 /km · 152 bpm · effort 7&#34;. Distance, pace, heart rate and effort are all missing.
+- defect: Last-time heading: in the capture &#34;LAST TIME · TUE 29 SEP&#34; is smaller and lighter than in the mockup&#39;s heading.
+- defect: Bottom bar: the action buttons sit a few pixels higher in the capture (top about 1488 against 1496), with a different gap below the divider. The mockup&#39;s &#34;Start → P2 / Log result → L1&#34; chips are frame annotations, not a departure.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261016T115940Z-visual-claude-code-claude-opus-5-5-low/kan-939-cardio-p1/2/transcript.jsonl</p>
+</section>
+<section id="trial-kan-939-cardio-p1-3" class="trial pass">
+<h3>kan-939-cardio-p1 · trial 3 · <span class="verdict">pass</span> · score 100.0</h3>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9999101890520454</dd></div>
+<div><dt>cache_read</dt><dd>44534</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>6186</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.0761508</dd></div>
+<div><dt>egress_denied</dt><dd>1</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>4</dd></div>
+<div><dt>output</dt><dd>887</dd></div>
+<div><dt>passed</dt><dd>true</dd></div>
+<div><dt>peak_context_tokens</dt><dd>28455</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.0761508</dd></div>
+<div><dt>score</dt><dd>100</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-opus-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{&#34;Bash&#34;:1,&#34;Read&#34;:2}</dd></div>
+<div><dt>tool_calls_total</dt><dd>3</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>4</dd></div>
+<div><dt>visual</dt><dd>{&#34;label&#34;:&#34;mismatch&#34;,&#34;correct&#34;:true,&#34;false_pass&#34;:false,&#34;localization&#34;:0.6666666666666666}</dd></div>
+<div><dt>wall_ms</dt><dd>14033</dd></div>
+</dl>
+<details><summary>judge usage (not charged to the trial)</summary>
+<dl class="metrics">
+<div><dt>api_errors</dt><dd>0</dd></div>
+<div><dt>cache_hit_ratio</dt><dd>0.9969278033794163</dd></div>
+<div><dt>cache_read</dt><dd>10384</dd></div>
+<div><dt>cache_write</dt><dd>0</dd></div>
+<div><dt>cache_write_1h</dt><dd>35248</dd></div>
+<div><dt>compactions</dt><dd>0</dd></div>
+<div><dt>cost_usd</dt><dd>0.14259439999999998</dd></div>
+<div><dt>egress_denied</dt><dd>0</dd></div>
+<div><dt>first_edit_tool_call</dt><dd>0</dd></div>
+<div><dt>infra_error</dt><dd>false</dd></div>
+<div><dt>input</dt><dd>32</dd></div>
+<div><dt>output</dt><dd>50</dd></div>
+<div><dt>passed</dt><dd>false</dd></div>
+<div><dt>peak_context_tokens</dt><dd>0</dd></div>
+<div><dt>permission_denials</dt><dd>0</dd></div>
+<div><dt>reasoning</dt><dd>0</dd></div>
+<div><dt>reported_cost_usd</dt><dd>0.1425944</dd></div>
+<div><dt>score</dt><dd>0</dd></div>
+<div><dt>served_matches_requested</dt><dd>true</dd></div>
+<div><dt>served_model</dt><dd>claude-sonnet-5-5</dd></div>
+<div><dt>timed_out</dt><dd>false</dd></div>
+<div><dt>tool_calls</dt><dd>{}</dd></div>
+<div><dt>tool_calls_total</dt><dd>0</dd></div>
+<div><dt>tool_errors</dt><dd>0</dd></div>
+<div><dt>turns</dt><dd>16</dd></div>
+<div><dt>wall_ms</dt><dd>0</dd></div>
+</dl>
+</details>
+<details><summary>output.md</summary><pre>Clear departures are visible, and the band pairing backs them up.
+
+- defect: The top app bar is a filled grey band 104px tall with a bottom hairline. The frame has no bar fill and no hairline here; its title sits on the page background.
+- defect: The back icon is a plain arrow (←). The frame draws a chevron (‹).
+- defect: The date/time row reads &#34;Fri 9 Oct&#34;. The frame reads &#34;Fri 9 Oct · 18:30&#34;, so the time is missing.
+- defect: The vertical rhythm is looser throughout, so every section sits lower than in the frame. The PLANNED figures are at y≈368 against 338, WARM-UP at 542 against 484, the repeat card at about 655 against 575, and COOL-DOWN at about 1060 against 920. Gaps above bands are also larger, for example 90 against 67 before WARM-UP.
+- defect: In the stats row, the DISTANCE column starts at x≈325. In the frame it starts at x≈280.
+- defect: Inside the repeat card, &#34;6×&#34; is inset at x≈88 against 64. The work and recover rows and their dividers are inset at x≈136 against 88.
+- defect: The work row reads only &#34;800 m&#34;. The frame reads &#34;800 m @ 4:00–4:10 /km&#34;, so the pace target is missing.
+- defect: The hairline under the repeat card, above COOL-DOWN at y≈902 in the frame, is missing from the capture.
+- defect: The &#34;LAST TIME · TUE 29 SEP&#34; heading is smaller and lighter than the frame&#39;s.
+- defect: The last-time summary reads only &#34;31:40&#34;. The frame reads &#34;4.9 km · 31:40 · 6:28 /km · 152 bpm · effort 7&#34;, so distance, pace, heart rate and effort are missing.
+- defect: The bottom action buttons are shorter, starting at y≈1488 against 1496, and their label text is smaller than in the frame.
+
+The &#34;Start → P2 / Log result → L1&#34; chips in the frame are mockup annotations, not app content, so their absence is not a defect.
+
+verdict: mismatch</pre></details>
+<p class="muted">transcript: 20261016T115940Z-visual-claude-code-claude-opus-5-5-low/kan-939-cardio-p1/3/transcript.jsonl</p>
+</section>
+</body>
+</html>

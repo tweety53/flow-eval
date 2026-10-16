@@ -1,0 +1,13 @@
+The capture does not match the mockup. The band pairing found only 9 of the frame's 25 bands paired, so the layout differs wholesale. I compared the two images visually and read the band and seam output. I did not run the per-control sweeps or fill the full element matrix.
+
+- defect: The capture has a grey app bar (a 104px filled band, `#eae9e9`, with a bottom border) that the mockup does not draw. The mockup's header sits on the page background. The title text is smaller and shifted. The back arrow is a different glyph (a long arrow versus a chevron). "Planned" and the overflow menu sit about 8px further right.
+- defect: The date row reads "Fri 9 Oct" and the mockup reads "Fri 9 Oct · 18:30". The time is missing, and the text is smaller. This is a wrong run, not a data difference.
+- defect: Vertical rhythm is stretched. In the capture the date sits 9px lower, the PLANNED label 13px lower, the figures 30px lower, and the lower sections progressively further down (gap_above deltas of 8, 4 and 16px on the first three paired bands). The "32 min" and "4.8 km" figures are also positioned differently: the second figure starts at x=325 in the capture and x=280 in the mockup. The mockup's figures are larger.
+- defect: The 6× REPEAT card is restructured. In the mockup the card is inset 40px on the left, with "6×" at x=64 and a divider spanning 40 to 736. The capture indents the "6×" to x=88 and the internal dividers start at x=136, where the mockup's start at x=88. The chevron is at x=676, where the mockup's is at x=692. The card is also taller, and the mockup's rounded bottom corners are not visible.
+- defect: The WORK row is missing its pace. The mockup reads "800 m @ 4:00–4:10 /km" and the capture reads only "800 m". This is a wrong run.
+- defect: The mockup has a divider at y=902 below the card, spanning x=40 to 736, above COOL-DOWN. The capture has no such rule.
+- defect: The LAST TIME section differs. The label is smaller and its trailing rule starts at x=425, where the mockup's starts at x=437. The title is positioned differently. The summary line "4.9 km · 31:40 · 6:28 /km · 152 bpm · effort 7" is replaced by only "31:40". This is truncated content.
+- defect: The mockup draws "Start → P2" and "Log result → L1" annotation chips at y=1430, and the capture does not. These chips are outside the app's own ink, so they may be frame annotations and not a departure. I did not settle this.
+- defect: The bottom action bar is 8px higher in the capture (rule at y=1462, mockup 1470). The buttons are 96px tall, where the mockup's are 88px. The button labels are smaller and use a different weight.
+
+verdict: mismatch

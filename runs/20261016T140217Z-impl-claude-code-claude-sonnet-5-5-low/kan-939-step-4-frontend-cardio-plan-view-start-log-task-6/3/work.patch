@@ -1,0 +1,614 @@
+diff --git a/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioActivity.kt b/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioActivity.kt
+index 3ba502e..c98bd65 100644
+--- a/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioActivity.kt
++++ b/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioActivity.kt
+@@ -62,6 +62,9 @@ enum class CardioActivity(
+     ),
+     ;
+ 
++    /** The log sheet's fields in sheet order (KAN-939 `log-fields-table`), the backend's sets. */
++    val logFields: List<CardioLogField> get() = logFieldsOf(this)
++
+     val isRide: Boolean get() = this == OUTDOOR_RIDE || this == INDOOR_RIDE
+ }
+ 
+diff --git a/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogDraft.kt b/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogDraft.kt
+new file mode 100644
+index 0000000..f62cb3c
+--- /dev/null
++++ b/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogDraft.kt
+@@ -0,0 +1,299 @@
++package com.gymie.shared.cardio
++
++import com.gymie.shared.cardio.CardioLogField.AVG_CADENCE
++import com.gymie.shared.cardio.CardioLogField.AVG_HEART_RATE
++import com.gymie.shared.cardio.CardioLogField.AVG_PACE
++import com.gymie.shared.cardio.CardioLogField.AVG_POWER
++import com.gymie.shared.cardio.CardioLogField.AVG_SPEED
++import com.gymie.shared.cardio.CardioLogField.CALORIES
++import com.gymie.shared.cardio.CardioLogField.DISTANCE
++import com.gymie.shared.cardio.CardioLogField.DURATION
++import com.gymie.shared.cardio.CardioLogField.EFFORT
++import com.gymie.shared.cardio.CardioLogField.ELEVATION_GAIN
++import com.gymie.shared.cardio.CardioLogField.MAX_HEART_RATE
++import com.gymie.shared.cardio.CardioLogField.NOTE
++import com.gymie.shared.cardio.shorthand.clock
++import com.gymie.shared.cardio.shorthand.hourClock
++import com.gymie.shared.domain.WorkoutStatus
++import kotlin.math.roundToLong
++import kotlin.time.Instant
++
++private const val HOUR = 3600
++private const val MAX_DURATION = 86400
++private const val MAX_DISTANCE_KM = 1000.0
++private const val THOUSAND = 1000.0
++
++private val DURATION_SHAPE = Regex("""(?:(\d{1,5}):([0-5]\d)|(\d{1,5}):([0-5]\d):([0-5]\d))""")
++
++/** An integer field's backend range; the rower's cadence is stricter (`client-ranges`). */
++private fun intRange(
++    field: CardioLogField,
++    activity: CardioActivity,
++): IntRange =
++    when (field) {
++        AVG_HEART_RATE, MAX_HEART_RATE -> 30..250
++        CALORIES -> 0..20000
++        ELEVATION_GAIN -> 0..20000
++        AVG_CADENCE -> if (activity == CardioActivity.ROWER) 10..60 else 1..250
++        AVG_POWER -> 1..2500
++        else -> error("$field is not an integer field")
++    }
++
++private fun unitOf(field: CardioLogField): String =
++    when (field) {
++        AVG_HEART_RATE, MAX_HEART_RATE -> "bpm"
++        CALORIES -> "kcal"
++        AVG_CADENCE -> "spm"
++        AVG_POWER -> "W"
++        else -> ""
++    }
++
++/** `m:ss` or `h:mm:ss` to whole seconds; null for any other shape. */
++internal fun parseClock(text: String): Int? {
++    val m = DURATION_SHAPE.matchEntire(text.trim()) ?: return null
++    val g = m.groupValues
++    return if (g[1].isNotEmpty()) {
++        g[1].toInt() * 60 + g[2].toInt()
++    } else {
++        g[3].toInt() * HOUR + g[4].toInt() * 60 + g[5].toInt()
++    }
++}
++
++private fun number(value: Double): String =
++    if (value ==
++        value.roundToLong().toDouble()
++    ) {
++        value.roundToLong().toString()
++    } else {
++        value.toString()
++    }
++
++private fun paceText(seconds: Int) = clock(seconds)
++
++/**
++ * The log sheet's state (KAN-939): typed text per field, the effort and note, and which fields the
++ * user has left. Errors are always computable; [shownError] holds them back until a field was left.
++ */
++data class CardioLogDraft(
++    val activity: CardioActivity,
++    val units: DistanceUnit,
++    val texts: Map<CardioLogField, String> = emptyMap(),
++    val effort: Int? = null,
++    val note: String = "",
++    val left: Set<CardioLogField> = emptySet(),
++) {
++    private val distanceUnit get() = if (activity == CardioActivity.ROWER) DistanceUnit.M else units
++    private val paceBasis get() =
++        if (activity == CardioActivity.ROWER) {
++            "500 m"
++        } else if (units == DistanceUnit.MI) {
++            "mi"
++        } else {
++            "km"
++        }
++
++    fun text(field: CardioLogField): String =
++        when (field) {
++            EFFORT -> effort?.toString() ?: ""
++            NOTE -> note
++            else -> texts[field] ?: ""
++        }
++
++    fun with(
++        field: CardioLogField,
++        value: String,
++    ): CardioLogDraft =
++        when (field) {
++            EFFORT -> copy(effort = value.toIntOrNull())
++            NOTE -> copy(note = value)
++            else -> copy(texts = texts + (field to value))
++        }
++
++    fun left(field: CardioLogField): CardioLogDraft = copy(left = left + field)
++
++    fun shownError(field: CardioLogField): String? = if (field in left) errors()[field] else null
++
++    private fun durationSeconds(): Int? = parseClock(text(DURATION))
++
++    private fun distance(): CardioDistance? =
++        text(DISTANCE)
++            .trim()
++            .toDoubleOrNull()
++            ?.takeIf {
++                it > 0
++            }?.let { CardioDistance(it, distanceUnit) }
++
++    private fun paceTyped(): Int? = parseClock(text(AVG_PACE))?.takeIf { text(AVG_PACE).count { c -> c == ':' } == 1 }
++
++    private fun speedTyped(): Double? = text(AVG_SPEED).trim().toDoubleOrNull()
++
++    private fun int(field: CardioLogField): Int? = text(field).trim().toIntOrNull()
++
++    fun errors(): Map<CardioLogField, String> {
++        val out = linkedMapOf<CardioLogField, String>()
++        for (field in activity.logFields) {
++            val message = if (text(field).isBlank()) null else check(field)
++            if (message != null) out[field] = message
++        }
++        return out
++    }
++
++    private fun check(field: CardioLogField): String? =
++        when (field) {
++            DURATION -> {
++                durationError()
++            }
++
++            DISTANCE -> {
++                distanceError()
++            }
++
++            AVG_PACE -> {
++                paceError()
++            }
++
++            AVG_SPEED -> {
++                if (speedTyped()?.let { it in 0.1..120.0 } ==
++                    true
++                ) {
++                    null
++                } else {
++                    "between 0.1 and 120 ${if (units == DistanceUnit.MI) "mph" else "km/h"}"
++                }
++            }
++
++            EFFORT, NOTE -> {
++                null
++            }
++
++            MAX_HEART_RATE -> {
++                intError(field) ?: maxBelowAvg()
++            }
++
++            else -> {
++                intError(field)
++            }
++        }
++
++    private fun durationError(): String? {
++        val s = durationSeconds() ?: return "use h:mm:ss"
++        return if (s in 1..MAX_DURATION) null else "between 0:01 and 24:00:00"
++    }
++
++    private fun distanceError(): String? {
++        val max = if (activity == CardioActivity.ROWER) MAX_DISTANCE_KM * THOUSAND else MAX_DISTANCE_KM * THOUSAND / units.metres
++        val unit =
++            if (activity == CardioActivity.ROWER) {
++                "m"
++            } else if (units == DistanceUnit.MI) {
++                "mi"
++            } else {
++                "km"
++            }
++        val v = text(DISTANCE).trim().toDoubleOrNull()
++        return if (v != null && v > 0 && v < max) null else "between 0 and ${number(max)} $unit"
++    }
++
++    private fun paceError(): String? {
++        val max = if (activity == CardioActivity.ROWER) 600 else 3600
++        val s = paceTyped()
++        return if (s != null && s in 60..max) null else "between ${paceText(60)} and ${paceText(max)} /$paceBasis"
++    }
++
++    private fun intError(field: CardioLogField): String? {
++        val range = intRange(field, activity)
++        val v = int(field)
++        return if (v != null && v in range) null else "between ${range.first} and ${range.last} ${unitOf(field)}".trimEnd()
++    }
++
++    private fun maxBelowAvg(): String? {
++        val avg = int(AVG_HEART_RATE)
++        val max = int(MAX_HEART_RATE)
++        return if (avg != null && max != null && max < avg) "max heart rate is below average" else null
++    }
++
++    val canSubmit: Boolean get() = durationSeconds() != null && errors().isEmpty()
++
++    /** The calculated pace or speed shown while the field is blank; null when typed or not computable. */
++    fun derived(field: CardioLogField): String? {
++        if (field !in activity.logFields || text(field).isNotBlank()) return null
++        return when (field) {
++            AVG_PACE -> {
++                CardioFormat
++                    .derivedPace(durationSeconds(), distance(), null, activity, units)
++                    ?.let(::paceText)
++            }
++
++            AVG_SPEED -> {
++                CardioFormat.derivedSpeed(durationSeconds(), distance(), null, units)?.toString()
++            }
++
++            else -> {
++                null
++            }
++        }
++    }
++
++    /** Typed fields and the effort; never the note (the workout's) and never a derived value. */
++    fun toRequest(): CardioLogRequest =
++        CardioLogRequest(
++            durationSeconds = checkNotNull(durationSeconds()) { "duration is required" },
++            distance = distance(),
++            avgPaceSeconds = paceTyped(),
++            avgSpeed = speedTyped(),
++            avgHeartRate = int(AVG_HEART_RATE),
++            maxHeartRate = int(MAX_HEART_RATE),
++            calories = int(CALORIES),
++            effort = effort,
++            elevationGain = int(ELEVATION_GAIN),
++            avgCadence = int(AVG_CADENCE),
++            avgPower = int(AVG_POWER),
++        )
++
++    companion object {
++        /** An empty draft; Duration holds the clock's whole seconds when the workout is in progress. */
++        fun fresh(
++            workout: CardioWorkout,
++            now: Instant,
++        ): CardioLogDraft {
++            val empty = CardioLogDraft(workout.activity, workout.distanceUnit, note = workout.notes.orEmpty())
++            val started = workout.startedAt
++            if (workout.status != WorkoutStatus.IN_PROGRESS || started == null) return empty
++            val seconds = (now - started).inWholeSeconds.toInt()
++            return if (seconds <= 0) empty else empty.with(DURATION, durationText(seconds))
++        }
++
++        /** A saved log as text; derived values stay unset so they recompute. */
++        fun of(workout: CardioWorkout): CardioLogDraft {
++            val base = CardioLogDraft(workout.activity, workout.distanceUnit, note = workout.notes.orEmpty())
++            val log = workout.log ?: return base
++            val shown = base.distanceUnit
++            val texts =
++                buildMap {
++                    put(DURATION, durationText(log.durationSeconds))
++                    log.distance?.let { d ->
++                        val v =
++                            if (d.unit ==
++                                shown
++                            ) {
++                                d.value
++                            } else {
++                                (d.value * d.unit.metres / shown.metres * THOUSAND).roundToLong() / THOUSAND
++                            }
++                        put(DISTANCE, number(v))
++                    }
++                    log.avgPaceSeconds?.let { put(AVG_PACE, paceText(it)) }
++                    log.avgSpeed?.let { put(AVG_SPEED, number(it)) }
++                    log.elevationGain?.let { put(ELEVATION_GAIN, it.toString()) }
++                    log.avgHeartRate?.let { put(AVG_HEART_RATE, it.toString()) }
++                    log.maxHeartRate?.let { put(MAX_HEART_RATE, it.toString()) }
++                    log.avgCadence?.let { put(AVG_CADENCE, it.toString()) }
++                    log.avgPower?.let { put(AVG_POWER, it.toString()) }
++                    log.calories?.let { put(CALORIES, it.toString()) }
++                }
++            return base.copy(texts = texts, effort = log.effort)
++        }
++
++        private fun durationText(seconds: Int) = if (seconds < HOUR) clock(seconds) else hourClock(seconds)
++    }
++}
+diff --git a/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogFields.kt b/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogFields.kt
+new file mode 100644
+index 0000000..04146ed
+--- /dev/null
++++ b/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogFields.kt
+@@ -0,0 +1,64 @@
++@file:Suppress("ktlint:standard:filename")
++
++package com.gymie.shared.cardio
++
++import com.gymie.shared.cardio.CardioLogField.AVG_CADENCE
++import com.gymie.shared.cardio.CardioLogField.AVG_HEART_RATE
++import com.gymie.shared.cardio.CardioLogField.AVG_PACE
++import com.gymie.shared.cardio.CardioLogField.AVG_POWER
++import com.gymie.shared.cardio.CardioLogField.AVG_SPEED
++import com.gymie.shared.cardio.CardioLogField.CALORIES
++import com.gymie.shared.cardio.CardioLogField.DISTANCE
++import com.gymie.shared.cardio.CardioLogField.DURATION
++import com.gymie.shared.cardio.CardioLogField.EFFORT
++import com.gymie.shared.cardio.CardioLogField.ELEVATION_GAIN
++import com.gymie.shared.cardio.CardioLogField.MAX_HEART_RATE
++import com.gymie.shared.cardio.CardioLogField.NOTE
++
++/** One input of the log sheet; which ones a sheet shows is [CardioActivity.logFields]. */
++enum class CardioLogField {
++    DURATION,
++    DISTANCE,
++    AVG_PACE,
++    AVG_SPEED,
++    ELEVATION_GAIN,
++    AVG_HEART_RATE,
++    MAX_HEART_RATE,
++    AVG_CADENCE,
++    AVG_POWER,
++    CALORIES,
++    EFFORT,
++    NOTE,
++}
++
++private val outdoorRun =
++    listOf(DURATION, DISTANCE, AVG_PACE, ELEVATION_GAIN, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, CALORIES, EFFORT, NOTE)
++private val outdoorRide =
++    listOf(DURATION, DISTANCE, AVG_SPEED, ELEVATION_GAIN, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, AVG_POWER, CALORIES, EFFORT, NOTE)
++
++internal fun logFieldsOf(activity: CardioActivity): List<CardioLogField> =
++    when (activity) {
++        CardioActivity.OUTDOOR_RUN -> {
++            outdoorRun
++        }
++
++        CardioActivity.TREADMILL_RUN -> {
++            outdoorRun.filter { it != ELEVATION_GAIN && it != AVG_CADENCE }
++        }
++
++        CardioActivity.OUTDOOR_RIDE -> {
++            outdoorRide
++        }
++
++        CardioActivity.INDOOR_RIDE -> {
++            outdoorRide.filter { it != ELEVATION_GAIN }
++        }
++
++        CardioActivity.ELLIPTICAL -> {
++            listOf(DURATION, DISTANCE, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, CALORIES, EFFORT, NOTE)
++        }
++
++        CardioActivity.ROWER -> {
++            listOf(DURATION, DISTANCE, AVG_PACE, AVG_POWER, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, CALORIES, EFFORT, NOTE)
++        }
++    }
+diff --git a/shared/src/commonTest/kotlin/com/gymie/shared/cardio/CardioLogDraftTest.kt b/shared/src/commonTest/kotlin/com/gymie/shared/cardio/CardioLogDraftTest.kt
+new file mode 100644
+index 0000000..6a708b4
+--- /dev/null
++++ b/shared/src/commonTest/kotlin/com/gymie/shared/cardio/CardioLogDraftTest.kt
+@@ -0,0 +1,219 @@
++package com.gymie.shared.cardio
++
++import com.gymie.shared.cardio.CardioLogField.AVG_CADENCE
++import com.gymie.shared.cardio.CardioLogField.AVG_HEART_RATE
++import com.gymie.shared.cardio.CardioLogField.AVG_PACE
++import com.gymie.shared.cardio.CardioLogField.AVG_POWER
++import com.gymie.shared.cardio.CardioLogField.AVG_SPEED
++import com.gymie.shared.cardio.CardioLogField.CALORIES
++import com.gymie.shared.cardio.CardioLogField.DISTANCE
++import com.gymie.shared.cardio.CardioLogField.DURATION
++import com.gymie.shared.cardio.CardioLogField.EFFORT
++import com.gymie.shared.cardio.CardioLogField.ELEVATION_GAIN
++import com.gymie.shared.cardio.CardioLogField.MAX_HEART_RATE
++import com.gymie.shared.cardio.CardioLogField.NOTE
++import com.gymie.shared.domain.WorkoutStatus
++import kotlinx.datetime.LocalDate
++import kotlin.test.Test
++import kotlin.test.assertEquals
++import kotlin.test.assertFalse
++import kotlin.test.assertNull
++import kotlin.test.assertTrue
++import kotlin.time.Instant
++
++class CardioLogDraftTest {
++    private fun workout(
++        activity: CardioActivity,
++        unit: DistanceUnit = DistanceUnit.KM,
++        status: WorkoutStatus = WorkoutStatus.PLANNED,
++        startedAt: Instant? = null,
++        log: CardioLog? = null,
++        notes: String? = null,
++    ) = CardioWorkout(
++        id = "w",
++        scheduledDate = LocalDate(2026, 5, 1),
++        displayName = "w",
++        notes = notes,
++        status = status,
++        startedAt = startedAt,
++        activity = activity,
++        kind = activity.kinds.first(),
++        distanceUnit = unit,
++        log = log,
++    )
++
++    private fun draft(
++        activity: CardioActivity,
++        unit: DistanceUnit = DistanceUnit.KM,
++    ) = CardioLogDraft.of(workout(activity, unit))
++
++    @Test
++    fun eachActivityLogsItsOwnFieldsInFrameOrder() {
++        val run = listOf(DURATION, DISTANCE, AVG_PACE, ELEVATION_GAIN, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, CALORIES, EFFORT, NOTE)
++        val ride =
++            listOf(
++                DURATION,
++                DISTANCE,
++                AVG_SPEED,
++                ELEVATION_GAIN,
++                AVG_HEART_RATE,
++                MAX_HEART_RATE,
++                AVG_CADENCE,
++                AVG_POWER,
++                CALORIES,
++                EFFORT,
++                NOTE,
++            )
++        assertEquals(run, CardioActivity.OUTDOOR_RUN.logFields)
++        assertEquals(ride, CardioActivity.OUTDOOR_RIDE.logFields)
++        assertEquals(ride - ELEVATION_GAIN, CardioActivity.INDOOR_RIDE.logFields)
++        assertEquals(
++            listOf(DURATION, DISTANCE, AVG_PACE, AVG_POWER, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, CALORIES, EFFORT, NOTE),
++            CardioActivity.ROWER.logFields,
++        )
++        assertEquals(run - ELEVATION_GAIN - AVG_CADENCE, CardioActivity.TREADMILL_RUN.logFields)
++        assertEquals(
++            listOf(DURATION, DISTANCE, AVG_HEART_RATE, MAX_HEART_RATE, AVG_CADENCE, CALORIES, EFFORT, NOTE),
++            CardioActivity.ELLIPTICAL.logFields,
++        )
++    }
++
++    @Test
++    fun durationReadsHoursMinutesAndSeconds() {
++        assertEquals(1992, draft(CardioActivity.OUTDOOR_RUN).with(DURATION, "33:12").toRequest().durationSeconds)
++        assertEquals(4360, draft(CardioActivity.OUTDOOR_RUN).with(DURATION, "1:12:40").toRequest().durationSeconds)
++    }
++
++    @Test
++    fun durationRefusesOtherShapes() {
++        for (bad in listOf("45", "1:75", "abc")) {
++            val d = draft(CardioActivity.OUTDOOR_RUN).with(DURATION, bad)
++            assertEquals("use h:mm:ss", d.errors()[DURATION], bad)
++            assertFalse(d.canSubmit, bad)
++        }
++    }
++
++    @Test
++    fun anEmptyDurationHoldsThePrimary() {
++        val d = draft(CardioActivity.OUTDOOR_RUN)
++        assertTrue(d.errors().isEmpty())
++        assertFalse(d.canSubmit)
++        assertTrue(d.with(DURATION, "30:00").canSubmit)
++    }
++
++    @Test
++    fun paceIsDerivedWhenBlankAndNeverSent() {
++        val d = draft(CardioActivity.OUTDOOR_RUN).with(DURATION, "33:12").with(DISTANCE, "5.02")
++        assertEquals("6:37", d.derived(AVG_PACE))
++        assertNull(d.toRequest().avgPaceSeconds)
++        assertEquals(CardioDistance(5.02, DistanceUnit.KM), d.toRequest().distance)
++    }
++
++    @Test
++    fun aTypedPaceReplacesTheDerivedOne() {
++        val d = draft(CardioActivity.OUTDOOR_RUN).with(DURATION, "33:12").with(DISTANCE, "5.02").with(AVG_PACE, "6:30")
++        assertNull(d.derived(AVG_PACE))
++        assertEquals(390, d.toRequest().avgPaceSeconds)
++    }
++
++    @Test
++    fun speedIsDerivedForRides() {
++        val d = draft(CardioActivity.OUTDOOR_RIDE).with(DURATION, "1:12:40").with(DISTANCE, "38.6")
++        assertEquals("31.9", d.derived(AVG_SPEED))
++        assertNull(d.derived(AVG_PACE))
++        assertNull(d.toRequest().avgSpeed)
++    }
++
++    @Test
++    fun theRowerDerivesPerFiveHundredMetres() {
++        val d = draft(CardioActivity.ROWER).with(DURATION, "7:30").with(DISTANCE, "1782")
++        assertEquals("2:06", d.derived(AVG_PACE))
++        val km = draft(CardioActivity.ROWER, DistanceUnit.KM).with(DURATION, "30:00").with(DISTANCE, "7120")
++        assertEquals(CardioDistance(7120.0, DistanceUnit.M), km.toRequest().distance)
++    }
++
++    @Test
++    fun maxBelowAvgIsAnError() {
++        val d = draft(CardioActivity.OUTDOOR_RUN).with(AVG_HEART_RATE, "148").with(MAX_HEART_RATE, "139")
++        assertEquals(mapOf(MAX_HEART_RATE to "max heart rate is below average"), d.errors())
++    }
++
++    @Test
++    fun rowerCadenceOutOfRangeNamesTheRange() {
++        val d = draft(CardioActivity.ROWER).with(AVG_CADENCE, "8")
++        assertEquals("between 10 and 60 spm", d.errors()[AVG_CADENCE])
++        assertEquals("between 1 and 250 spm", draft(CardioActivity.OUTDOOR_RUN).with(AVG_CADENCE, "0").errors()[AVG_CADENCE])
++    }
++
++    @Test
++    fun anErrorShowsOnlyOnceTheFieldWasLeft() {
++        val d = draft(CardioActivity.ROWER).with(AVG_CADENCE, "8")
++        assertTrue(AVG_CADENCE in d.errors())
++        assertNull(d.shownError(AVG_CADENCE))
++        assertEquals("between 10 and 60 spm", d.left(AVG_CADENCE).shownError(AVG_CADENCE))
++    }
++
++    @Test
++    fun durationPrefillsFromTheClockRoundedDown() {
++        val w =
++            workout(
++                CardioActivity.OUTDOOR_RUN,
++                status = WorkoutStatus.IN_PROGRESS,
++                startedAt = Instant.parse("2026-05-01T18:31:00.000Z"),
++            )
++        assertEquals("41:06", CardioLogDraft.fresh(w, Instant.parse("2026-05-01T19:12:06.900Z")).text(DURATION))
++        assertEquals("1:12:40", CardioLogDraft.fresh(w, Instant.parse("2026-05-01T19:43:40.000Z")).text(DURATION))
++        assertEquals("", CardioLogDraft.fresh(w.copy(status = WorkoutStatus.PLANNED), Instant.parse("2026-05-01T19:12:06Z")).text(DURATION))
++    }
++
++    @Test
++    fun aSavedLogFillsTheDraft() {
++        val log =
++            CardioLog(
++                durationSeconds = 4360,
++                distance = CardioDistance(5.02, DistanceUnit.KM),
++                avgHeartRate = 150,
++                maxHeartRate = 170,
++                calories = 700,
++                effort = 7,
++                elevationGain = 40,
++                avgCadence = 170,
++                derivedAvgPaceSeconds = 869,
++            )
++        val d = CardioLogDraft.of(workout(CardioActivity.OUTDOOR_RUN, log = log, notes = "hilly"))
++        assertEquals("1:12:40", d.text(DURATION))
++        assertEquals("5.02", d.text(DISTANCE))
++        assertEquals("150", d.text(AVG_HEART_RATE))
++        assertEquals("170", d.text(MAX_HEART_RATE))
++        assertEquals("700", d.text(CALORIES))
++        assertEquals("40", d.text(ELEVATION_GAIN))
++        assertEquals("170", d.text(AVG_CADENCE))
++        assertEquals("7", d.text(EFFORT))
++        assertEquals("hilly", d.text(NOTE))
++        assertEquals("", d.text(AVG_PACE))
++        assertEquals("14:29", d.derived(AVG_PACE))
++    }
++
++    @Test
++    fun theRequestCarriesTypedFieldsOnly() {
++        val d =
++            draft(CardioActivity.OUTDOOR_RIDE)
++                .with(DURATION, "1:12:40")
++                .with(DISTANCE, "38.6")
++                .with(AVG_POWER, "210")
++                .with(CALORIES, "900")
++                .with(EFFORT, "6")
++                .with(NOTE, "windy")
++        assertEquals(
++            CardioLogRequest(
++                durationSeconds = 4360,
++                distance = CardioDistance(38.6, DistanceUnit.KM),
++                avgPower = 210,
++                calories = 900,
++                effort = 6,
++            ),
++            d.toRequest(),
++        )
++        assertEquals(6, d.copy(effort = 6, note = "hilly").effort)
++    }
++}
