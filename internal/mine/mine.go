@@ -1,7 +1,8 @@
 // Package mine drafts eval cases from flow history in a source checkout (design.md §3): an impl
 // case from one task's implementer commit, a review case from a change's round-0 range and panel,
-// and a visual case from a mockup and capture pair. A miner only reads the source checkout; the
-// operator edits the draft's labels, and the commit review is the label approval.
+// and a visual case from a mockup and capture pair. A miner only reads the source checkout, save
+// fetching a change's pre-reshape ref from origin when the checkout lacks it; the operator edits the
+// draft's labels, and the commit review is the label approval.
 package mine
 
 import (
@@ -76,12 +77,19 @@ type VisualDraft struct {
 }
 
 // Impl drafts root/impl/<change>-task-<n>/ from task n of change, whose commits are in the
-// checkout repo and whose archive is in planRepo (repo itself for a single-repository change): the
-// commit of the ledger's last implementer dispatch for task n that is not a fix round is the
-// reference, its parent the snapshot — a fix round's parent already holds the answer. It returns
-// the draft directory, and refuses to overwrite an existing one.
+// checkout repo and whose archive is in planRepo (repo itself for a single-repository change). The
+// reference is the oldest commit carrying a `Task-Id: <n>` trailer reachable from the
+// change's pre-reshape ref (see prereshape) and from no branch — integrate squashes the task commits, and a grouped
+// implementer dispatch is one ledger row against the group's last commit — else, with no such
+// commit, that of the ledger's last implementer dispatch for task n that is not a fix round. Its
+// parent is the snapshot — a fix round's parent already holds the answer. It returns the draft
+// directory, and refuses to overwrite an existing one.
 func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (string, error) {
 	art := filepath.Join(planRepo, _archive, change)
+	pin, fetchErr := prereshape(ctx, repo, change)
+	if planRepo != repo {
+		_, _ = prereshape(ctx, planRepo, change) // planAt reads the plan's pre-reshape history too
+	}
 	ledger, err := readLedger(ctx, art, repo)
 	if err != nil {
 		return "", err
@@ -92,11 +100,20 @@ func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (stri
 			ref = d.commit
 		}
 	}
+	if pin != "" {
+		found, err := taskCommits(ctx, repo, pin, strconv.Itoa(n))
+		if err != nil {
+			return "", err
+		}
+		if len(found) > 0 {
+			ref = found[0]
+		}
+	}
 	if ref == "" {
 		return "", fmt.Errorf("%s: no implementer commit for task %d in ledger.md", change, n)
 	}
 	if ref, err = gitOut(ctx, repo, "rev-parse", "--verify", ref+"^{commit}"); err != nil {
-		return "", err
+		return "", withFetch(err, fetchErr)
 	}
 	base, err := gitOut(ctx, repo, "rev-parse", "--verify", ref+"^")
 	if err != nil {
@@ -209,12 +226,15 @@ func planAt(ctx context.Context, repo, ref, planRepo, change string) (string, er
 
 // Review drafts root/review/<change>/ from change's round-0 review range in the checkout repo, its
 // archive in planRepo (repo itself for a single-repository change): base is the parent of the
-// ledger's first implementer commit, head the last implementer commit before the first panel-fix.
+// oldest commit carrying a `Task-Id:` trailer reachable from head and from no branch when the change has a
+// pre-reshape ref (see prereshape), else of the ledger's first implementer commit; head is the
+// ledger's last implementer commit before the first panel-fix.
 // diff.patch leaves out the change's plan files (decision review-cases-diff-only). Labels come
 // from panel.md (see labelsFromPanel). It returns the draft directory, and refuses to overwrite an
 // existing one.
 func Review(ctx context.Context, root, repo, planRepo, change string) (string, error) {
 	art := filepath.Join(planRepo, _archive, change)
+	pin, fetchErr := prereshape(ctx, repo, change)
 	ledger, err := readLedger(ctx, art, repo)
 	if err != nil {
 		return "", err
@@ -232,11 +252,21 @@ func Review(ctx context.Context, root, repo, planRepo, change string) (string, e
 	if head == "" {
 		return "", fmt.Errorf("%s: ledger.md has no implementer commit before the first panel-fix", change)
 	}
+	head, err = gitOut(ctx, repo, "rev-parse", "--verify", head+"^{commit}")
+	if err != nil {
+		return "", withFetch(err, fetchErr)
+	}
+	if pin != "" {
+		found, err := taskCommits(ctx, repo, head, "")
+		if err != nil {
+			return "", err
+		}
+		if len(found) > 0 {
+			first = found[0]
+		}
+	}
 	base, err := gitOut(ctx, repo, "rev-parse", "--verify", first+"^")
 	if err != nil {
-		return "", err
-	}
-	if head, err = gitOut(ctx, repo, "rev-parse", "--verify", head+"^{commit}"); err != nil {
 		return "", err
 	}
 	noPlan := []string{"--", ".", ":(exclude)spectre/changes", ":(exclude)openspec/changes"}
@@ -623,7 +653,50 @@ func isPlanArtifact(file string) bool {
 	return strings.HasPrefix(file, "spectre/changes/") || strings.HasPrefix(file, "openspec/changes/")
 }
 
-// gitOut runs a read-only git command in dir and returns its stdout without the trailing newline.
+// _fixSuffix is a sub-change's `-fix-<N>` suffix: a fix run carries no pin of its own.
+var _fixSuffix = regexp.MustCompile(`-fix-\d+$`)
+
+// prereshape returns refs/flow/pre-reshape/<change>, the change branch as integrate pinned it before
+// squashing its task commits, once repo has it — fetched from origin when repo lacks it — or ""
+// when origin has none either, with the fetch's error. A `<name>-fix-<N>` change with no pin of its
+// own falls back to <name>'s.
+func prereshape(ctx context.Context, repo, change string) (string, error) {
+	ref := "refs/flow/pre-reshape/" + change
+	if _, err := gitOut(ctx, repo, "rev-parse", "--verify", "--quiet", ref); err == nil {
+		return ref, nil
+	}
+	_, err := gitOut(ctx, repo, "fetch", "--quiet", "origin", ref+":"+ref)
+	if err == nil {
+		return ref, nil
+	}
+	if parent := _fixSuffix.ReplaceAllString(change, ""); parent != change {
+		if pin, perr := prereshape(ctx, repo, parent); pin != "" {
+			return pin, nil
+		} else if perr != nil {
+			err = perr
+		}
+	}
+	return "", err
+}
+
+// taskCommits returns the commits reachable from until and from no branch or remote-tracking ref
+// carrying a `Task-Id: <n>` trailer — any task's when n is "" — oldest first. The bound is the
+// same whatever the checkout's HEAD; pin, a refs/flow/ ref, is never in the excluded set.
+func taskCommits(ctx context.Context, repo, until, n string) ([]string, error) {
+	id := cmp.Or(n, "[0-9][0-9]*")
+	out, err := gitOut(ctx, repo, "log", "--reverse", "--format=%H", "--grep=^Task-Id: "+id+"$", until, "--not", "--branches", "--remotes")
+	return strings.Fields(out), err
+}
+
+// withFetch adds a failed pin fetch to err, the ledger sha's resolution failure it may explain.
+func withFetch(err, fetch error) error {
+	if fetch == nil {
+		return err
+	}
+	return fmt.Errorf("%w (fetching the pre-reshape ref: %v)", err, fetch)
+}
+
+// gitOut runs a git command — read-only, save prereshape's fetch — in dir and returns its stdout without the trailing newline.
 func gitOut(ctx context.Context, dir string, args ...string) (string, error) {
 	cmd := exec.CommandContext(ctx, "git", append([]string{"-C", dir, "--no-pager"}, args...)...)
 	var stderr bytes.Buffer

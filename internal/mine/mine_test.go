@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -354,6 +355,73 @@ func TestMineImplFromLedger(t *testing.T) {
 			t.Error("Impl over an existing case directory succeeded")
 		}
 	})
+}
+
+// TestMineThroughThePreReshapeRef mines a change after integrate squashed its branch: the task
+// commits are reachable only from refs/flow/pre-reshape/<change> on origin, and the ledger holds one
+// grouped row, task 1's, against the group's last commit.
+func TestMineThroughThePreReshapeRef(t *testing.T) {
+	f := newFixture(t, nil)
+	origin := filepath.Join(t.TempDir(), "origin.git")
+	git(t, f.repo, "init", "-q", "--bare", origin)
+	git(t, f.repo, "remote", "add", "origin", origin)
+	git(t, f.repo, "checkout", "-q", "-b", "spectre/x", f.base)
+	var task []string
+	for i := range 2 {
+		git(t, f.repo, "cherry-pick", "-n", f.commits[i])
+		git(t, f.repo, "commit", "-q", "-m", "feat: task", "-m", "Task-Id: "+strconv.Itoa(i+1))
+		task = append(task, strings.TrimSpace(git(t, f.repo, "rev-parse", "HEAD")))
+	}
+	pin := "refs/flow/pre-reshape/" + _change
+	git(t, f.repo, "update-ref", pin, "HEAD")
+	git(t, f.repo, "push", "-q", "origin", pin)
+	git(t, f.repo, "update-ref", "-d", pin)
+	git(t, f.repo, "reset", "-q", "--soft", f.base)
+	git(t, f.repo, "commit", "-q", "-m", "feat: the squashed work")
+	writeFiles(t, filepath.Join(f.repo, "spectre/changes/archive", _change), map[string]string{"ledger.md": "# ledger\n" +
+		"\n## Dispatch 1 — implementer\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer\n- Commit: " + task[1][:8] + "\n"})
+	git(t, f.repo, "checkout", "-q", "--detach", task[0]) // the bound must not depend on HEAD
+
+	root := t.TempDir()
+	for n, want := range map[int]string{1: f.base, 2: task[0]} {
+		if _, err := Impl(t.Context(), filepath.Join(root, strconv.Itoa(n)), f.repo, f.repo, _change, n); err != nil {
+			t.Fatalf("Impl(task %d): %v", n, err)
+		}
+		if c := loadOne(t, filepath.Join(root, strconv.Itoa(n)), "impl"); c.Snapshot != want {
+			t.Errorf("task %d: snapshot %s, want its Task-Id commit's parent %s", n, c.Snapshot, want)
+		}
+	}
+	if got := strings.TrimSpace(git(t, f.repo, "rev-parse", pin)); got != task[1] {
+		t.Errorf("local %s is %q, want it fetched from origin at %s", pin, got, task[1])
+	}
+	if _, err := Review(t.Context(), root, f.repo, f.repo, _change); err != nil {
+		t.Fatal(err)
+	}
+	if c := loadOne(t, root, "review"); c.Notes != "round-0 range "+f.base+".."+task[1] {
+		t.Errorf("review %q, want the range from task 1's parent %s to %s", c.Notes, f.base, task[1])
+	}
+}
+
+// TestPreReshapeFixFallsBackToItsChange: a `<name>-fix-<N>` change with no pin of its own takes
+// <name>'s.
+func TestPreReshapeFixFallsBackToItsChange(t *testing.T) {
+	f := newFixture(t, nil)
+	git(t, f.repo, "update-ref", "refs/flow/pre-reshape/x", f.base)
+	if got, err := prereshape(t.Context(), f.repo, "x-fix-2"); got != "refs/flow/pre-reshape/x" || err != nil {
+		t.Errorf("prereshape(x-fix-2) = %q, %v; want refs/flow/pre-reshape/x", got, err)
+	}
+}
+
+// TestMineSurfacesThePinFetchError: with no origin to fetch the pin from and a ledger sha that does
+// not resolve, the error names the fetch's failure too.
+func TestMineSurfacesThePinFetchError(t *testing.T) {
+	f := newFixture(t, nil)
+	writeFiles(t, filepath.Join(f.repo, "spectre/changes/archive", _change), map[string]string{"ledger.md": "# ledger\n" +
+		"\n## Dispatch 1 — implementer\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer\n- Commit: deadbeef\n"})
+	_, err := Impl(t.Context(), t.TempDir(), f.repo, f.repo, _change, 1)
+	if err == nil || !strings.Contains(err.Error(), "fetching the pre-reshape ref") || !strings.Contains(err.Error(), "origin") {
+		t.Errorf("Impl error %v, want it to carry the pin fetch's failure", err)
+	}
 }
 
 // decodeReviewLabels decodes a review draft's labels.json, ignored[] included.

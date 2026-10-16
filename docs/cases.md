@@ -6,7 +6,8 @@ case add <role>` mines a draft from a source checkout's flow history, you check 
 separate approval flag, so whoever reviews the commit is signing off the labels.
 
 Every miner only reads the source checkout (`git` read commands and the archived change's files);
-it never writes to it. A miner refuses to overwrite an existing case directory, and prints:
+it never writes to it, save `impl` and `review` fetching `refs/flow/pre-reshape/<change>` from
+`origin` when the checkout lacks it (**Before/after after integrate** below). A miner refuses to overwrite an existing case directory, and prints:
 
 ```text
 draft cases/<role>/<id>: edit labels, then commit
@@ -25,7 +26,10 @@ flow-eval case add impl --repo ../gymie --change kan-757-offline-l5-be-per-item-
 
 What it mines, from `<plan-repo>/spectre/changes/archive/<change>/`:
 
-- **The reference commit**: the commit of the last `ledger.md` dispatch with `Role: implementer`
+- **The reference commit**: the oldest commit carrying a `Task-Id: <n>` trailer
+  reachable from `refs/flow/pre-reshape/<change>` and from no branch or remote-tracking ref when
+  the change has that ref — a `<change>-fix-<N>` without its own takes `<change>`'s. Otherwise, or with
+  no such commit there, the commit of the last `ledger.md` dispatch with `Role: implementer`
   and `Task: <n>` whose `Key` is not a fix round (`-fix-`): a fix round's parent already holds the
   task's answer. A cross-repository `Commit:` map, `<worktree>=<sha>[,…]`, gives the sha that is a
   commit in `--repo`. Its parent is the case's `snapshot`, the commit the trial's `/work` starts from.
@@ -81,8 +85,10 @@ flow-eval case add review --repo ../gymie-frontend --plan-repo ../gymie --change
 
 What it mines, from the same archive:
 
-- **The round-0 range**: base is the parent of the first `ledger.md` implementer commit; head is
-  the last implementer commit before the first `panel-fix` dispatch. `diff.patch` is `git diff
+- **The round-0 range**: base is the parent of the oldest commit carrying a `Task-Id:` trailer
+  reachable from `<head>` and from no branch or remote-tracking ref when the change has `refs/flow/pre-reshape/<change>`, else of the first
+  `ledger.md` implementer commit; head is the last implementer commit before the first `panel-fix`
+  dispatch. `diff.patch` is `git diff
   base head` less the change's plan files (`spectre/changes/`, `openspec/changes/`), and
   `case.json`'s `snapshot` is head.
 - **`labels.json`**, from `panel.md`'s findings table and its `finding-status:` lines:
@@ -150,6 +156,28 @@ flow-eval case add visual --id home-title-low \
 
 What to check: open both images and confirm the recorded verdict still reads true of them, and that
 each defect summary names one departure a reviewer could point at.
+
+## Before/after after integrate
+
+`/flow`'s integrate squashes each worktree's task commits into one implementation commit and its
+planning commits into one, so no branch reaches a task's own commit or the plan it was implemented
+from. Before squashing it pins the branch as `refs/flow/pre-reshape/<change>` in every repository
+of the change and pushes that ref to `origin`. A grouped implementer dispatch is one `ledger.md`
+row against the group's last commit, so a task's commit is the one carrying its `Task-Id: <n>`
+trailer, never the row. By hand, in the checkout holding the code (`<n>` the task number):
+
+```bash
+git -C ../gymie fetch origin refs/flow/pre-reshape/<change>:refs/flow/pre-reshape/<change>
+after=$(git -C ../gymie log --reverse --format=%H --grep='^Task-Id: <n>$' refs/flow/pre-reshape/<change> --not --branches --remotes | head -1)
+before=$(git -C ../gymie rev-parse "$after^")
+git -C ../gymie show "$before:spectre/changes/<change>/tasks.md"   # the plan the task started from
+git -C ../gymie diff "$before" "$after"                            # the task's own change
+```
+
+For a change planned in another checkout, fetch the same ref there too and read `tasks.md` from
+its pre-reshape history (`git -C ../gymie log refs/flow/pre-reshape/<change> --
+spectre/changes/<change>/tasks.md`). `case add impl` and `case add review` do all of this
+themselves. The pin also keeps a case's snapshot alive: it is on `origin` already.
 
 ## Validate and commit
 
