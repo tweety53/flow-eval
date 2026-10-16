@@ -1,0 +1,10 @@
+{
+  "id": "kan-939-cardio-p1",
+  "role": "visual",
+  "source": {
+    "repo": "gymie",
+    "change": "kan-939-step-4-frontend-cardio-plan-view-start-log"
+  },
+  "notes": "mockup docs/design/mockups/cardio-P1.png, capture cardio-plan-P1.png; labels from spectre/changes/archive/kan-939-step-4-frontend-cardio-plan-view-start-log/visual-verification.md:29 (Departures 1-3)",
+  "needsDocker": false
+}

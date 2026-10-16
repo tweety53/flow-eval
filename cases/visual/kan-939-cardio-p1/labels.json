@@ -1,0 +1,20 @@
+{
+  "verdict": "mismatch",
+  "defects": [
+    {
+      "summary": "top bar drawn as a filled grey bar (#eae9e9, 52dp) with a bottom hairline and ← arrow; the frame draws it unfilled on the page colour with a ‹ chevron and no hairline",
+      "region": {
+        "x": 0,
+        "y": 0,
+        "w": 776,
+        "h": 104
+      }
+    },
+    {
+      "summary": "vertical rhythm drifts: kicker→date gap 47 vs 39 px, warm-up line 507 vs 452 px, repeat rows ~100 vs ~80 px pitch, cool-down 943 vs 821 px"
+    },
+    {
+      "summary": "repeat card rows padded ~10dp more than the frame"
+    }
+  ]
+}
