@@ -16,9 +16,52 @@
 **Decision:** derived-never-sent
 **Decision:** clock-from-started-at
 
+**API the tests use** — exact names and shapes, all in package `com.gymie.shared.cardio`. The tests
+also use the existing `CardioWorkout`, `CardioLog`, `CardioLogRequest`, `CardioDistance`,
+`DistanceUnit`, `CardioActivity.kinds` and `WorkoutStatus` as they stand.
+
+```kotlin
+enum class CardioLogField {
+    DURATION, DISTANCE, AVG_PACE, AVG_SPEED, ELEVATION_GAIN, AVG_HEART_RATE,
+    MAX_HEART_RATE, AVG_CADENCE, AVG_POWER, CALORIES, EFFORT, NOTE,
+}
+
+// on enum class CardioActivity
+val logFields: List<CardioLogField>
+
+data class CardioLogDraft(
+    // further constructor parameters are free; these two must be properties the data class's
+    // copy() takes by name, as in draft.copy(effort = 6, note = "hilly")
+    val effort: Int?,
+    val note: String,
+) {
+    fun text(field: CardioLogField): String                    // "" when nothing is typed
+    fun with(field: CardioLogField, value: String): CardioLogDraft
+    fun left(field: CardioLogField): CardioLogDraft            // marks field as left
+    fun shownError(field: CardioLogField): String?             // errors()[field] once left, else null
+    fun errors(): Map<CardioLogField, String>                  // an empty field is never in error
+    val canSubmit: Boolean                                     // a property, not a function
+    fun derived(field: CardioLogField): String?                // AVG_PACE "6:37", AVG_SPEED "31.9"; null when typed
+    fun toRequest(): CardioLogRequest                          // typed fields and effort; never note, never a derived value
+
+    companion object {
+        fun fresh(workout: CardioWorkout, now: kotlin.time.Instant): CardioLogDraft
+        fun of(workout: CardioWorkout): CardioLogDraft          // saved log as text, effort from it, note from workout.notes
+    }
+}
+```
+
+Exact error texts: `use h:mm:ss` (DURATION of another shape), `max heart rate is below average` (on
+MAX_HEART_RATE only), and range messages `between <min> and <max> <unit>` (`between 10 and 60 spm`).
+Duration text is `m:ss` under an hour and `h:mm:ss` from one up (`41:06`, `1:12:40`). The rower's
+distance is metres whatever the workout's unit: `toRequest().distance == CardioDistance(7120.0,
+DistanceUnit.M)` for `7120` typed on a km workout. `of` leaves AVG_PACE's text `""` when the saved
+log carries only `derivedAvgPaceSeconds`, so `derived(AVG_PACE)` recomputes it (`14:29` for 4360 s
+over 5.02 km).
+
   - [ ] **Step 1: Shape** — `CardioLogFields.kt`:
 
-    ```kotlin unverified:authored for this plan; adjust names to the file's idiom
+    ```kotlin
     enum class CardioLogField { DURATION, DISTANCE, AVG_PACE, AVG_SPEED, ELEVATION_GAIN, AVG_HEART_RATE,
         MAX_HEART_RATE, AVG_CADENCE, AVG_POWER, CALORIES, EFFORT, NOTE }
     ```
@@ -52,4 +95,6 @@
     `toRequest(): CardioLogRequest` with typed fields only; `companion fun fresh(workout, now)` (Duration from
     `startedAt` when IN_PROGRESS, floored to the second) and `fun of(workout)` (from its saved log and notes).
     The 400 ms debounce lives in the sheet (Task 9), not here. Run — pass.
-  - [ ] **Step 4: Verify** — frontend verify for `CardioLogDraftTest`. Commit.
+  - [ ] **Step 4: Verify.** `./gradlew :shared:ktlintFormat`, then
+    `./gradlew :shared:ktlintCheck :shared:detekt :shared:desktopTest --tests 'CardioLogDraftTest'`.
+    Commit.

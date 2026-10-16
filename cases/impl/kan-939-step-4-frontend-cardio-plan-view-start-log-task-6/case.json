@@ -6,12 +6,11 @@
     "change": "kan-939-step-4-frontend-cardio-plan-view-start-log"
   },
   "snapshot": "e46eb8fcf72730568c8a1fddd1df47b432a34661",
-  "notes": "task 6: feat(cardio): the log sheet's fields, draft, checks and derived pace and speed (reference 1b51e3f6d6ea3a3063b9ed906def84a4338fe52e); the ledger has no task 6 row (tasks 5-7 ran as one dispatch, keyed task-5-implementer), so the reference is the task's own commit by subject, from the frontend reflog, and the plan is gymie f8303355 (the last tasks.md commit authored before it, reachable from the reflog only after integrate's reshape)",
+  "notes": "task 6: feat(cardio): the log sheet's fields, draft, checks and derived pace and speed (reference 1b51e3f6d6ea3a3063b9ed906def84a4338fe52e); the ledger has no task 6 row (tasks 5-7 ran as one dispatch, keyed task-5-implementer), so the reference is the task's own commit by subject, from the frontend reflog, and the plan is gymie f8303355 (the last tasks.md commit authored before it, reachable from the reflog only after integrate's reshape); the :shared module suite is dropped from verify: its Compose UI tests fail on timing (ActiveWorkoutFloorHeaderUiTest > aMovedStartCrossFadesFromTheReadingDrawn failed two trials), and the grader still runs the agent's own test classes by name",
   "needsDocker": false,
   "verify": [
     "./gradlew :shared:ktlintCheck :shared:detekt",
-    "./gradlew :shared:desktopTest --tests 'CardioLogDraftTest'",
-    "./gradlew :shared:desktopTest"
+    "./gradlew :shared:desktopTest --tests 'CardioLogDraftTest'"
   ],
   "files": [
     "shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioActivity.kt",
