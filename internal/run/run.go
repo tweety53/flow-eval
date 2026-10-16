@@ -731,6 +731,20 @@ const _stopSandbox = "; stop sandbox: "
 // even after the agent's output.
 type infraFault struct{ error }
 
+// _crashMarkers are verify.log lines that only a build tool dying under the trial prints — a Gradle or
+// Kotlin daemon lost, a JVM out of heap, a process killed by SIGKILL (exit 137, the container OOM
+// killer's): the machine failed the trial, not the agent's code.
+var _crashMarkers = []string{
+	"Connection to the Kotlin daemon has been unexpectedly lost",
+	"Gradle build daemon disappeared unexpectedly",
+	"java.lang.OutOfMemoryError",
+	"[exit 137]",
+}
+
+func buildToolCrashed(log string) bool {
+	return slices.ContainsFunc(_crashMarkers, func(m string) bool { return strings.Contains(log, m) })
+}
+
 // gradeTrial scores the agent's work into l (design.md §5, §7) and returns the judge's usage. An
 // impl trial is graded inside the container, which is what first brings in the held-out tests; the
 // agent's diff and the verify output land in art as work.patch and verify.log, and a failure's reason
@@ -749,6 +763,9 @@ func gradeTrial(ctx context.Context, cfg Config, sb Sandbox, c cases.Case, repor
 		}
 		if err != nil {
 			return harness.Usage{}, err
+		}
+		if !g.Passed && buildToolCrashed(g.Log) {
+			return harness.Usage{}, infraFault{fmt.Errorf("build tool crashed: %s", g.Reason)}
 		}
 		t.Passed, t.Work = g.Passed, &g.Work
 		t.Score = score(g.Passed)

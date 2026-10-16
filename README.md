@@ -149,7 +149,9 @@ Tuning a prompt with flow-eval is [`docs/prompt-tuning.md`](docs/prompt-tuning.m
   infra errors, and every trial with its metrics, error, `output.md`, `verify.log` and `work.patch`.
 - **`served`** — the model id(s) the run's trials were served, read from their `served_model`, so it
   names what an alias such as `sonnet` resolved to; `–` when the harness names none (codex).
-- **Case table:** `valid/k` (infra errors are excluded and listed apart), `passes` and `pass^k`,
+- **Case table:** `valid/k` (infra errors are excluded and listed apart; an impl verify whose log
+  shows a build tool dying — a Gradle or Kotlin daemon lost, a JVM `OutOfMemoryError`, an exit 137 —
+  is one), `passes` and `pass^k`,
   `score` and `stddev`, and the candidate's cost, wall-clock and tokens. `judge cost` is never
   charged to the candidate. A review trial passes when its recall is 1; its score is F1 × 100 plus 5
   per net extra, at most 15. An extra is a finding of any severity that matches no label and that

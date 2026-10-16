@@ -642,6 +642,21 @@ func TestImplFailureIsRecorded(t *testing.T) {
 	}
 }
 
+// A verify command whose build tool died under it — here the Gradle daemon lost — is an infra error,
+// not a failed trial: the machine, not the agent's code, failed.
+func TestImplBuildToolCrashIsInfra(t *testing.T) {
+	cfg := implConfig(t, "echo 'Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)'; exit 1",
+		"echo x > feature.txt && echo done")
+	id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, lines := readRun(t, cfg.RunsDir, id)
+	if len(lines) != 1 || !lines[0].InfraError || !strings.Contains(lines[0].Error, "build tool crashed") {
+		t.Fatalf("crashed verify recorded as %+v, want an infra error naming the crash", lines)
+	}
+}
+
 // A grading failure the agent caused — here git's index lock left in its work tree — is a scored
 // fail, never an infra error the aggregates would skip.
 func TestAgentCausedGradeFailureIsScored(t *testing.T) {
