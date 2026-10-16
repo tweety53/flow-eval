@@ -232,6 +232,9 @@ func runCmd(args []string) int {
 		return 2
 	}
 	fmt.Printf("run %s: %s/%s.jsonl, %s/%s.md, %s/%s.html\n", id, *runsDir, id, *runsDir, id, *runsDir, id)
+	if index, err := filepath.Abs(filepath.Join(*runsDir, "index.html")); err == nil {
+		fmt.Printf("index: %s\n", index)
+	}
 	return 0
 }
 

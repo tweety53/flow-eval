@@ -65,7 +65,7 @@ flow-eval run --role impl --harness claude-code --model sonnet --effort low -k 1
   never touches.
 - Measure Haiku as `--model claude-haiku-5-5`: the CLI's `haiku` alias resolves to Haiku 4.5.
 
-Writes `runs/<id>.jsonl`, `runs/<id>.md` and `runs/<id>.html`, and rewrites `runs/index.html`. Raw
+Writes `runs/<id>.jsonl`, `runs/<id>.md` and `runs/<id>.html`, and rewrites `runs/index.html`, whose absolute path it prints last as `index: <path>`. Raw
 transcripts, outputs, `work.patch` and `verify.log` go to `runs/<id>/`; commit it with the run files.
 
 **Pricing:** `cost_usd` comes from `pricing.json` — per model id, USD per million tokens of `input`,
