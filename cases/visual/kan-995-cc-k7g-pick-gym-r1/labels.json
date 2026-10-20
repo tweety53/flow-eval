@@ -1,0 +1,23 @@
+{
+  "verdict": "mismatch",
+  "defects": [
+    {
+      "summary": "row pitch 236px against the mockup's 204px"
+    },
+    {
+      "summary": "search field fill #eae9e9 against the page's #f3f2f2"
+    },
+    {
+      "summary": "Copy button inset 48px a side against 40px"
+    },
+    {
+      "summary": "disabled Copy is grey #d6d2d2 against light teal #81bdcf"
+    },
+    {
+      "summary": "COPY TO label 28px tall against 24px"
+    },
+    {
+      "summary": "size line gap 17px against 14px (3px low)"
+    }
+  ]
+}

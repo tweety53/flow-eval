@@ -1,0 +1,10 @@
+{
+  "id": "kan-995-cc-k7g-pick-gym-r1",
+  "role": "visual",
+  "source": {
+    "repo": "gymie",
+    "change": "kan-995-fe-copy-another-workout-asks-gym-or-cardio-copy"
+  },
+  "notes": "mockup docs/design/mockups/cc-K7g.png, capture: fix round 1 capture of fidelity/kan-995-copy-kind.spec.ts-snapshots/cc-k7g-pick-gym-darwin.png at gymie-playwright de8d85f; the 104px app-bar offset was closed by decision and is not a defect",
+  "needsDocker": false
+}
