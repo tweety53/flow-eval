@@ -1,0 +1,10 @@
+Done. The cardio log logic is implemented, green, and committed as `[bf2597d](https://example.com/commit/bf2597d)`.
+
+What changed:
+- [CardioLogFields.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogFields.kt): `CardioLogField` enum and `CardioActivity.logFields` in sheet order for all six activities (indoor ride = outdoor ride minus elevation; treadmill = outdoor run minus elevation and cadence). The backend `CardioActivity.kt` it should mirror was not present in this repo, so that cross-check could not be done here.
+- [CardioLogDraft.kt](/work/shared/src/commonMain/kotlin/com/gymie/shared/cardio/CardioLogDraft.kt): immutable `CardioLogDraft` data class (`effort`, `note` are `copy()`-able constructor properties) with text/with/left/shownError/errors/canSubmit/derived/toRequest plus `fresh` (clock prefill floored to the second when in progress) and `of` (saved log as text, effort from it, note from workout notes; saved derived-only pace stays blank so it recomputes). Duration/pace parse `m:ss` and `h:mm:ss` with 00–59 after a colon; errors are `use h:mm:ss`, `max heart rate is below average`, and `between X and Y <unit>`; rower distances are metres and derived pace is per 500 m via `CardioFormat`.
+- [CardioLogDraftTest.kt](/work/shared/src/commonTest/kotlin/com/gymie/shared/cardio/CardioLogDraftTest.kt): 14 tests covering the specified behaviors (33:12→1992, 1:12:40→4360, derived 6:37/31.9/2:06, the 41:06 clock prefill, 14:29 recompute, rower metres, and the exact error texts).
+
+Commands run, all passing:
+- `./gradlew :shared:desktopTest --tests '*CardioLogDraftTest*'` — 14 tests, 0 failures.
+- `./gradlew :shared:ktlintFormat` then `./gradlew :shared:ktlintCheck :shared:detekt :shared:desktopTest --tests 'CardioLogDraftTest'` — BUILD SUCCESSFUL (this caught and I fixed two detekt findings: too many class functions and return count in the clock parser, by moving helpers to top level).
