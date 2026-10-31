@@ -12,7 +12,6 @@ Move a line out of the fence to make it take effect.
 - malformed-bullet: error
 - id-sequence: error
 - task-sequence: error
-- refs: error
 ```
 
 ## Vocabulary
