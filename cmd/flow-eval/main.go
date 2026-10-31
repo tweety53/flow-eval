@@ -477,9 +477,9 @@ func caseAdd(args []string) int {
 	role := args[0]
 	fs := flag.NewFlagSet("case add "+role, flag.ContinueOnError)
 	root := fs.String("root", "cases", "cases directory the draft is written under")
-	repo := fs.String("repo", "", "source checkout holding the change's commits (impl, review)")
-	planRepo := fs.String("plan-repo", "", "checkout holding spectre/changes/archive/<change>, when not --repo (impl, review)")
-	change := fs.String("change", "", "archived change name (impl, review)")
+	repo := fs.String("repo", "", "the change's worktree, holding its commits (impl, review)")
+	planRepo := fs.String("plan-repo", "", "the change's worktree holding spectre/changes/<change>/ and .superpowers/sdd/, when not --repo (impl, review)")
+	change := fs.String("change", "", "change name (impl, review)")
 	task := fs.Int("task", 0, "task number whose implementer commit is the reference (impl)")
 	draft := mine.VisualDraft{}
 	fs.StringVar(&draft.ID, "id", "", "case id (visual)")
