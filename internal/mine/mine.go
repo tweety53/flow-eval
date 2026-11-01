@@ -21,14 +21,10 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/tweety53/flow-eval/internal/cases"
 	"github.com/tweety53/flow-eval/internal/grade"
 )
-
-// _archive is where a change's flow artifacts live in its source checkout.
-const _archive = "spectre/changes/archive"
 
 // IgnoredLabel is a withdrawn finding whose reason names a later decision or supersession rather
 // than a false premise: neither must-find nor known-false until the operator moves it.
@@ -77,7 +73,9 @@ type VisualDraft struct {
 }
 
 // Impl drafts root/impl/<change>-task-<n>/ from task n of change, whose commits are in the
-// checkout repo and whose archive is in planRepo (repo itself for a single-repository change). The
+// checkout repo and whose plan snapshots, ledger and panel record are in the worktree planRepo (repo
+// itself for a single-repository change). task.md and context.md come from the earliest plan
+// snapshot holding task n, never the live plan. The
 // reference is the oldest commit carrying a `Task-Id: <n>` trailer reachable from the
 // change's pre-reshape ref (see prereshape) and from no branch — integrate squashes the task commits, and a grouped
 // implementer dispatch is one ledger row against the group's last commit — else, with no such
@@ -85,12 +83,12 @@ type VisualDraft struct {
 // parent is the snapshot — a fix round's parent already holds the answer. It returns the draft
 // directory, and refuses to overwrite an existing one.
 func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (string, error) {
-	art := filepath.Join(planRepo, _archive, change)
-	pin, fetchErr := prereshape(ctx, repo, change)
-	if planRepo != repo {
-		_, _ = prereshape(ctx, planRepo, change) // planAt reads the plan's pre-reshape history too
+	snapshots, ledgerFile, _, err := worktreeFiles(planRepo, change)
+	if err != nil {
+		return "", err
 	}
-	ledger, err := readLedger(ctx, art, repo)
+	pin, fetchErr := prereshape(ctx, repo, change)
+	ledger, err := readLedger(ctx, ledgerFile, repo)
 	if err != nil {
 		return "", err
 	}
@@ -120,30 +118,13 @@ func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (stri
 		return "", err
 	}
 
-	// The plan as it stood at base, never the archived one: the archive carries later Corrections and
-	// decisions written from review fixes landed after this task — the answer. In another repository
-	// that is its last commit to the change's plan authored no later than the reference commit — the
-	// plan the implementer worked from; base predates the change and can predate its plan.
-	at := base
-	if planRepo != repo {
-		if at, err = planAt(ctx, repo, ref, planRepo, change); err != nil {
-			return "", err
-		}
-	}
-	plan := func(name string) (string, error) {
-		return gitOut(ctx, planRepo, "show", at+":spectre/changes/"+change+"/"+name)
-	}
-	tasks, err := plan("tasks.md")
-	if err != nil {
-		return "", err
-	}
-	task, files, err := taskSection(tasks, n)
+	snap, task, files, err := planSnapshot(snapshots, n)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", change, err)
 	}
 	var background []byte
 	for _, name := range []string{"proposal.md", "design.md"} {
-		raw, err := plan(name)
+		raw, err := os.ReadFile(filepath.Join(snap, name))
 		if err != nil {
 			return "", err
 		}
@@ -190,42 +171,52 @@ func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (stri
 	})
 }
 
-// planAt returns planRepo's commit (any ref) to change's tasks.md with the latest author date no
-// later than ref's in repo. Author dates, because a rebase re-stamps every plan commit's committer
-// date after the code it planned.
-func planAt(ctx context.Context, repo, ref, planRepo, change string) (string, error) {
-	out, err := gitOut(ctx, repo, "log", "-1", "--format=%aI", ref)
-	if err != nil {
-		return "", err
+// worktreeFiles returns the plan snapshots directory, the rendered ledger and the panel record of
+// change in its worktree planRepo, refusing once the change's directory is gone.
+func worktreeFiles(planRepo, change string) (snapshots, ledger, panel string, err error) {
+	if dir := filepath.Join(planRepo, "spectre/changes", change); !isDir(dir) {
+		return "", "", "", fmt.Errorf("%s: plan files gone — mine before cleanup: %s does not exist", change, dir)
 	}
-	when, err := time.Parse(time.RFC3339, out)
-	if err != nil {
-		return "", err
-	}
-	log, err := gitOut(ctx, planRepo, "log", "--all", "--format=%H %aI", "--", "spectre/changes/"+change+"/tasks.md")
-	if err != nil {
-		return "", err
-	}
-	var at string
-	var latest time.Time
-	for line := range strings.Lines(log) {
-		sha, date, _ := strings.Cut(strings.TrimSpace(line), " ")
-		t, err := time.Parse(time.RFC3339, date)
-		if err != nil {
-			return "", err
-		}
-		if !t.After(when) && t.After(latest) {
-			at, latest = sha, t
-		}
-	}
-	if at == "" {
-		return "", fmt.Errorf("%s: %s has no commit of spectre/changes/%s/tasks.md authored by %s", change, planRepo, change, out)
-	}
-	return at, nil
+	sdd := filepath.Join(planRepo, ".superpowers/sdd")
+	return filepath.Join(sdd, change, "plan-snapshots"), filepath.Join(sdd, "ledgers", change+".md"),
+		filepath.Join(sdd, "reviews", change+"-panel.md"), nil
 }
 
-// Review drafts root/review/<change>/ from change's round-0 review range in the checkout repo, its
-// archive in planRepo (repo itself for a single-repository change): base is the parent of the
+func isDir(p string) bool {
+	st, err := os.Stat(p)
+	return err == nil && st.IsDir()
+}
+
+// planSnapshot returns the earliest snapshot under snapshots whose tasks.md holds task n — taken
+// before task n was implemented, so no later Correction reaches the case — with that task's section
+// and **Files:** paths.
+func planSnapshot(snapshots string, n int) (dir, task string, files []string, err error) {
+	entries, last := os.ReadDir(snapshots)
+	var ks []int
+	for _, e := range entries {
+		if k, err := strconv.Atoi(e.Name()); err == nil {
+			ks = append(ks, k)
+		}
+	}
+	slices.Sort(ks)
+	for _, k := range ks {
+		dir = filepath.Join(snapshots, strconv.Itoa(k))
+		raw, err := os.ReadFile(filepath.Join(dir, "tasks.md"))
+		if err != nil {
+			last = err
+			continue
+		}
+		if task, files, err = taskSection(string(raw), n); err == nil {
+			return dir, task, files, nil
+		}
+		last = err
+	}
+	return "", "", nil, errors.Join(fmt.Errorf("no plan snapshot under %s holds task %d", snapshots, n), last)
+}
+
+// Review drafts root/review/<change>/ from change's round-0 review range in the checkout repo,
+// whose plan snapshots, ledger and panel record are in the worktree planRepo (repo itself for a
+// single-repository change): base is the parent of the
 // oldest commit carrying a `Task-Id:` trailer reachable from head and from no branch when the change has a
 // pre-reshape ref (see prereshape), else of the ledger's first implementer commit; head is the
 // ledger's last implementer commit before the first panel-fix.
@@ -233,9 +224,12 @@ func planAt(ctx context.Context, repo, ref, planRepo, change string) (string, er
 // from panel.md (see labelsFromPanel). It returns the draft directory, and refuses to overwrite an
 // existing one.
 func Review(ctx context.Context, root, repo, planRepo, change string) (string, error) {
-	art := filepath.Join(planRepo, _archive, change)
+	_, ledgerFile, panelFile, err := worktreeFiles(planRepo, change)
+	if err != nil {
+		return "", err
+	}
 	pin, fetchErr := prereshape(ctx, repo, change)
-	ledger, err := readLedger(ctx, art, repo)
+	ledger, err := readLedger(ctx, ledgerFile, repo)
 	if err != nil {
 		return "", err
 	}
@@ -274,7 +268,7 @@ func Review(ctx context.Context, root, repo, planRepo, change string) (string, e
 	if err != nil {
 		return "", err
 	}
-	panel, err := os.ReadFile(filepath.Join(art, "panel.md"))
+	panel, err := os.ReadFile(panelFile)
 	if err != nil {
 		return "", err
 	}
@@ -432,11 +426,11 @@ func marshal(v any) ([]byte, error) {
 // dispatch is one ledger.md row's fields that mining reads; commit is empty for "no commit".
 type dispatch struct{ task, role, key, commit string }
 
-// readLedger parses the dispatches of art/ledger.md in ledger order. A cross-repository commit map,
+// readLedger parses the dispatches of the ledger file in ledger order. A cross-repository commit map,
 // `<worktree>=<sha>[,<worktree>=<sha>…]`, keeps the sha that is a commit in repo; a map with none
 // there reads as no commit — that dispatch committed to another repository only.
-func readLedger(ctx context.Context, art, repo string) ([]dispatch, error) {
-	raw, err := os.ReadFile(filepath.Join(art, "ledger.md"))
+func readLedger(ctx context.Context, file, repo string) ([]dispatch, error) {
+	raw, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}

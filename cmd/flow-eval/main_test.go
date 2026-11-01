@@ -113,7 +113,7 @@ func TestCaseValidateExitCodes(t *testing.T) {
 		{[]string{"case", "add", "impl", "--repo", src, "--change", "c"}, 2, "", "usage: flow-eval case add"},
 		{[]string{"case", "add", "review", "--repo", src}, 2, "", "usage: flow-eval case add"},
 		{[]string{"case", "add", "visual", "--id", "v"}, 2, "", "usage: flow-eval case add"},
-		{[]string{"case", "add", "review", "--repo", src, "--change", "c", "--root", drafts}, 2, "", "ledger.md"},
+		{[]string{"case", "add", "review", "--repo", src, "--change", "c", "--root", drafts}, 2, "", "plan files gone"},
 		{[]string{"case", "add", "visual", "--region", "1,2,3,4"}, 2, "", "a --region must follow its --defect"},
 		{[]string{"case", "add", "visual", "--defect", "x", "--region", "1,2"}, 2, "", "not x,y,w,h"},
 		{[]string{"case", "add", "visual", "--id", "v", "--mockup", png, "--capture", png, "--verdict", "maybe",

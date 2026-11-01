@@ -1,11 +1,11 @@
 # Adding an eval case
 
 A case is a directory `cases/<role>/<id>/` holding `case.json` and the role's assets. `flow-eval
-case add <role>` mines a draft from a source checkout's flow history, you check and edit it, then
+case add <role>` mines a draft from the change's worktree, you check and edit it, then
 `flow-eval case validate` and commit. **The commit review is the label approval**: there is no
 separate approval flag, so whoever reviews the commit is signing off the labels.
 
-Every miner only reads the source checkout (`git` read commands and the archived change's files);
+Every miner only reads the source checkout (`git` read commands and the change's worktree files);
 it never writes to it, save `impl` and `review` fetching `refs/flow/pre-reshape/<change>` from
 `origin` when the checkout lacks it (**Before/after after integrate** below). A miner refuses to overwrite an existing case directory, and prints:
 
@@ -14,7 +14,7 @@ draft cases/<role>/<id>: edit labels, then commit
 ```
 
 Run the commands from the `flow-eval` repository root; `--root` (default `cases`) moves the draft
-elsewhere. For a change whose code is in one checkout and whose plan and archive are in another —
+elsewhere. For a change whose code is in one checkout and whose plan snapshots are in another —
 a gymie-frontend change planned in gymie — `--repo` names the code's checkout and `--plan-repo` the
 plan's (`impl` and `review`).
 
@@ -24,7 +24,8 @@ plan's (`impl` and `review`).
 flow-eval case add impl --repo ../gymie --change kan-757-offline-l5-be-per-item-if-match-on-group-session --task 3
 ```
 
-What it mines, from `<plan-repo>/spectre/changes/archive/<change>/`:
+What it mines, from `<plan-repo>/.superpowers/sdd/<change>/plan-snapshots/<k>/` and the rendered
+`.superpowers/sdd/ledgers/<change>.md` / `.superpowers/sdd/reviews/<change>-panel.md`:
 
 - **The reference commit**: the oldest commit carrying a `Task-Id: <n>` trailer
   reachable from `refs/flow/pre-reshape/<change>` and from no branch or remote-tracking ref when
@@ -35,11 +36,9 @@ What it mines, from `<plan-repo>/spectre/changes/archive/<change>/`:
   commit in `--repo`. Its parent is the case's `snapshot`, the commit the trial's `/work` starts from.
 - **`task.md`**: task `n`'s section of `tasks.md`, from its checkbox line to the next task's.
 - **`context.md`**: `proposal.md` then `design.md`.
-- `tasks.md`, `proposal.md` and `design.md` are read as they stood at the snapshot, from
-  `spectre/changes/<change>/` in that commit — never the archived copies, which carry Corrections
-  and decisions written from review fixes landed after the task, i.e. the answer. With
-  `--plan-repo`, they are read from that checkout's last commit (any ref) to the change's
-  `tasks.md` authored no later than the reference commit.
+- `tasks.md`, `proposal.md` and `design.md` are read from the earliest plan snapshot holding the
+  task — the plan as it stood before the task was implemented, never the live plan, whose
+  review-fix Corrections name the answer. A task no snapshot holds is refused.
 - **`heldout.patch`**: the reference commit's changes to test files — paths under `src/test/`,
   `commonTest/` or `desktopTest/`, or ending `Test.kt` or `_test.go`. The agent never sees it; the
   grader applies it after the agent exits.
@@ -83,7 +82,7 @@ What to check and edit:
 flow-eval case add review --repo ../gymie-frontend --plan-repo ../gymie --change kan-867-qm-2-step-1-frontend-settings-workout-mode-focus
 ```
 
-What it mines, from the same archive:
+What it mines, from the same plan snapshots, ledger and panel record:
 
 - **The round-0 range**: base is the parent of the oldest commit carrying a `Task-Id:` trailer
   reachable from `<head>` and from no branch or remote-tracking ref when the change has `refs/flow/pre-reshape/<change>`, else of the first
@@ -150,18 +149,23 @@ flow-eval case add visual --id home-title-low \
   the checkout holding the mockup.
 - Pair a mockup with its capture through the fidelity spec's `.mockups` sidecar.
 - The verdict and defects are the ones flow's own visual verification recorded for that pair in an
-  archived change's `visual-verification.md`, its defect text as written; a `--region` only where
+  change's `visual-verification.md` in its worktree, its defect text as written; a `--region` only where
   the record gives one. A difference that record did not count — pinned seed data, a font-width
   wrap — is not a departure (decision `visual-labels-from-flow-verdicts`).
 
 What to check: open both images and confirm the recorded verdict still reads true of them, and that
 each defect summary names one departure a reviewer could point at.
 
+**What a case ships.** An impl case's agent sees `task.md`, `context.md` and the tree at the
+snapshot commit, a review case's agent `diff.patch` and the tree at its head, a visual case's agent
+the mockup and capture — each the pre-task state. The ledger, the panel record, the reference
+commit, its subject and its trailers reach only `case.json`, `heldout.patch`, `reference.stat` and
+`labels.json`, which a trial never receives (decision `plan-snapshots-for-the-miner`).
+
 ## Before/after after integrate
 
-`/flow`'s integrate squashes each worktree's task commits into one implementation commit and its
-planning commits into one, so no branch reaches a task's own commit or the plan it was implemented
-from. Before squashing it pins the branch as `refs/flow/pre-reshape/<change>` in every repository
+`/flow`'s integrate squashes each worktree's task commits into one implementation commit, so no
+branch reaches a task's own commit. Before squashing it pins the branch as `refs/flow/pre-reshape/<change>` in every repository
 of the change and pushes that ref to `origin`. A grouped implementer dispatch is one `ledger.md`
 row against the group's last commit, so a task's commit is the one carrying its `Task-Id: <n>`
 trailer, never the row. By hand, in the checkout holding the code (`<n>` the task number):
@@ -170,13 +174,11 @@ trailer, never the row. By hand, in the checkout holding the code (`<n>` the tas
 git -C ../gymie fetch origin refs/flow/pre-reshape/<change>:refs/flow/pre-reshape/<change>
 after=$(git -C ../gymie log --reverse --format=%H --grep='^Task-Id: <n>$' refs/flow/pre-reshape/<change> --not --branches --remotes | head -1)
 before=$(git -C ../gymie rev-parse "$after^")
-git -C ../gymie show "$before:spectre/changes/<change>/tasks.md"   # the plan the task started from
 git -C ../gymie diff "$before" "$after"                            # the task's own change
 ```
 
-For a change planned in another checkout, fetch the same ref there too and read `tasks.md` from
-its pre-reshape history (`git -C ../gymie log refs/flow/pre-reshape/<change> --
-spectre/changes/<change>/tasks.md`). `case add impl` and `case add review` do all of this
+Mine before `/flow`'s cleanup: once the worktree is gone, `case add impl|review` refuses with
+`plan files gone — mine before cleanup`. `case add impl` and `case add review` do all of this
 themselves. The pin also keeps a case's snapshot alive: it is on `origin` already.
 
 ## Validate and commit

@@ -4,8 +4,8 @@ flow-eval measures how well a model, at a given effort and through a given agent
 flow role — implementer, code reviewer and visual-verify — on real cases mined from the gymie
 projects, each trial in an isolated container. `compare` then says whether a cheaper or newer
 candidate can take over a role from its baseline. A role is judged on its own, never in aggregate.
-The design is `kan-964-flow-eval-harness/design.md` in [`spectre/changes/`](spectre/changes/), or in
-`spectre/changes/archive/` once the change has landed.
+The design is `kan-964-flow-eval-harness/design.md`, in this repository's git history
+(`git log --all -- '*kan-964-flow-eval-harness/design.md'`).
 
 ## Setup
 
@@ -122,7 +122,8 @@ flow-eval case validate
 ```
 
 `case add impl|review|visual` mines a draft; edit its labels and commit — the commit review is the
-label approval. `case add visual` uses the installed `compose-mockup-frames.sh` from the agents
+label approval. `case add impl|review` reads the change's worktree (`--repo`, `--plan-repo`) and
+runs before `/flow`'s cleanup removes it. `case add visual` uses the installed `compose-mockup-frames.sh` from the agents
 repository. The how-to for each role is [`docs/cases.md`](docs/cases.md).
 
 ### `prompts sync`

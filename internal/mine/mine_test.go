@@ -35,19 +35,23 @@ const (
 		"GroupSessionExceptionHandler.kt"
 	_conflictTest = "src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/" +
 		"GroupSessionFloorSetConflictTest.kt"
-	// _leak is written into the archived plan only: the plan at the task's base never carries it.
+	// _leak is written into every post-task source — the live plan, a later snapshot, the ledger and
+	// panel record, the panel-fix commit — and never into the plan snapshot taken before task 1.
 	_leak = "LATER-CORRECTION-FROM-REVIEW-FIXES"
 )
 
 type fixture struct {
 	repo    string
+	ledger  string   // the rendered ledger's path in the worktree
 	base    string   // the parent of task 1's commit
 	commits []string // full shas, aligned with _ledgerSHAs
 }
 
-// newFixture builds a gymie-shaped repository: a base commit, one commit per ledger dispatch that
-// committed, and the change's archive holding the verbatim kan-757 artifacts with the ledger's shas
-// rewritten to the fixture's. edits rewrites an artifact (by file name) before it is written.
+// newFixture builds a gymie-shaped worktree: a base commit ignoring the change's files, one commit
+// per ledger dispatch that committed, and on disk, uncommitted, plan snapshot 1 holding the verbatim
+// kan-757 plan, then snapshot 2, the live plan, the rendered ledger and the panel record, each with
+// the ledger's shas rewritten to the fixture's and the plan files carrying _leak. edits rewrites the
+// ledger, the panel or a live plan file (by file name) before it is written, never a snapshot.
 func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 	t.Helper()
 	repo := filepath.Join(t.TempDir(), "gymie")
@@ -62,13 +66,7 @@ func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 		_patchSvc:                               "class WorkoutFieldPatchServiceImpl {\n}\n",
 		_handler:                                "class GroupSessionExceptionHandler {\n}\n",
 	})
-	for _, name := range []string{"tasks.md", "proposal.md", "design.md"} {
-		raw, err := os.ReadFile(filepath.Join("testdata/kan-757", name))
-		if err != nil {
-			t.Fatal(err)
-		}
-		writeFiles(t, filepath.Join(repo, "spectre/changes", _change), map[string]string{name: string(raw)})
-	}
+	writeFiles(t, repo, map[string]string{".gitignore": "spectre/changes/\n.superpowers/\n"})
 	git(t, repo, "init", "-q")
 	commit := func(msg string) string {
 		git(t, repo, "add", "-A")
@@ -85,17 +83,25 @@ func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 		{
 			_handler:      "class GroupSessionExceptionHandler {\n    fun code() = Unit\n}\n",
 			_conflictTest: "class GroupSessionFloorSetConflictTest {\n    @Test fun conflict() = Unit\n}\n",
-			"spectre/changes/" + _change + "/tasks.md": readFile(t, "testdata/kan-757/tasks.md") + "\n<!-- ticked mid-change -->\n",
 		},
 		{_handler: "class GroupSessionExceptionHandler {\n    fun code() = Unit\n    fun setChanged() = Unit\n}\n"},
 		{"src/app/workout/src/main/kotlin/com/gymie/workout/infrastructure/presentation/web/IdempotencyKeyFilter.kt": "class F\n"},
 		{"spectre/specs/group-sessions.md": "# group sessions\n"},
-		{_patchSvc: "class WorkoutFieldPatchServiceImpl {\n    fun patch() = if (changed) Unit else Unit\n}\n"},
+		{_patchSvc: "class WorkoutFieldPatchServiceImpl {\n    fun patch() = if (changed) Unit else Unit\n    // " + _leak + "\n}\n"},
 	} {
 		writeFiles(t, repo, files)
-		f.commits = append(f.commits, commit("commit "+_ledgerSHAs[i]))
+		msg := "commit " + _ledgerSHAs[i]
+		if i == 5 {
+			msg += " " + _leak
+		}
+		f.commits = append(f.commits, commit(msg))
 	}
-	archive := filepath.Join(repo, "spectre/changes/archive", _change)
+	sdd := filepath.Join(repo, ".superpowers/sdd")
+	f.ledger = filepath.Join(sdd, "ledgers", _change+".md")
+	snapshots := filepath.Join(sdd, _change, "plan-snapshots")
+	for _, name := range []string{"tasks.md", "proposal.md", "design.md"} {
+		writeFiles(t, filepath.Join(snapshots, "1"), map[string]string{name: readFile(t, filepath.Join("testdata/kan-757", name))})
+	}
 	for _, name := range []string{"ledger.md", "panel.md", "tasks.md", "proposal.md", "design.md"} {
 		raw, err := os.ReadFile(filepath.Join("testdata/kan-757", name))
 		if err != nil {
@@ -112,10 +118,22 @@ func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 		if name == "design.md" {
 			body += "\n" + _leak + "\n"
 		}
+		switch name {
+		case "ledger.md", "panel.md":
+		default:
+			writeFiles(t, filepath.Join(snapshots, "2"), map[string]string{name: body})
+		}
 		if edit := edits[name]; edit != nil {
 			body = edit(body)
 		}
-		writeFiles(t, archive, map[string]string{name: body})
+		switch name {
+		case "ledger.md":
+			writeFiles(t, filepath.Dir(f.ledger), map[string]string{filepath.Base(f.ledger): body})
+		case "panel.md":
+			writeFiles(t, filepath.Join(sdd, "reviews"), map[string]string{_change + "-panel.md": body})
+		default:
+			writeFiles(t, filepath.Join(repo, "spectre/changes", _change), map[string]string{name: body})
+		}
 	}
 	return f
 }
@@ -141,17 +159,6 @@ func git(t *testing.T, dir string, args ...string) string {
 		t.Fatalf("git %v: %v", args, err)
 	}
 	return string(out)
-}
-
-// gitAt runs git with its author and committer dates pinned.
-func gitAt(t *testing.T, dir, author, committer string, args ...string) {
-	t.Helper()
-	c := exec.Command("git", append([]string{"-C", dir, "-c", "user.name=t", "-c", "user.email=t@t"}, args...)...)
-	c.Env = append(os.Environ(), "GIT_CONFIG_GLOBAL=/dev/null", "GIT_CONFIG_NOSYSTEM=1",
-		"GIT_AUTHOR_DATE="+author, "GIT_COMMITTER_DATE="+committer)
-	if out, err := c.CombinedOutput(); err != nil {
-		t.Fatalf("git %v: %v\n%s", args, err, out)
-	}
 }
 
 func writeFiles(t *testing.T, dir string, files map[string]string) {
@@ -245,7 +252,7 @@ func TestMineImplFromLedger(t *testing.T) {
 		t.Error("context.md does not carry proposal.md and design.md")
 	}
 	if strings.Contains(task, _leak) || strings.Contains(ctxt, _leak) {
-		t.Error("task.md or context.md carries the archived plan's later correction: the plan must be read at the task's base")
+		t.Error("task.md or context.md carries a later correction: the plan must be the snapshot taken before the task")
 	}
 	git(t, f.repo, "worktree", "remove", check)
 	if after := git(t, f.repo, "status", "--porcelain"); after != statusBefore {
@@ -269,8 +276,8 @@ func TestMineImplFromLedger(t *testing.T) {
 		git(t, f.repo, "mv", _unitTest, renamed)
 		git(t, f.repo, "commit", "-q", "-m", "rename")
 		ref := strings.TrimSpace(git(t, f.repo, "rev-parse", "HEAD"))
-		ledger := filepath.Join(f.repo, "spectre/changes/archive", _change, "ledger.md")
-		writeFiles(t, filepath.Dir(ledger), map[string]string{"ledger.md": readFile(t, ledger) +
+		ledger := f.ledger
+		writeFiles(t, filepath.Dir(ledger), map[string]string{filepath.Base(ledger): readFile(t, ledger) +
 			"\n## Dispatch 98\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer-retry\n- Commit: " + ref[:8] + "\n"})
 		dir, err := Impl(t.Context(), t.TempDir(), f.repo, f.repo, _change, 1)
 		if err != nil {
@@ -284,8 +291,8 @@ func TestMineImplFromLedger(t *testing.T) {
 	t.Run("a cross-repository commit map yields the sha that is a commit in the code checkout", func(t *testing.T) {
 		f := newFixture(t, nil)
 		ref := f.commits[1]
-		ledger := filepath.Join(f.repo, "spectre/changes/archive", _change, "ledger.md")
-		writeFiles(t, filepath.Dir(ledger), map[string]string{"ledger.md": readFile(t, ledger) +
+		ledger := f.ledger
+		writeFiles(t, filepath.Dir(ledger), map[string]string{filepath.Base(ledger): readFile(t, ledger) +
 			"\n## Dispatch 97\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer-retry\n- Commit: /wt/gymie=" +
 			strings.Repeat("e", 40) + ",/wt/gymie-frontend=" + ref[:8] + "\n"})
 		root := t.TempDir()
@@ -298,8 +305,8 @@ func TestMineImplFromLedger(t *testing.T) {
 	})
 	t.Run("a fix round's commit is never the reference", func(t *testing.T) {
 		f := newFixture(t, nil)
-		ledger := filepath.Join(f.repo, "spectre/changes/archive", _change, "ledger.md")
-		writeFiles(t, filepath.Dir(ledger), map[string]string{"ledger.md": readFile(t, ledger) +
+		ledger := f.ledger
+		writeFiles(t, filepath.Dir(ledger), map[string]string{filepath.Base(ledger): readFile(t, ledger) +
 			"\n## Dispatch 99\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer-fix-1\n- Commit: " + f.commits[5][:8] + "\n"})
 		root := t.TempDir()
 		if _, err := Impl(t.Context(), root, f.repo, f.repo, _change, 1); err != nil {
@@ -309,40 +316,31 @@ func TestMineImplFromLedger(t *testing.T) {
 			t.Errorf("snapshot %s, want task 1's own base %s, not the fix round's parent", c.Snapshot, f.base)
 		}
 	})
-	t.Run("a change planned in another repository reads that repository's plan as of the snapshot", func(t *testing.T) {
+	t.Run("a change planned in another worktree reads that worktree's snapshot", func(t *testing.T) {
 		f := newFixture(t, nil)
 		plans := filepath.Join(t.TempDir(), "gymie-plans")
-		dir := filepath.Join(plans, "spectre/changes", _change)
-		// Authored before and after the snapshot, both re-committed (as a rebase does) long after it.
-		for i, date := range []string{"2001-01-01T00:00:00Z", "2098-01-01T00:00:00Z"} {
-			mark := "  PLANNED-IN-THE-PLAN-REPOSITORY\n" // only this repository's plan carries it
-			if i == 1 {
-				mark += "  " + _leak + "\n"
-			}
-			tasks := strings.Replace(readFile(t, "testdata/kan-757/tasks.md"),
-				"- [x] 1. Set authorship stamps and the compare-and-set in workout\n",
-				"- [x] 1. Set authorship stamps and the compare-and-set in workout\n\n"+mark, 1)
-			writeFiles(t, dir, map[string]string{"tasks.md": tasks,
-				"proposal.md": readFile(t, "testdata/kan-757/proposal.md"), "design.md": readFile(t, "testdata/kan-757/design.md")})
-			if i == 0 {
-				git(t, plans, "init", "-q")
-			}
-			git(t, plans, "add", "-A")
-			gitAt(t, plans, date, "2099-01-01T00:00:00Z", "commit", "-q", "-m", "plan")
-		}
-		if err := os.Rename(filepath.Join(f.repo, "spectre/changes/archive"), filepath.Join(plans, "spectre/changes/archive")); err != nil {
+		if err := os.MkdirAll(filepath.Join(plans, "spectre/changes"), 0o755); err != nil {
 			t.Fatal(err)
 		}
+		for _, d := range []string{".superpowers", filepath.Join("spectre/changes", _change)} {
+			if err := os.Rename(filepath.Join(f.repo, d), filepath.Join(plans, d)); err != nil {
+				t.Fatal(err)
+			}
+		}
+		snap := filepath.Join(plans, ".superpowers/sdd", _change, "plan-snapshots/1/tasks.md")
+		tasks := strings.Replace(readFile(t, snap), "- [x] 1. Set authorship stamps and the compare-and-set in workout\n",
+			"- [x] 1. Set authorship stamps and the compare-and-set in workout\n\n  PLANNED-IN-THE-PLAN-REPOSITORY\n", 1)
+		writeFiles(t, filepath.Dir(snap), map[string]string{"tasks.md": tasks})
 		root := t.TempDir()
 		draft, err := Impl(t.Context(), root, f.repo, plans, _change, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if task := readFile(t, filepath.Join(draft, "task.md")); !strings.Contains(task, "PLANNED-IN-THE-PLAN-REPOSITORY") || strings.Contains(task, _leak) {
-			t.Errorf("task.md is not the plan as of the snapshot:\n%.200s", task)
+			t.Errorf("task.md is not the plan worktree's snapshot:\n%.200s", task)
 		}
 		if _, err := Review(t.Context(), root, f.repo, plans, _change); err != nil {
-			t.Errorf("Review with the archive in another repository: %v", err)
+			t.Errorf("Review with the plan files in another worktree: %v", err)
 		}
 	})
 	t.Run("a task the ledger has no implementer commit for is refused", func(t *testing.T) {
@@ -378,7 +376,7 @@ func TestMineThroughThePreReshapeRef(t *testing.T) {
 	git(t, f.repo, "update-ref", "-d", pin)
 	git(t, f.repo, "reset", "-q", "--soft", f.base)
 	git(t, f.repo, "commit", "-q", "-m", "feat: the squashed work")
-	writeFiles(t, filepath.Join(f.repo, "spectre/changes/archive", _change), map[string]string{"ledger.md": "# ledger\n" +
+	writeFiles(t, filepath.Dir(f.ledger), map[string]string{filepath.Base(f.ledger): "# ledger\n" +
 		"\n## Dispatch 1 — implementer\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer\n- Commit: " + task[1][:8] + "\n"})
 	git(t, f.repo, "checkout", "-q", "--detach", task[0]) // the bound must not depend on HEAD
 
@@ -416,7 +414,7 @@ func TestPreReshapeFixFallsBackToItsChange(t *testing.T) {
 // not resolve, the error names the fetch's failure too.
 func TestMineSurfacesThePinFetchError(t *testing.T) {
 	f := newFixture(t, nil)
-	writeFiles(t, filepath.Join(f.repo, "spectre/changes/archive", _change), map[string]string{"ledger.md": "# ledger\n" +
+	writeFiles(t, filepath.Dir(f.ledger), map[string]string{filepath.Base(f.ledger): "# ledger\n" +
 		"\n## Dispatch 1 — implementer\n\n- Task: 1\n- Role: implementer\n- Key: task-1-implementer\n- Commit: deadbeef\n"})
 	_, err := Impl(t.Context(), t.TempDir(), f.repo, f.repo, _change, 1)
 	if err == nil || !strings.Contains(err.Error(), "fetching the pre-reshape ref") || !strings.Contains(err.Error(), "origin") {
@@ -729,6 +727,62 @@ func TestMineVisualCropsTheMockupToItsFrame(t *testing.T) {
 	t.Run("a declared geometry with no compose script is refused", func(t *testing.T) {
 		if _, err := Visual(t.Context(), t.TempDir(), VisualDraft{ID: "v", Mockup: mockup, Capture: capture, Verdict: "match"}); err == nil {
 			t.Error("Visual copied an uncropped board")
+		}
+	})
+}
+
+// TestMineShipsOnlyPreTaskState: _leak is in every post-task source, and no input a trial receives
+// carries it.
+func TestMineShipsOnlyPreTaskState(t *testing.T) {
+	f := newFixture(t, map[string]func(string) string{
+		"ledger.md": func(s string) string { return s + "\n" + _leak + "\n" },
+		"panel.md":  replace(t, "| Test names contradict what they assert |", "| Test names contradict what they assert "+_leak+" |"),
+	})
+	if c := exec.Command("git", "-C", f.repo, "grep", "-q", _leak, f.commits[5]); c.Run() != nil {
+		t.Fatal("the plant did not reach the panel-fix commit")
+	}
+	root := t.TempDir()
+	impl, err := Impl(t.Context(), root, f.repo, f.repo, _change, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	review, err := Review(t.Context(), root, f.repo, f.repo, _change)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range []string{filepath.Join(impl, "task.md"), filepath.Join(impl, "context.md"), filepath.Join(review, "diff.patch")} {
+		if strings.Contains(readFile(t, p), _leak) {
+			t.Errorf("%s carries %s", p, _leak)
+		}
+	}
+	for _, role := range []string{"impl", "review"} {
+		snap := loadOne(t, root, role).Snapshot
+		err := exec.Command("git", "-C", f.repo, "grep", "-q", "-e", _leak, snap).Run()
+		if e, ok := err.(*exec.ExitError); !ok || e.ExitCode() != 1 {
+			t.Errorf("%s snapshot %s: git grep %s = %v, want exit 1", role, snap, _leak, err)
+		}
+	}
+}
+
+// TestMineRefusesOnceThePlanFilesAreGone: with the worktree's plan files removed, mining refuses.
+func TestMineRefusesOnceThePlanFilesAreGone(t *testing.T) {
+	f := newFixture(t, nil)
+	if err := os.RemoveAll(filepath.Join(f.repo, "spectre/changes", _change)); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Impl(t.Context(), t.TempDir(), f.repo, f.repo, _change, 1); err == nil || !strings.Contains(err.Error(), "plan files gone — mine before cleanup") {
+		t.Errorf("Impl = %v, want plan files gone", err)
+	}
+	if _, err := Review(t.Context(), t.TempDir(), f.repo, f.repo, _change); err == nil || !strings.Contains(err.Error(), "plan files gone — mine before cleanup") {
+		t.Errorf("Review = %v, want plan files gone", err)
+	}
+	t.Run("a task no plan snapshot holds is refused", func(t *testing.T) {
+		f := newFixture(t, nil)
+		if err := os.RemoveAll(filepath.Join(f.repo, ".superpowers/sdd", _change, "plan-snapshots")); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := Impl(t.Context(), t.TempDir(), f.repo, f.repo, _change, 1); err == nil || !strings.Contains(err.Error(), "no plan snapshot") {
+			t.Errorf("Impl = %v, want no plan snapshot", err)
 		}
 	})
 }
