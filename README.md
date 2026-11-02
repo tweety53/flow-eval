@@ -9,25 +9,33 @@ The design is `kan-964-flow-eval-harness/design.md`, in this repository's git hi
 
 ## How it works
 
-1. **Mine a case** from a finished `/flow` change ([`case add`](#case-add-and-case-validate)),
-   before `/flow`'s cleanup removes its worktree. The self-review's `flow-eval` angle names
-   candidates. An **impl** case is a task's plan as it stood before the task, with the reference
-   commit's tests held out (`heldout.patch`) and its `verify` the project's lint plus those
-   tests. A **review** case is a real diff labelled with the defects each reviewer slot must find.
-   A **visual** case is screenshot/mockup pairs labelled match or departure. Committing the edited
-   labels approves them.
-2. **Pin the prompts** ([`prompts sync`](#prompts-sync)): vendor the agents repository's role
-   prompts and rules at one commit into `prompts/PIN`, then rebuild the runner image.
-3. **Run trials** ([`run`](#run)): a model, effort and harness per role, `-k` trials per case, each
-   in its own container. `--no-flow` runs the same role without flow's prompts and tooling, to
-   measure what flow adds.
-4. **Grade** ([Reading results](#reading-results)): an impl trial passes when its `verify`, held-out
-   tests included, is green; a review trial when the judge matches every must-find, scored by F1
-   plus capped net extras; a visual trial by balanced accuracy. Cost, wall-clock and tokens are
-   recorded per trial, and a crashed build tool is an infra error, not a fail.
-5. **Compare and promote** ([`compare`](#compare), [`baseline set`](#baseline-set)): a candidate
-   run against its role's baseline — non-inferior, regression or improvement — and a winner becomes
-   the new baseline. [`regrade`](#regrade) re-scores stored review runs after a label is corrected.
+1. **Mine a case** — [`case add`](#case-add-and-case-validate)
+   - From a finished `/flow` change, before `/flow`'s cleanup removes its worktree.
+   - The self-review's `flow-eval` angle names candidates.
+   - **impl**: a task's plan as it stood before the task; the reference commit's tests are held
+     out (`heldout.patch`); `verify` is the project's lint plus those tests.
+   - **review**: a real diff, labelled with the defects each reviewer slot must find.
+   - **visual**: screenshot/mockup pairs, labelled match or departure.
+   - Committing the edited labels approves them.
+2. **Pin the prompts** — [`prompts sync`](#prompts-sync)
+   - Vendors the agents repository's role prompts and rules at one commit into `prompts/PIN`.
+   - Rebuild the runner image afterwards.
+3. **Run trials** — [`run`](#run)
+   - One model, effort and harness per role; `-k` trials per case.
+   - Each trial runs in its own container.
+   - `--no-flow` runs the same role without flow's prompts and tooling, to measure what flow adds.
+4. **Grade** — [Reading results](#reading-results)
+   - **impl**: passes when its `verify`, held-out tests included, is green.
+   - **review**: passes when the judge matches every must-find; scored by F1 plus capped net extras.
+   - **visual**: scored by balanced accuracy.
+   - Cost, wall-clock and tokens are recorded per trial.
+   - A crashed build tool is an infra error, not a fail.
+5. **Compare and promote** — [`compare`](#compare), [`baseline set`](#baseline-set),
+   [`regrade`](#regrade)
+   - `compare` checks a candidate run against its role's baseline: non-inferior, regression or
+     improvement.
+   - `baseline set` makes a winning run the new baseline.
+   - `regrade` re-scores stored review runs after a label is corrected.
 
 ## Setup
 
