@@ -2485,3 +2485,35 @@ func TestSplitJudgeSumsToWhole(t *testing.T) {
 		})
 	}
 }
+
+// A judged impl trial's alignment reason sits, escaped, directly under its heading; an unjudged
+// trial shows none.
+func TestPageShowsAlignmentReason(t *testing.T) {
+	trial := func(n int, passed bool, score float64, reason string) Line {
+		return Line{Case: "i1", TrialNum: n, Trial: metrics.Trial{
+			Passed: passed, Score: score, Work: &metrics.Work{AlignmentReason: reason},
+		}}
+	}
+	lines := []Line{
+		trial(1, true, 85, "does it; also <renames> a helper"),
+		trial(2, false, 0, ""),
+		trial(3, true, 60, "adds a settings screen"),
+	}
+	data, err := page(t.TempDir(), "r", Header{Role: "impl"}, summary{Rows: []caseRow{{ID: "i1"}}}, lines)
+	if err != nil {
+		t.Fatal(err)
+	}
+	html := string(data)
+	for _, want := range []string{
+		"· score 85.0</h3>\n<p class=\"reason\">alignment: does it; also &lt;renames&gt; a helper</p>",
+		"· score 60.0</h3>\n<p class=\"reason\">alignment: adds a settings screen</p>",
+		".reason { color: var(--muted); margin: .25em 0; }",
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("page lacks %q:\n%s", want, html)
+		}
+	}
+	if n := strings.Count(html, `<p class="reason">`); n != 2 {
+		t.Errorf("page holds %d reason lines, want 2, one per judged trial", n)
+	}
+}
