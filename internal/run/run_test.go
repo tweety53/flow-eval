@@ -1443,8 +1443,8 @@ func TestRunHeaderRecordsItsJudge(t *testing.T) {
 	}{
 		{"review records the pin", review, _judgePin,
 			"<dt>judge</dt><dd>claude-code m1 medium</dd>", "<td>primary</td><td>claude-code m1 medium</td>"},
-		{"impl, which calls no judge, records none", impl, grade.Pin{},
-			"<dt>judge</dt><dd>–</dd>", "<td></td><td>–</td>"},
+		{"impl records the pin", impl, _judgePin,
+			"<dt>judge</dt><dd>claude-code m1 medium</dd>", "<td></td><td>claude-code m1 medium</td>"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			id, err := Run(t.Context(), tc.cfg, &hostDocker{root: t.TempDir()})
@@ -2273,5 +2273,215 @@ func TestReportNamesAnEmptyPromptPinNone(t *testing.T) {
 		if !strings.Contains(md, want) {
 			t.Errorf("pin %q: report lacks %q:\n%s", pin, want, md)
 		}
+	}
+}
+
+// alignJudge records each Align call's patches and answers with answer, in label order, at usage —
+// or with err.
+type alignJudge struct {
+	sameJudge
+	answer []grade.Alignment
+	usage  harness.Usage
+	err    error
+
+	mu    sync.Mutex
+	calls [][]string // each Align call's patches
+}
+
+func (j *alignJudge) Align(_ context.Context, _, _ string, patches []string) ([]grade.Alignment, harness.Usage, error) {
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	j.calls = append(j.calls, patches)
+	if j.err != nil {
+		return nil, j.usage, j.err
+	}
+	return j.answer, j.usage, nil
+}
+
+// _redSecond writes feature.txt, holding the trial's sandbox id, on every trial but the second, so
+// verify `test -f feature.txt` is red in the middle of a k=3 case.
+const _redSecond = `t=$(basename "$(dirname "$PWD")"); case $t in *-2) echo skip ;; *) echo "$t" > feature.txt && echo done ;; esac`
+
+// A k=3 impl case is judged once over its two green trials, in trial order: each scores its own
+// alignment, the red trial in between stays 0 and unjudged, and the judge's cost is split between
+// the judged lines, never charged to a trial.
+func TestImplCaseJudgedOnceOverItsGreenTrials(t *testing.T) {
+	cfg := implConfig(t, "test -f feature.txt", _redSecond)
+	cfg.K, cfg.Parallel = 3, 3
+	usage := harness.Usage{Input: 2_000_000, Output: 100_000, ServedModels: []string{"m1"}}
+	j := &alignJudge{
+		answer: []grade.Alignment{{Score: 85, Reason: "does it; also renames a helper"}, {Score: 60, Reason: "adds a settings screen"}},
+		usage:  usage,
+	}
+	cfg.Judge = j
+	id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, lines := readRun(t, cfg.RunsDir, id)
+	if len(lines) != 3 {
+		t.Fatalf("got %d lines, want 3", len(lines))
+	}
+
+	if len(j.calls) != 1 || len(j.calls[0]) != 2 {
+		t.Fatalf("Align calls = %d with patches %q, want one call over two patches", len(j.calls), j.calls)
+	}
+	for i, trial := range []int{1, 3} {
+		patch, err := os.ReadFile(filepath.Join(cfg.RunsDir, id, "i1", fmt.Sprint(trial), "work.patch"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if j.calls[0][i] != string(patch) {
+			t.Errorf("patch T%d = %q, want trial %d's work.patch %q", i+1, j.calls[0][i], trial, patch)
+		}
+	}
+
+	agent, err := metrics.FromUsage(harness.Usage{Input: 1_000_000, Output: 1_000_000, ServedModels: []string{"m1"}}, "m1", _pricing, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	priced, err := metrics.FromUsage(usage, "m1", _pricing, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []struct {
+		passed bool
+		score  float64
+		reason string
+	}{{true, 85, "does it; also renames a helper"}, {false, 0, ""}, {true, 60, "adds a settings screen"}}
+	var judgeCost float64
+	for i, l := range lines {
+		w := want[i]
+		var reason string
+		if l.Work != nil {
+			reason = l.Work.AlignmentReason
+		}
+		if l.Passed != w.passed || l.Score != w.score || reason != w.reason || l.InfraError {
+			t.Errorf("trial %d: passed %v score %v reason %q infra %v; want passed %v score %v reason %q",
+				l.TrialNum, l.Passed, l.Score, reason, l.InfraError, w.passed, w.score, w.reason)
+		}
+		if l.CostUSD != agent.CostUSD {
+			t.Errorf("trial %d's own cost %v, want the agent's %v alone", l.TrialNum, l.CostUSD, agent.CostUSD)
+		}
+		if (l.Judge != nil) != w.passed {
+			t.Errorf("trial %d judge usage %+v, want it only on a judged trial", l.TrialNum, l.Judge)
+		}
+		if l.Judge != nil {
+			judgeCost += l.Judge.CostUSD
+		}
+	}
+	if judgeCost != priced.CostUSD {
+		t.Errorf("judged lines' judge cost sums to %v, want the call's %v", judgeCost, priced.CostUSD)
+	}
+	raw, err := os.ReadFile(filepath.Join(cfg.RunsDir, id+".jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n := bytes.Count(raw, []byte(`"alignment_reason"`)); n != 2 {
+		t.Errorf("jsonl holds %d alignment_reason keys, want 2, one per judged trial:\n%s", n, raw)
+	}
+	if s := summarize(h, cfg.Cases, lines); s.Rows[0].Passes != 2 || s.Rows[0].JudgeCost != priced.CostUSD {
+		t.Errorf("case row %+v, want 2 passes and judge cost %v", s.Rows[0], priced.CostUSD)
+	}
+}
+
+func TestImplCaseWithNoGreenTrialMakesNoJudgeCall(t *testing.T) {
+	cfg := implConfig(t, "false", "echo feature > feature.txt && echo done")
+	cfg.K = 2
+	j := &alignJudge{usage: _judgeUsage}
+	cfg.Judge = j
+	id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, lines := readRun(t, cfg.RunsDir, id)
+	if len(j.calls) != 0 {
+		t.Errorf("Align called %d times on an all-red case, want none", len(j.calls))
+	}
+	for _, l := range lines {
+		if l.Score != 0 || l.Passed || l.Judge != nil {
+			t.Errorf("trial %d: score %v passed %v judge %+v; want a red 0 with no judge usage", l.TrialNum, l.Score, l.Passed, l.Judge)
+		}
+	}
+}
+
+// A judge that fails turns the case's green trials into infra errors carrying its usage; the run
+// itself goes on.
+func TestImplJudgeErrorMakesGreenTrialsInfra(t *testing.T) {
+	cfg := implConfig(t, "true", "echo feature > feature.txt && echo done")
+	j := &alignJudge{usage: _judgeUsage, err: errors.New("judge: model unavailable")}
+	cfg.Judge = j
+	id, err := Run(t.Context(), cfg, &hostDocker{root: t.TempDir()})
+	if err != nil {
+		t.Fatalf("Run = %v, want a judge failure recorded on its trials, never the run's error", err)
+	}
+	_, lines := readRun(t, cfg.RunsDir, id)
+	if len(lines) != 1 {
+		t.Fatalf("got %d lines, want 1", len(lines))
+	}
+	l := lines[0]
+	if !l.InfraError || l.Passed || l.Score != 0 {
+		t.Errorf("trial: infra %v passed %v score %v; want an unscored infra error", l.InfraError, l.Passed, l.Score)
+	}
+	if !strings.HasPrefix(l.Error, "judge: ") || strings.HasPrefix(l.Error, "judge: judge: ") {
+		t.Errorf("error %q, want it prefixed judge: exactly once", l.Error)
+	}
+	if l.Judge == nil || l.Judge.Input != _judgeUsage.Input {
+		t.Errorf("judge usage %+v, want the failed call's", l.Judge)
+	}
+}
+
+func TestSplitJudgeSumsToWhole(t *testing.T) {
+	whole := metrics.Trial{
+		Input: 10, Output: 11, CacheRead: 13, CacheWrite: 14, CacheWrite1h: 16, Reasoning: 17,
+		CostUSD: 0.75, ReportedCostUSD: new(0.75), ToolCalls: map[string]int{"Edit": 1}, ServedModel: "m1",
+	}
+	tokens := func(t metrics.Trial) [6]int64 {
+		return [6]int64{t.Input, t.Output, t.CacheRead, t.CacheWrite, t.CacheWrite1h, t.Reasoning}
+	}
+	for _, n := range []int{1, 2, 3} {
+		t.Run(fmt.Sprintf("n=%d", n), func(t *testing.T) {
+			parts := splitJudge(whole, n)
+			if len(parts) != n {
+				t.Fatalf("got %d parts, want %d", len(parts), n)
+			}
+			var sum [6]int64
+			var cost, reported float64
+			for i, p := range parts {
+				for k, v := range tokens(*p) {
+					sum[k] += v
+					share := tokens(whole)[k] / int64(n)
+					if i == 0 {
+						share += tokens(whole)[k] % int64(n)
+					}
+					if v != share {
+						t.Errorf("part %d token %d = %d, want %d", i+1, k, v, share)
+					}
+				}
+				cost += p.CostUSD
+				reported += *p.ReportedCostUSD
+				if p.ServedModel != whole.ServedModel {
+					t.Errorf("part %d served %q, want %q copied", i+1, p.ServedModel, whole.ServedModel)
+				}
+				for _, q := range parts[:i] {
+					if p.ReportedCostUSD == q.ReportedCostUSD {
+						t.Errorf("part %d shares a ReportedCostUSD pointer", i+1)
+					}
+				}
+				p.ToolCalls["mutated"] = i
+			}
+			if sum != tokens(whole) || cost != whole.CostUSD || reported != *whole.ReportedCostUSD {
+				t.Errorf("parts sum to tokens %v cost %v reported %v, want %v, %v, %v",
+					sum, cost, reported, tokens(whole), whole.CostUSD, *whole.ReportedCostUSD)
+			}
+			if _, ok := whole.ToolCalls["mutated"]; ok {
+				t.Error("a part shares the whole's ToolCalls map")
+			}
+			for i, p := range parts {
+				if p.ToolCalls["mutated"] != i {
+					t.Errorf("part %d's ToolCalls map is shared with another part", i+1)
+				}
+			}
+		})
 	}
 }

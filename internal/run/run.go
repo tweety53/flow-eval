@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
@@ -109,7 +110,7 @@ type Config struct {
 	FlowEvalSHA                   string
 	Pricing                       metrics.Pricing
 	Judge                         grade.Judge
-	JudgePin                      grade.Pin // recorded in a review or visual run's header; its model prices the judge's usage
+	JudgePin                      grade.Pin // recorded in every run's header; its model prices the judge's usage
 	// Warnings receives what does not fail the run: another run's page that could not be repainted.
 	// nil discards them.
 	Warnings io.Writer
@@ -131,8 +132,8 @@ type Header struct {
 	CaseHashes  map[string]string `json:"case_hashes"` // case id → its own set hash
 	FlowEvalSHA string            `json:"flow_eval_sha"`
 	Started     time.Time         `json:"started"`
-	// Judge is the judge pin a review or visual run is graded with; an impl run, and every run from
-	// before the field, records none.
+	// Judge is the judge pin the run is graded with; a run from before the field, and an impl run
+	// from before KAN-1075, records none.
 	Judge grade.Pin `json:"judge,omitzero"`
 	// Regraded is the flow-eval sha whose labels and grader last re-graded the run's trials (Regrade);
 	// FlowEvalSHA stays the sha that ran them. A run never re-graded records none.
@@ -172,7 +173,9 @@ var now = time.Now
 // is warmed before its first trial. A trial whose sandbox or agent fails before the agent produced
 // output is recorded as an infra error; any later failure, grading included, is a scored fail
 // carrying its reason. err is reserved for a run that cannot proceed at all, such as a review slot
-// with no prompt or a review case with no must-find for cfg.Slot, refused before any trial.
+// with no prompt or a review case with no must-find for cfg.Slot, refused before any trial. An impl
+// case's lines are held until its last trial lands, then its verify-green trials are scored by one
+// judge call (judgeCase) and the case's lines written together.
 func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 	timeout, ok := Timeouts[cfg.Role]
 	if !ok || cfg.K < 1 || cfg.Parallel < 1 || len(cfg.Cases) == 0 {
@@ -239,11 +242,23 @@ func Run(ctx context.Context, cfg Config, docker Docker) (string, error) {
 	}
 
 	var (
-		mu       sync.Mutex // guards lines and out
+		mu       sync.Mutex // guards lines, out and held
 		lines    []Line
 		writeErr error
 		wg       sync.WaitGroup
+		// held is each impl case's finished trials, kept until its last one lands and the case is
+		// judged (decision judge-on-last-trial).
+		held = map[string][]Line{}
 	)
+	record := func(ls ...Line) {
+		mu.Lock()
+		defer mu.Unlock()
+		for _, l := range ls {
+			lines = append(lines, l)
+			writeErr = errors.Join(writeErr, writeJSONLine(out, l))
+		}
+	}
+	caseArt := func(c cases.Case) string { return filepath.Join(cfg.RunsDir, id, c.ID) }
 	sem := make(chan struct{}, cfg.Parallel) // one slot per concurrent trial
 	// tag keeps this run's sandboxes apart from a run with the same id in another runs directory,
 	// which O_EXCL above cannot see.
@@ -267,14 +282,32 @@ jobs:
 				defer func() { <-sem }()
 				l := runTrial(ctx, cfg, docker, p, sandboxID, art, timeout)
 				l.Case, l.TrialNum, l.StandardsDropped = p.c.ID, trial, p.dropped
+				if cfg.Role != "impl" {
+					record(l)
+					return
+				}
 				mu.Lock()
-				defer mu.Unlock()
-				lines = append(lines, l)
-				writeErr = errors.Join(writeErr, writeJSONLine(out, l))
+				ls := append(held[p.c.ID], l)
+				last := len(ls) == cfg.K
+				if last {
+					delete(held, p.c.ID)
+				} else {
+					held[p.c.ID] = ls
+				}
+				mu.Unlock()
+				if last {
+					record(judgeCase(ctx, cfg, p.c, caseArt(p.c), ls, timeout)...)
+				}
 			})
 		}
 	}
 	wg.Wait()
+	// A cancelled run leaves the cases whose last trial never started held: judged as they stand.
+	for _, p := range preps {
+		if ls, ok := held[p.c.ID]; ok {
+			record(judgeCase(ctx, cfg, p.c, caseArt(p.c), ls, timeout)...)
+		}
+	}
 	// The reports cover the trials recorded so far, so a cancelled run still gets them.
 	if err := errors.Join(ctx.Err(), writeErr, writeReports(cfg, id, h, lines)); err != nil {
 		return id, fmt.Errorf("run %s: %w", id, err)
@@ -324,9 +357,7 @@ func header(cfg Config, started time.Time) (Header, error) {
 	if cfg.Role == "review" {
 		h.Slot = cfg.Slot
 	}
-	if cfg.Role != "impl" { // impl calls no judge
-		h.Judge = cfg.JudgePin
-	}
+	h.Judge = cfg.JudgePin
 	if h.CaseSetHash, h.CaseHashes, err = caseHashes(cfg.Cases); err != nil {
 		return Header{}, err
 	}
@@ -356,6 +387,99 @@ func judgeMetrics(cfg Config, u harness.Usage) (*metrics.Trial, error) {
 	}
 	jt, err := metrics.FromUsage(u, cfg.JudgePin.Model, cfg.Pricing, 0)
 	return &jt, err
+}
+
+// judgeCase scores a finished impl case's verify-green trials by one judge call over their patches
+// (decision one-call-per-case) and returns ls sorted by trial. The judge's priced usage is split
+// across the judged lines, never added to a trial's own cost. A judge pass that fails turns every
+// green line into an infra error carrying the cause and its share of the usage (decision
+// judge-error-is-infra). Red and infra lines are returned untouched, as is a case with no green trial.
+func judgeCase(ctx context.Context, cfg Config, c cases.Case, caseArt string, ls []Line,
+	timeout time.Duration,
+) []Line {
+	slices.SortFunc(ls, func(a, b Line) int { return cmp.Compare(a.TrialNum, b.TrialNum) })
+	var green []int
+	for i, l := range ls {
+		if !l.InfraError && l.Passed {
+			green = append(green, i)
+		}
+	}
+	if len(green) == 0 {
+		return ls
+	}
+	as, jt, err := align(ctx, cfg, c, caseArt, ls, green, timeout)
+	var parts []*metrics.Trial
+	if jt != nil {
+		parts = splitJudge(*jt, len(green))
+	}
+	for k, i := range green {
+		l := &ls[i]
+		if parts != nil {
+			l.Judge = parts[k]
+		}
+		if err != nil {
+			l.InfraError, l.Passed, l.Score = true, false, 0
+			l.Error = "judge: " + strings.TrimPrefix(err.Error(), "judge: ")
+			continue
+		}
+		l.Score = float64(as[k].Score)
+		l.Work.AlignmentReason = as[k].Reason // a green impl trial always carries its Work
+	}
+	return ls
+}
+
+// align reads the case's task and context and the patch of each line green indexes, makes the one
+// Align call under the role's grading timeout (decision judge-deadline) and prices its usage. The
+// usage is returned priced even when the call or its pricing failed: its spend is real.
+func align(ctx context.Context, cfg Config, c cases.Case, caseArt string, ls []Line, green []int,
+	timeout time.Duration,
+) ([]grade.Alignment, *metrics.Trial, error) {
+	task, err := os.ReadFile(filepath.Join(c.Dir, "task.md"))
+	if err != nil {
+		return nil, nil, err
+	}
+	taskContext, err := os.ReadFile(filepath.Join(c.Dir, "context.md"))
+	if err != nil {
+		return nil, nil, err
+	}
+	patches := make([]string, len(green))
+	for k, i := range green {
+		patch, err := os.ReadFile(filepath.Join(caseArt, fmt.Sprint(ls[i].TrialNum), "work.patch"))
+		if err != nil {
+			return nil, nil, err
+		}
+		patches[k] = string(patch)
+	}
+	jctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	as, u, err := cfg.Judge.Align(jctx, string(task), string(taskContext), patches)
+	jt, perr := judgeMetrics(cfg, u)
+	return as, jt, errors.Join(err, perr)
+}
+
+// splitJudge divides one judge call's priced usage into n equal parts, one per judged trial
+// (decision split-judge-usage): each token count's integer remainder goes to the first part, so the
+// parts sum to the whole, and each part owns its ReportedCostUSD and ToolCalls.
+func splitJudge(jt metrics.Trial, n int) []*metrics.Trial {
+	parts := make([]*metrics.Trial, n)
+	for i := range parts {
+		share := func(v int64) int64 {
+			if i == 0 {
+				return v/int64(n) + v%int64(n)
+			}
+			return v / int64(n)
+		}
+		p := jt
+		p.Input, p.Output, p.CacheRead = share(jt.Input), share(jt.Output), share(jt.CacheRead)
+		p.CacheWrite, p.CacheWrite1h, p.Reasoning = share(jt.CacheWrite), share(jt.CacheWrite1h), share(jt.Reasoning)
+		p.CostUSD = jt.CostUSD / float64(n)
+		if jt.ReportedCostUSD != nil {
+			p.ReportedCostUSD = new(*jt.ReportedCostUSD / float64(n))
+		}
+		p.ToolCalls = maps.Clone(jt.ToolCalls)
+		parts[i] = &p
+	}
+	return parts
 }
 
 // prepare snapshots each impl and review case's repository, warms each repository's Gradle cache

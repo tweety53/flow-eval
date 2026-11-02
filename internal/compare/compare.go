@@ -87,8 +87,8 @@ type Decision struct {
 	// change between the runs can move scores, so a difference is shown, never refused.
 	FlowEval string
 	// Judges is a warning naming both runs' judges when they differ or a review or visual run records
-	// none, since a judge it does not record may differ; "" otherwise, as for impl, which calls no
-	// judge. A warning never refuses the comparison nor changes its exit.
+	// none, since a judge it does not record may differ; "" otherwise, as for an impl run from before
+	// KAN-1075, which called no judge. A warning never refuses the comparison nor changes its exit.
 	Judges string
 	// Prompts is a warning naming both runs' prompt pins when they differ, "" otherwise. Like Judges,
 	// it never refuses the comparison nor changes its exit.

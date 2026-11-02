@@ -174,6 +174,8 @@ func TestRunRefusesBeforeAnyContainer(t *testing.T) {
 		{"unknown harness", []string{"run", "--role", "impl", "--harness", "x", "--model", "m", "--effort", "e"}, nil, "usage: flow-eval run"},
 		{"harness credential missing", full, nil, "OPENAI_API_KEY"},
 		{"judge credential missing", full, []string{"OPENAI_API_KEY=k"}, "CLAUDE_CODE_OAUTH_TOKEN"},
+		{"impl judge credential missing", []string{"run", "--role", "impl", "--harness", "codex", "--model", "m", "--effort", "low"},
+			[]string{"OPENAI_API_KEY=k"}, "CLAUDE_CODE_OAUTH_TOKEN"},
 		// muse-code's login lives in its volume, so no credential is asked of it; only the judge's.
 		{"muse-code needs no credential", []string{"run", "--role", "visual", "--harness", "muse-code", "--model", "m", "--effort", "low"}, nil, "CLAUDE_CODE_OAUTH_TOKEN"},
 		{"unknown case", append(full, "--root", t.TempDir(), "--cases", "nope"), []string{"OPENAI_API_KEY=k", "ANTHROPIC_API_KEY=k"}, "nope"},

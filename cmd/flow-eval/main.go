@@ -175,7 +175,7 @@ func runCmd(args []string) int {
 		return 2
 	}
 	judgeCreds := _harnesses["claude-code"].creds
-	if *role != "impl" && len(firstCredential(judgeCreds)) == 0 {
+	if len(firstCredential(judgeCreds)) == 0 {
 		fmt.Fprintf(os.Stderr, "flow-eval run: the %s grader's judge needs one of %s set\n", *role, strings.Join(judgeCreds, ", "))
 		return 2
 	}
