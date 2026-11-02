@@ -419,7 +419,11 @@ func judgeCase(ctx context.Context, cfg Config, c cases.Case, caseArt string, ls
 		}
 		if err != nil {
 			l.InfraError, l.Passed, l.Score = true, false, 0
+			_, stop, stopped := strings.CutLast(l.Error, _stopSandbox) // runTrial's note stays
 			l.Error = "judge: " + strings.TrimPrefix(err.Error(), "judge: ")
+			if stopped {
+				l.Error += _stopSandbox + stop
+			}
 			continue
 		}
 		l.Score = float64(as[k].Score)
@@ -429,8 +433,9 @@ func judgeCase(ctx context.Context, cfg Config, c cases.Case, caseArt string, ls
 }
 
 // align reads the case's task and context and the patch of each line green indexes, makes the one
-// Align call under the role's grading timeout (decision judge-deadline) and prices its usage. The
-// usage is returned priced even when the call or its pricing failed: its spend is real.
+// Align call under the role's grading timeout (decision judge-deadline) and prices its usage. A
+// cancelled run still judges: the deadline alone bounds the call, so its green trials stay green.
+// The usage is returned priced even when the call or its pricing failed: its spend is real.
 func align(ctx context.Context, cfg Config, c cases.Case, caseArt string, ls []Line, green []int,
 	timeout time.Duration,
 ) ([]grade.Alignment, *metrics.Trial, error) {
@@ -450,7 +455,7 @@ func align(ctx context.Context, cfg Config, c cases.Case, caseArt string, ls []L
 		}
 		patches[k] = string(patch)
 	}
-	jctx, cancel := context.WithTimeout(ctx, timeout)
+	jctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), timeout)
 	defer cancel()
 	as, u, err := cfg.Judge.Align(jctx, string(task), string(taskContext), patches)
 	jt, perr := judgeMetrics(cfg, u)

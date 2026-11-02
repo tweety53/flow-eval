@@ -2517,3 +2517,91 @@ func TestPageShowsAlignmentReason(t *testing.T) {
 		t.Errorf("page holds %d reason lines, want 2, one per judged trial", n)
 	}
 }
+
+// A k=2 impl case cancelled after its first trial started is still recorded: the held trial is
+// judged as it stands once the run stops.
+func TestCancelledImplCaseKeepsItsHeldTrials(t *testing.T) {
+	cfg := implConfig(t, "exec sleep 60", "echo feature > feature.txt && echo done")
+	cfg.K = 2
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	d := &hostDocker{root: t.TempDir()}
+	go func() { // cancel once trial 1 is grading, before trial 2 can start
+		for {
+			d.mu.Lock()
+			grading := slices.Contains(d.log, "exec sh -c exec sleep 60")
+			d.mu.Unlock()
+			if grading {
+				cancel()
+				return
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	}()
+	id, err := Run(ctx, cfg, d)
+	if err == nil {
+		t.Fatal("a cancelled run returned no error")
+	}
+	_, lines := readRun(t, cfg.RunsDir, id)
+	if len(lines) != 1 || lines[0].TrialNum != 1 {
+		t.Fatalf("cancelled case recorded %+v, want its held trial 1", lines)
+	}
+}
+
+// ctxJudge records the context of its Align call and fails as that context would.
+type ctxJudge struct {
+	sameJudge
+	deadline time.Time
+	hasDL    bool
+}
+
+func (j *ctxJudge) Align(ctx context.Context, _, _ string, patches []string) ([]grade.Alignment, harness.Usage, error) {
+	j.deadline, j.hasDL = ctx.Deadline()
+	if err := ctx.Err(); err != nil {
+		return nil, harness.Usage{}, err
+	}
+	return aligned(len(patches)), harness.Usage{}, nil
+}
+
+// greenImplCase is a case directory and its artifacts holding one green trial's patch.
+func greenImplCase(t *testing.T) (cases.Case, string, []Line) {
+	t.Helper()
+	dir, art := t.TempDir(), t.TempDir()
+	writeFiles(t, dir, map[string]string{"task.md": "t", "context.md": "c"})
+	writeFiles(t, art, map[string]string{"1/work.patch": "p"})
+	ls := []Line{{Case: "i1", TrialNum: 1, Trial: metrics.Trial{Passed: true, Score: 100, Work: &metrics.Work{}}}}
+	return cases.Case{ID: "i1", Dir: dir}, art, ls
+}
+
+// The judge call runs under the timeout judgeCase is given (decision judge-deadline).
+func TestImplJudgeHasADeadline(t *testing.T) {
+	c, art, ls := greenImplCase(t)
+	j := &ctxJudge{}
+	began := time.Now()
+	judgeCase(t.Context(), Config{Judge: j, JudgePin: _judgePin, Pricing: _pricing}, c, art, ls, time.Minute)
+	if !j.hasDL || j.deadline.After(began.Add(time.Minute+time.Second)) {
+		t.Fatalf("judge deadline %v (set %v), want within a minute of %v", j.deadline, j.hasDL, began)
+	}
+}
+
+// A cancelled run still judges its green trials: they keep their green status and get a score.
+func TestCancelledRunStillJudgesGreenTrials(t *testing.T) {
+	c, art, ls := greenImplCase(t)
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	got := judgeCase(ctx, Config{Judge: &ctxJudge{}, JudgePin: _judgePin, Pricing: _pricing}, c, art, ls, time.Minute)
+	if got[0].InfraError || !got[0].Passed || got[0].Score != 100 {
+		t.Fatalf("green trial of a cancelled run judged as %+v, want it green and scored", got[0])
+	}
+}
+
+// A judge failure keeps the note runTrial left when the trial's sandbox would not stop.
+func TestImplJudgeFailureKeepsTheSandboxStopNote(t *testing.T) {
+	c, art, ls := greenImplCase(t)
+	ls[0].Error = _stopSandbox + "container still running"
+	j := &alignJudge{err: errors.New("judge: model unavailable")}
+	got := judgeCase(t.Context(), Config{Judge: j, JudgePin: _judgePin, Pricing: _pricing}, c, art, ls, time.Minute)
+	if want := "judge: model unavailable" + _stopSandbox + "container still running"; !got[0].InfraError || got[0].Error != want {
+		t.Fatalf("line %+v, want an infra error %q", got[0], want)
+	}
+}

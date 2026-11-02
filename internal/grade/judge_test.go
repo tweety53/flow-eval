@@ -32,7 +32,8 @@ func TestParseAlignment(t *testing.T) {
 		{name: "a duplicate label is refused", answer: "T1 | 70 | a\nT1 | 60 | b\nT2 | 50 | c", wantErr: true},
 		{name: "an unknown label is refused", answer: "T1 | 70 | a\nT2 | 60 | b\nT3 | 50 | c", wantErr: true},
 		{name: "a score above 100 is refused", answer: "T1 | 101 | a\nT2 | 60 | b", wantErr: true},
-		{name: "an empty reason is refused", answer: "T1 | 70 |\nT2 | 60 | b", wantErr: true},
+		{name: "an empty reason is refused", answer: "T2 | 60 | b\nT1 | 70 |", wantErr: true},
+		{name: "an empty reason never takes the next line", answer: "T1 | 70 |\nOverall fine.\nT2 | 60 | b", wantErr: true},
 		{name: "an answer with no lines is refused", answer: "Both patches look fine to me.", wantErr: true},
 	}
 	for _, tt := range tests {

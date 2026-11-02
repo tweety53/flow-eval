@@ -117,8 +117,9 @@ func alignPrompt(task, taskContext string, patches []string) string {
 }
 
 // _alignLine matches one answer line, T<n> | <score> | <reason>, ignoring list or quote markers
-// before it; the reason is the rest of the line, so a reason holding "|" is kept whole.
-var _alignLine = regexp.MustCompile(`(?m)^[\s*>-]*T(\d+)\s*\|\s*(\d+)\s*\|\s*(.*?)\s*$`)
+// before it; the reason is the rest of the line, so a reason holding "|" is kept whole. Spacing
+// after the label never crosses a newline, so an empty reason never takes the next line.
+var _alignLine = regexp.MustCompile(`(?m)^[\s*>-]*T(\d+)[ \t]*\|[ \t]*(\d+)[ \t]*\|[ \t]*(.*?)[ \t\r]*$`)
 
 // parseAlignment reads n alignments, indexed by label, from answer lines anywhere in the text;
 // every label 1..n exactly once with a score of at most 100 and a non-empty reason.
