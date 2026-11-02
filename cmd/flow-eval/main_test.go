@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
+	"context"
 	json "encoding/json/v2"
 	"errors"
 	"fmt"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -455,7 +456,7 @@ func TestBaselineSetWarnsOnAFailedRepaint(t *testing.T) {
 // A SIGTERM — a CI cancel, `timeout`, `kill` — cancels a run like Ctrl+C does, so its deferred
 // teardown removes the trials' containers instead of the process dying with them running.
 func TestSIGTERMCancelsARun(t *testing.T) {
-	ctx, stop := signal.NotifyContext(t.Context(), stopSignals...)
+	ctx, stop := stopContext()
 	defer stop()
 	if err := syscall.Kill(os.Getpid(), syscall.SIGTERM); err != nil {
 		t.Fatal(err)
@@ -464,6 +465,56 @@ func TestSIGTERMCancelsARun(t *testing.T) {
 	case <-ctx.Done():
 	case <-time.After(5 * time.Second):
 		t.Fatal("SIGTERM did not cancel the run context")
+	}
+}
+
+// A second stop signal kills a run whose first one is still being honoured — a run judging its held
+// cases can take minutes to wind down, and an operator who presses Ctrl+C again means it.
+func TestSecondInterruptKillsARun(t *testing.T) {
+	if os.Getenv("FLOW_EVAL_SIGNAL_CHILD") == "1" {
+		ctx, stop := stopContext()
+		defer stop()
+		fmt.Println("ready")
+		<-ctx.Done()
+		fmt.Println("cancelled")
+		select {}
+	}
+	killCtx, killCancel := context.WithTimeout(t.Context(), 30*time.Second)
+	defer killCancel()
+	cmd := exec.CommandContext(killCtx, os.Args[0], "-test.run=^TestSecondInterruptKillsARun$")
+	cmd.Env = append(os.Environ(), "FLOW_EVAL_SIGNAL_CHILD=1")
+	out, err := cmd.StdoutPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = cmd.Process.Kill() })
+	lines := bufio.NewScanner(out)
+	expect := func(want string) {
+		t.Helper()
+		if !lines.Scan() || lines.Text() != want {
+			t.Fatalf("child printed %q (err %v), want %q", lines.Text(), lines.Err(), want)
+		}
+	}
+	expect("ready")
+	if err := cmd.Process.Signal(syscall.SIGTERM); err != nil {
+		t.Fatal(err)
+	}
+	expect("cancelled")
+	if err := cmd.Process.Signal(syscall.SIGTERM); err != nil {
+		t.Fatal(err)
+	}
+	done := make(chan error, 1)
+	go func() { done <- cmd.Wait() }()
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("second SIGTERM did not kill the child")
+	}
+	if st := cmd.ProcessState; st.Success() || !st.Sys().(syscall.WaitStatus).Signaled() {
+		t.Errorf("child exited %v; want killed by signal", st)
 	}
 }
 

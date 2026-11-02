@@ -95,6 +95,7 @@ flow-eval run --role impl --harness claude-code --model sonnet --effort low -k 1
   `<role>-no-flow[-<slot>]`; compare one with its flow counterpart by
   `compare <run> --baseline <flow run>`. The prompts are `prompts/no-flow/`, which `prompts sync`
   never touches.
+- The first Ctrl+C (or SIGTERM) stops `run` cleanly: it tears the trials down and judges what is held. A second one kills the process at once, losing the lines still held.
 - Measure Haiku as `--model claude-haiku-5-5`: the CLI's `haiku` alias resolves to Haiku 4.5.
 
 Writes `runs/<id>.jsonl`, `runs/<id>.md` and `runs/<id>.html`, and rewrites `runs/index.html`, whose absolute path it prints last as `index: <path>`. Raw
