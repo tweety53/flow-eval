@@ -127,6 +127,21 @@ func firstCredential(names []string) []string {
 // terminal, and SIGTERM from a CI cancel, `timeout` or `kill`.
 var stopSignals = []os.Signal{os.Interrupt, syscall.SIGTERM}
 
+// stopContext is cancelled by the first stop signal and then restores the signals' default action,
+// so a second one kills a run still winding down — judging its held cases can take minutes. A run
+// killed that way loses its held lines, the trade-off of any kill. The returned context is cancelled
+// only once the default action is back, so nothing observing it races a second signal.
+func stopContext() (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithCancel(context.Background())
+	sig, stop := signal.NotifyContext(ctx, stopSignals...)
+	go func() {
+		<-sig.Done()
+		stop()
+		cancel()
+	}()
+	return ctx, cancel
+}
+
 // runCmd exits 0 when every trial is recorded (infra-error trials included), 2 on a usage error,
 // missing credentials, an invalid or unknown case, or a run that cannot proceed.
 func runCmd(args []string) int {
@@ -218,7 +233,7 @@ func runCmd(args []string) int {
 		}
 	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), stopSignals...)
+	ctx, stop := stopContext()
 	defer stop()
 	id, err := run.Run(ctx, run.Config{
 		Role: *role, Model: *model, Effort: *effort, Slot: *slot, Harness: hr.h, K: *k, Parallel: *parallel,
@@ -433,7 +448,7 @@ func regradeCmd(args []string) int {
 		fmt.Fprintf(os.Stderr, "flow-eval regrade: %v\n", err)
 		return 2
 	}
-	ctx, stop := signal.NotifyContext(context.Background(), stopSignals...)
+	ctx, stop := stopContext()
 	defer stop()
 	cfg := run.Config{
 		Cases: loaded, RunsDir: *runsDir, BaselinesDir: *baselines, FlowEvalSHA: sha,
