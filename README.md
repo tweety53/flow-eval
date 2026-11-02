@@ -25,7 +25,9 @@ The design is `kan-964-flow-eval-harness/design.md`, in this repository's git hi
    - Each trial runs in its own container.
    - `--no-flow` runs the same role without flow's prompts and tooling, to measure what flow adds.
 4. **Grade** — [Reading results](#reading-results)
-   - **impl**: passes when its `verify`, held-out tests included, is green.
+   - **impl**: passes when its `verify`, held-out tests included, is green; a green trial is scored 0–100 by one
+     judge call per case over its green trials, for doing what the task asks and only that; a red
+     trial scores 0.
    - **review**: passes when the judge matches every must-find; scored by F1 plus capped net extras.
    - **visual**: scored by balanced accuracy.
    - Cost, wall-clock and tokens are recorded per trial.
@@ -189,6 +191,11 @@ Tuning a prompt with flow-eval is [`docs/prompt-tuning.md`](docs/prompt-tuning.m
   the judge rates a plausible defect in the diff; net extras are extras less the unlabelled findings
   it rates implausible, floored at 0. A finding that names a must-find defect away from its label is
   neither (decision `review-extras-net`).
+  An impl trial passes when its verify is green; its score is the judge's 0–100
+  alignment score, and its one-line reason shows under the trial's heading on the run page; a
+  judge failure makes the case's green trials infra errors; a red trial scores 0 and is not
+  judged; impl runs from before this change scored every green trial 100, so compare one only
+  against a run graded the same way.
 - Every field of `runs/<id>.jsonl` is defined in design.md §6; the run id, the page and the colours
   in §8. Scoring is §7, and the visual score is decision `visual-score-balanced-accuracy`.
 
