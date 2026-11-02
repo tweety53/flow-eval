@@ -50,10 +50,12 @@ type ReviewLabels struct {
 
 // Judge decides what a location cannot: whether two descriptions name the same defect, and
 // whether an unlabelled finding is a plausible defect in the diff. Each answer comes with the
-// judge's own usage, which is never the candidate's.
+// judge's own usage, which is never the candidate's. Align scores each of a case's green patches
+// 0–100 for doing what the task asks and only that.
 type Judge interface {
 	Same(ctx context.Context, labelled, reported string) (bool, harness.Usage, error)
 	Plausible(ctx context.Context, diff, finding string) (bool, harness.Usage, error)
+	Align(ctx context.Context, task, taskContext string, patches []string) ([]Alignment, harness.Usage, error)
 }
 
 // Review is a review trial's grade.

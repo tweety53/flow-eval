@@ -41,6 +41,19 @@ func (j *fakeJudge) Plausible(_ context.Context, _, finding string) (bool, harne
 	return strings.Contains(finding, "plausible"), _callUsage, nil
 }
 
+func (j *fakeJudge) Align(_ context.Context, _, _ string, patches []string) ([]Alignment, harness.Usage, error) {
+	return aligned(len(patches)), _callUsage, nil
+}
+
+// aligned is n alignments of 100.
+func aligned(n int) []Alignment {
+	as := make([]Alignment, n)
+	for i := range as {
+		as[i] = Alignment{Score: 100, Reason: "aligned"}
+	}
+	return as
+}
+
 func TestParseReviewReport(t *testing.T) {
 	report := "### Strengths\n- `ok.go:1` is fine\n\n### Issues\n\n" +
 		"#### Critical (Must Fix)\n" +

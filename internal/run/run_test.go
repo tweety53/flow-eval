@@ -174,6 +174,19 @@ func (sameJudge) Plausible(context.Context, string, string) (bool, harness.Usage
 	return true, _judgeUsage, nil
 }
 
+func (sameJudge) Align(_ context.Context, _, _ string, patches []string) ([]grade.Alignment, harness.Usage, error) {
+	return aligned(len(patches)), _judgeUsage, nil
+}
+
+// aligned is n alignments of 100.
+func aligned(n int) []grade.Alignment {
+	as := make([]grade.Alignment, n)
+	for i := range as {
+		as[i] = grade.Alignment{Score: 100, Reason: "aligned"}
+	}
+	return as
+}
+
 var _pricing = metrics.Pricing{"m1": {Input: 1, Output: 10, CacheRead: 0.1, CacheWrite: 1.25, Source: "test"}}
 
 // _judgePin is the judge every test run records; m1 prices its usage.
@@ -605,6 +618,10 @@ func (unpricedJudge) Same(context.Context, string, string) (bool, harness.Usage,
 
 func (unpricedJudge) Plausible(context.Context, string, string) (bool, harness.Usage, error) {
 	return true, harness.Usage{Input: 1, ServedModels: []string{"unpriced"}}, nil
+}
+
+func (unpricedJudge) Align(_ context.Context, _, _ string, patches []string) ([]grade.Alignment, harness.Usage, error) {
+	return aligned(len(patches)), harness.Usage{Input: 1, ServedModels: []string{"unpriced"}}, nil
 }
 
 // A judge whose usage cannot be priced fails the trial's grading: a scored fail, never infra.
@@ -1834,6 +1851,10 @@ func (tagJudge) Same(_ context.Context, _, reported string) (bool, harness.Usage
 
 func (tagJudge) Plausible(_ context.Context, _, finding string) (bool, harness.Usage, error) {
 	return !strings.Contains(finding, "made up"), harness.Usage{}, nil
+}
+
+func (tagJudge) Align(_ context.Context, _, _ string, patches []string) ([]grade.Alignment, harness.Usage, error) {
+	return aligned(len(patches)), harness.Usage{}, nil
 }
 
 // A review trial's score is F1 × 100 plus a bonus per net extra — plausible unlabelled findings less
