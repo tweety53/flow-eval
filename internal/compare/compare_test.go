@@ -224,7 +224,7 @@ func TestCompareWarnsOnMixedJudges(t *testing.T) {
 			"warning: judge claude-code sonnet medium vs – — DIFFER: scores may not be comparable"},
 		{"both record none", "visual", grade.Pin{}, grade.Pin{},
 			"warning: judge – vs – — UNRECORDED: scores may not be comparable"},
-		{"impl, which calls no judge", "impl", grade.Pin{}, grade.Pin{}, ""},
+		{"impl from before KAN-1075, which called no judge", "impl", grade.Pin{}, grade.Pin{}, ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			base, cand := fixture("base", tc.role, 3, scores), fixture("cand", tc.role, 3, scores)

@@ -129,6 +129,9 @@ type Work struct {
 	OutOfScopeFiles   []string `json:"out_of_scope_files"`
 	TestsAdded        int      `json:"tests_added"`
 	PreexistingBroken int      `json:"preexisting_broken"`
+	// AlignmentReason is the judge's one-line reason for a judged impl trial's score; the score
+	// itself is Trial.Score.
+	AlignmentReason string `json:"alignment_reason,omitzero"`
 }
 
 // Review is a review trial's scoring against the case labels.

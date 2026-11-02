@@ -218,6 +218,7 @@ pre { background: var(--panel); padding: 12px; border-radius: 6px; overflow-x: a
 nav { margin: 0 0 16px; }
 nav ul { margin: 4px 0; padding-left: 20px; }
 a { color: inherit; }
+.reason { color: var(--muted); margin: .25em 0; }
 `
 
 var _page = template.Must(template.New("page").Funcs(template.FuncMap{
@@ -286,6 +287,8 @@ var _page = template.Must(template.New("page").Funcs(template.FuncMap{
 {{- range .Cases}}{{range .Trials}}
 ` + _sectionOpen + ` class="trial {{if .InfraError}}infra{{else if .Passed}}pass{{else}}fail{{end}}">
 <h3>{{.Case}} · trial {{.TrialNum}} · <span class="verdict">{{if .InfraError}}infra error{{else if .Passed}}pass{{else}}fail{{end}}</span> · score {{printf "%.1f" .Score}}</h3>
+{{- with .Work}}{{with .AlignmentReason}}
+<p class="reason">alignment: {{.}}</p>{{end}}{{end}}
 {{- if .Error}}
 <p class="error">{{.Error}}</p>
 {{- end}}

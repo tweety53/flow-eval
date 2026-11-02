@@ -30,3 +30,15 @@ reviewer prompt.
 The rest (`go-grpc`, `go-database`, `go-observability`, `go-api-design`, `go-ci`,
 `go-dependency-injection`, `go-design-patterns`, `go-performance-review`, `go-data-structures`,
 `go-refactoring`, `go-semantic-tools`) apply only when the work is about their subject.
+
+## README
+
+Any change that alters user-visible behaviour, a command, a flag, a file format or the run/grade/compare
+pipeline updates `README.md` in the same change, before it is called done. An agent finishing such a
+change checks the README against the diff.
+
+## Shell
+
+Run every shell command that needs the operator's environment — `flow-eval run`, anything reading
+`ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` — through an interactive zsh: `zsh -ic '<command>'`.
+The credentials are exported by the zsh profile, not by the agent's own shell.
