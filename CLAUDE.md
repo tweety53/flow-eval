@@ -30,3 +30,9 @@ reviewer prompt.
 The rest (`go-grpc`, `go-database`, `go-observability`, `go-api-design`, `go-ci`,
 `go-dependency-injection`, `go-design-patterns`, `go-performance-review`, `go-data-structures`,
 `go-refactoring`, `go-semantic-tools`) apply only when the work is about their subject.
+
+## README
+
+Any change that alters user-visible behaviour, a command, a flag, a file format or the run/grade/compare
+pipeline updates `README.md` in the same change, before it is called done. An agent finishing such a
+change checks the README against the diff.
