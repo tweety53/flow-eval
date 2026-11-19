@@ -35,8 +35,8 @@ const (
 		"GroupSessionExceptionHandler.kt"
 	_conflictTest = "src/app/groupsession/src/test/kotlin/com/gymie/groupsession/infrastructure/presentation/web/" +
 		"GroupSessionFloorSetConflictTest.kt"
-	// _leak is written into every post-task source — the live plan, a later snapshot, the ledger and
-	// panel record, the panel-fix commit — and never into the plan snapshot taken before task 1.
+	// _leak is written into every post-task source — the ledger and panel record, the panel-fix
+	// commit — and never into the plan.
 	_leak = "LATER-CORRECTION-FROM-REVIEW-FIXES"
 )
 
@@ -48,10 +48,9 @@ type fixture struct {
 }
 
 // newFixture builds a gymie-shaped worktree: a base commit ignoring the change's files, one commit
-// per ledger dispatch that committed, and on disk, uncommitted, plan snapshot 1 holding the verbatim
-// kan-757 plan, then snapshot 2, the live plan, the rendered ledger and the panel record, each with
-// the ledger's shas rewritten to the fixture's and the plan files carrying _leak. edits rewrites the
-// ledger, the panel or a live plan file (by file name) before it is written, never a snapshot.
+// per ledger dispatch that committed, and on disk, uncommitted, the kan-757 plan, the rendered
+// ledger and the panel record, each with the ledger's shas rewritten to the fixture's. edits
+// rewrites the ledger, the panel or a plan file (by file name) before it is written.
 func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 	t.Helper()
 	repo := filepath.Join(t.TempDir(), "gymie")
@@ -98,10 +97,6 @@ func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 	}
 	sdd := filepath.Join(repo, ".superpowers/sdd")
 	f.ledger = filepath.Join(sdd, "ledgers", _change+".md")
-	snapshots := filepath.Join(sdd, _change, "plan-snapshots")
-	for _, name := range []string{"tasks.md", "proposal.md", "design.md"} {
-		writeFiles(t, filepath.Join(snapshots, "1"), map[string]string{name: readFile(t, filepath.Join("testdata/kan-757", name))})
-	}
 	for _, name := range []string{"ledger.md", "panel.md", "tasks.md", "proposal.md", "design.md"} {
 		raw, err := os.ReadFile(filepath.Join("testdata/kan-757", name))
 		if err != nil {
@@ -110,18 +105,6 @@ func newFixture(t *testing.T, edits map[string]func(string) string) fixture {
 		body := string(raw)
 		for i, sha := range _ledgerSHAs {
 			body = strings.ReplaceAll(body, sha, f.commits[i][:8])
-		}
-		if name == "tasks.md" {
-			body = strings.Replace(body, "- [x] 1. Set authorship stamps and the compare-and-set in workout\n",
-				"- [x] 1. Set authorship stamps and the compare-and-set in workout\n\n  "+_leak+"\n", 1)
-		}
-		if name == "design.md" {
-			body += "\n" + _leak + "\n"
-		}
-		switch name {
-		case "ledger.md", "panel.md":
-		default:
-			writeFiles(t, filepath.Join(snapshots, "2"), map[string]string{name: body})
 		}
 		if edit := edits[name]; edit != nil {
 			body = edit(body)
@@ -251,9 +234,6 @@ func TestMineImplFromLedger(t *testing.T) {
 		!strings.Contains(ctxt, readFile(t, "testdata/kan-757/design.md")) {
 		t.Error("context.md does not carry proposal.md and design.md")
 	}
-	if strings.Contains(task, _leak) || strings.Contains(ctxt, _leak) {
-		t.Error("task.md or context.md carries a later correction: the plan must be the snapshot taken before the task")
-	}
 	git(t, f.repo, "worktree", "remove", check)
 	if after := git(t, f.repo, "status", "--porcelain"); after != statusBefore {
 		t.Errorf("mining changed the source checkout: status %q, was %q", after, statusBefore)
@@ -316,7 +296,7 @@ func TestMineImplFromLedger(t *testing.T) {
 			t.Errorf("snapshot %s, want task 1's own base %s, not the fix round's parent", c.Snapshot, f.base)
 		}
 	})
-	t.Run("a change planned in another worktree reads that worktree's snapshot", func(t *testing.T) {
+	t.Run("a change planned in another worktree reads that worktree's plan", func(t *testing.T) {
 		f := newFixture(t, nil)
 		plans := filepath.Join(t.TempDir(), "gymie-plans")
 		if err := os.MkdirAll(filepath.Join(plans, "spectre/changes"), 0o755); err != nil {
@@ -327,7 +307,7 @@ func TestMineImplFromLedger(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
-		snap := filepath.Join(plans, ".superpowers/sdd", _change, "plan-snapshots/1/tasks.md")
+		snap := filepath.Join(plans, "spectre/changes", _change, "tasks.md")
 		tasks := strings.Replace(readFile(t, snap), "- [x] 1. Set authorship stamps and the compare-and-set in workout\n",
 			"- [x] 1. Set authorship stamps and the compare-and-set in workout\n\n  PLANNED-IN-THE-PLAN-REPOSITORY\n", 1)
 		writeFiles(t, filepath.Dir(snap), map[string]string{"tasks.md": tasks})
@@ -337,7 +317,7 @@ func TestMineImplFromLedger(t *testing.T) {
 			t.Fatal(err)
 		}
 		if task := readFile(t, filepath.Join(draft, "task.md")); !strings.Contains(task, "PLANNED-IN-THE-PLAN-REPOSITORY") || strings.Contains(task, _leak) {
-			t.Errorf("task.md is not the plan worktree's snapshot:\n%.200s", task)
+			t.Errorf("task.md is not the plan worktree's plan:\n%.200s", task)
 		}
 		if _, err := Review(t.Context(), root, f.repo, plans, _change); err != nil {
 			t.Errorf("Review with the plan files in another worktree: %v", err)
@@ -776,13 +756,4 @@ func TestMineRefusesOnceThePlanFilesAreGone(t *testing.T) {
 	if _, err := Review(t.Context(), t.TempDir(), f.repo, f.repo, _change); err == nil || !strings.Contains(err.Error(), "plan files gone — mine before cleanup") {
 		t.Errorf("Review = %v, want plan files gone", err)
 	}
-	t.Run("a task no plan snapshot holds is refused", func(t *testing.T) {
-		f := newFixture(t, nil)
-		if err := os.RemoveAll(filepath.Join(f.repo, ".superpowers/sdd", _change, "plan-snapshots")); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := Impl(t.Context(), t.TempDir(), f.repo, f.repo, _change, 1); err == nil || !strings.Contains(err.Error(), "no plan snapshot") {
-			t.Errorf("Impl = %v, want no plan snapshot", err)
-		}
-	})
 }

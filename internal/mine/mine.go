@@ -73,17 +73,17 @@ type VisualDraft struct {
 }
 
 // Impl drafts root/impl/<change>-task-<n>/ from task n of change, whose commits are in the
-// checkout repo and whose plan snapshots, ledger and panel record are in the worktree planRepo (repo
-// itself for a single-repository change). task.md and context.md come from the earliest plan
-// snapshot holding task n, never the live plan. The
+// checkout repo and whose plan, ledger and panel record are in the worktree planRepo (repo
+// itself for a single-repository change). task.md and context.md come from the change's plan
+// under spectre/changes/<change>/. The
 // reference is the oldest commit carrying a `Task-Id: <n>` trailer reachable from the
 // change's pre-reshape ref (see prereshape) and from no branch — integrate squashes the task commits, and a grouped
 // implementer dispatch is one ledger row against the group's last commit — else, with no such
 // commit, that of the ledger's last implementer dispatch for task n that is not a fix round. Its
-// parent is the snapshot — a fix round's parent already holds the answer. It returns the draft
+// parent is the case's snapshot commit — a fix round's parent already holds the answer. It returns the draft
 // directory, and refuses to overwrite an existing one.
 func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (string, error) {
-	snapshots, ledgerFile, _, err := worktreeFiles(planRepo, change)
+	plan, ledgerFile, _, err := worktreeFiles(planRepo, change)
 	if err != nil {
 		return "", err
 	}
@@ -118,13 +118,17 @@ func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (stri
 		return "", err
 	}
 
-	snap, task, files, err := planSnapshot(snapshots, n)
+	raw, err := os.ReadFile(filepath.Join(plan, "tasks.md"))
+	if err != nil {
+		return "", err
+	}
+	task, files, err := taskSection(string(raw), n)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", change, err)
 	}
 	var background []byte
 	for _, name := range []string{"proposal.md", "design.md"} {
-		raw, err := os.ReadFile(filepath.Join(snap, name))
+		raw, err := os.ReadFile(filepath.Join(plan, name))
 		if err != nil {
 			return "", err
 		}
@@ -171,14 +175,15 @@ func Impl(ctx context.Context, root, repo, planRepo, change string, n int) (stri
 	})
 }
 
-// worktreeFiles returns the plan snapshots directory, the rendered ledger and the panel record of
-// change in its worktree planRepo, refusing once the change's directory is gone.
-func worktreeFiles(planRepo, change string) (snapshots, ledger, panel string, err error) {
-	if dir := filepath.Join(planRepo, "spectre/changes", change); !isDir(dir) {
-		return "", "", "", fmt.Errorf("%s: plan files gone — mine before cleanup: %s does not exist", change, dir)
+// worktreeFiles returns the plan directory, the rendered ledger and the panel record of change in
+// its worktree planRepo, refusing once the change's directory is gone.
+func worktreeFiles(planRepo, change string) (plan, ledger, panel string, err error) {
+	plan = filepath.Join(planRepo, "spectre/changes", change)
+	if !isDir(plan) {
+		return "", "", "", fmt.Errorf("%s: plan files gone — mine before cleanup: %s does not exist", change, plan)
 	}
 	sdd := filepath.Join(planRepo, ".superpowers/sdd")
-	return filepath.Join(sdd, change, "plan-snapshots"), filepath.Join(sdd, "ledgers", change+".md"),
+	return plan, filepath.Join(sdd, "ledgers", change+".md"),
 		filepath.Join(sdd, "reviews", change+"-panel.md"), nil
 }
 
@@ -187,35 +192,8 @@ func isDir(p string) bool {
 	return err == nil && st.IsDir()
 }
 
-// planSnapshot returns the earliest snapshot under snapshots whose tasks.md holds task n — taken
-// before task n was implemented, so no later Correction reaches the case — with that task's section
-// and **Files:** paths.
-func planSnapshot(snapshots string, n int) (dir, task string, files []string, err error) {
-	entries, last := os.ReadDir(snapshots)
-	var ks []int
-	for _, e := range entries {
-		if k, err := strconv.Atoi(e.Name()); err == nil {
-			ks = append(ks, k)
-		}
-	}
-	slices.Sort(ks)
-	for _, k := range ks {
-		dir = filepath.Join(snapshots, strconv.Itoa(k))
-		raw, err := os.ReadFile(filepath.Join(dir, "tasks.md"))
-		if err != nil {
-			last = err
-			continue
-		}
-		if task, files, err = taskSection(string(raw), n); err == nil {
-			return dir, task, files, nil
-		}
-		last = err
-	}
-	return "", "", nil, errors.Join(fmt.Errorf("no plan snapshot under %s holds task %d", snapshots, n), last)
-}
-
 // Review drafts root/review/<change>/ from change's round-0 review range in the checkout repo,
-// whose plan snapshots, ledger and panel record are in the worktree planRepo (repo itself for a
+// whose plan, ledger and panel record are in the worktree planRepo (repo itself for a
 // single-repository change): base is the parent of the
 // oldest commit carrying a `Task-Id:` trailer reachable from head and from no branch when the change has a
 // pre-reshape ref (see prereshape), else of the ledger's first implementer commit; head is the

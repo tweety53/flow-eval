@@ -14,7 +14,7 @@ draft cases/<role>/<id>: edit labels, then commit
 ```
 
 Run the commands from the `flow-eval` repository root; `--root` (default `cases`) moves the draft
-elsewhere. For a change whose code is in one checkout and whose plan snapshots are in another —
+elsewhere. For a change whose code is in one checkout and whose plan is in another —
 a gymie-frontend change planned in gymie — `--repo` names the code's checkout and `--plan-repo` the
 plan's (`impl` and `review`).
 
@@ -24,7 +24,7 @@ plan's (`impl` and `review`).
 flow-eval case add impl --repo ../gymie --change kan-757-offline-l5-be-per-item-if-match-on-group-session --task 3
 ```
 
-What it mines, from `<plan-repo>/.superpowers/sdd/<change>/plan-snapshots/<k>/` and the rendered
+What it mines, from `<plan-repo>/spectre/changes/<change>/` and the rendered
 `.superpowers/sdd/ledgers/<change>.md` / `.superpowers/sdd/reviews/<change>-panel.md`:
 
 - **The reference commit**: the oldest commit carrying a `Task-Id: <n>` trailer
@@ -36,9 +36,9 @@ What it mines, from `<plan-repo>/.superpowers/sdd/<change>/plan-snapshots/<k>/` 
   commit in `--repo`. Its parent is the case's `snapshot`, the commit the trial's `/work` starts from.
 - **`task.md`**: task `n`'s section of `tasks.md`, from its checkbox line to the next task's.
 - **`context.md`**: `proposal.md` then `design.md`.
-- `tasks.md`, `proposal.md` and `design.md` are read from the earliest plan snapshot holding the
-  task — the plan as it stood before the task was implemented, never the live plan, whose
-  review-fix Corrections name the answer. A task no snapshot holds is refused.
+- `tasks.md`, `proposal.md` and `design.md` are read from the change's plan as it stands; a task
+  the plan does not hold is refused. A review-fix Correction in the plan reaches the case — check
+  `task.md` and `context.md` before keeping a draft.
 - **`heldout.patch`**: the reference commit's changes to test files — paths under `src/test/`,
   `commonTest/` or `desktopTest/`, or ending `Test.kt` or `_test.go`. The agent never sees it; the
   grader applies it after the agent exits.
@@ -82,7 +82,7 @@ What to check and edit:
 flow-eval case add review --repo ../gymie-frontend --plan-repo ../gymie --change kan-867-qm-2-step-1-frontend-settings-workout-mode-focus
 ```
 
-What it mines, from the same plan snapshots, ledger and panel record:
+What it mines, from the same ledger and panel record:
 
 - **The round-0 range**: base is the parent of the oldest commit carrying a `Task-Id:` trailer
   reachable from `<head>` and from no branch or remote-tracking ref when the change has `refs/flow/pre-reshape/<change>`, else of the first
@@ -160,7 +160,7 @@ each defect summary names one departure a reviewer could point at.
 snapshot commit, a review case's agent `diff.patch` and the tree at its head, a visual case's agent
 the mockup and capture — each the pre-task state. The ledger, the panel record, the reference
 commit, its subject and its trailers reach only `case.json`, `heldout.patch`, `reference.stat` and
-`labels.json`, which a trial never receives (decision `plan-snapshots-for-the-miner`).
+`labels.json`, which a trial never receives.
 
 ## Before/after after integrate
 
